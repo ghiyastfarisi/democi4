@@ -30,9 +30,8 @@ $routes->setAutoRoute(true);
  * --------------------------------------------------------------------
  */
 
-// We get a performance increase by specifying the default
-// route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+// api routing
+$routes->get('/api/user/(:alpha)', 'Api\V1\User::validWith/$1');
 
 /*
  * --------------------------------------------------------------------
