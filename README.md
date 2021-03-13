@@ -15,9 +15,6 @@ The user guide corresponding to this version of the framework can be found
 [here](https://codeigniter4.github.io/userguide/).
 
 
-## How to run
+## How to ?
 
-run `make build-image`
-run `make run-dev`
-
-and voila....
+run ```make build-image``` and ```make run-dev``` then, voila...
