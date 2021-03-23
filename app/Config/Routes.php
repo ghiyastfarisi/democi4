@@ -31,7 +31,19 @@ $routes->setAutoRoute(true);
  */
 
 // api routing
-$routes->get('/api/user/(:alpha)', 'Api\V1\User::validWith/$1');
+// sample api
+// $routes->get('/api/user/(:alpha)', 'Api\V1\User::validWith/$1');
+$routes->group('api', function($routes)
+{
+	$routes->group('v1/user', function($routes)
+	{
+		$routes->get('all', 'Api\V1\User::GetAll');
+		$routes->get('(:num)', 'Api\V1\User::GetById/$1');
+		$routes->post('create', 'Api\V1\User::create');
+		$routes->put('update/(:num)', 'Api\V1\User::update/$1');
+		$routes->delete('(:num)', 'Api\V1\User::delete/$1');
+	});
+});
 
 /*
  * --------------------------------------------------------------------

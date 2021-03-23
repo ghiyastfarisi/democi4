@@ -37,4 +37,5 @@ class App extends BaseConfig
 	public $CSRFRedirect = true;
 	public $CSRFSameSite = 'Lax';
 	public $CSPEnabled = false;
+	public $TemplateStyle = 'mytemplate';
 }

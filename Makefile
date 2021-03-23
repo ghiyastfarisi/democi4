@@ -4,8 +4,15 @@ PROJECT_NAME := "democi4"
 
 all: build-image run-dev
 
+migration-create:
+	@docker exec -it ${PROJECT_NAME} php spark migrate:create $(FILE)
+	@chown $(USER) ./app/Database/Migrations/*
+
+migration-run:
+	@docker exec -it ${PROJECT_NAME} php spark migrate
+
 build-image:
-	@docker build -t democi4:v1 -f Dockerfile .
+	@docker build -t ${PROJECT_NAME}:v1 -f Dockerfile .
 
 run-dev:
 	@sh run.sh
