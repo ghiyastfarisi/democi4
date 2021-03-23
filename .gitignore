@@ -129,4 +129,4 @@ nb-configuration.xml
 node_modules/
 
 # file upload exclude file
-files/upload/*
+files/*/

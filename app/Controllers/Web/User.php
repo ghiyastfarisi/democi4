@@ -8,6 +8,11 @@ class User extends BaseController
 
 	public function index()
 	{
-		return view('templates/'.GetTemplateStyle().'/index');
+		$data = array(
+			'_PageTitle' 	=> 'User Management',
+			'_Pages' 		=> 'user/index',
+			'_LoadJS'		=> array('@/userIndex.js')
+		);
+		return RenderTemplate($data);
 	}
 }
