@@ -1,22 +1,19 @@
 <?php namespace App\Controllers\Api\V1;
 
 use App\Controllers\BaseController;
-use App\Models\UserModel;
+use App\Models\PembinaMutuJabatanModel;
 
-class User extends BaseController
+class PembinaMutuJabatan extends BaseController
 {
-	protected $UserModel;
+	protected $db;
+	protected $PembinaMutuJabatanModel;
 	protected $validation;
 
 	function __construct()
 	{
-		$this->UserModel = new UserModel();
+		$this->PembinaMutuJabatanModel = new PembinaMutuJabatanModel();
 		$this->validation = \Config\Services::validation();
-	}
-
-	public function index()
-	{
-		return 'api user v1 here...';
+		$this->db = \Config\Database::connect();
 	}
 
 	public function GetAll()
@@ -29,12 +26,15 @@ class User extends BaseController
 
 		$q = $req->getGet();
 
+		$pembina_mutu_id = (isset($q['pembina_mutu_id'])) ? $q['pembina_mutu_id'] : 0;;
 		$page = (isset($q['page'])) ? $q['page'] : 1;
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
 		$offset = ($page - 1) * $limit;
 
-		$resp = $this->UserModel->orderBy('id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->UserModel->selectCount('id')->find();
+		$where = ($pembina_mutu_id > 0) ? ['pembina_mutu_id' => $pembina_mutu_id] : [];
+
+		$resp = $this->PembinaMutuJabatanModel->where($where)->orderBy('id', 'desc')->findAll($limit, $offset);
+		$countQuery = $this->PembinaMutuJabatanModel->selectCount('id')->where($where)->find();
 		$count = (int)$countQuery[0]['id'];
 
 		$pageAvailable = ceil((int)$count/(int)$limit);
@@ -98,7 +98,7 @@ class User extends BaseController
 			return ResponseNotAllowed();
 		}
 
-		$resp = $this->UserModel->find($id);
+		$resp = $this->PembinaMutuJabatanModel->find($id);
 
 		$transformed = array(
 			'data' => $resp
@@ -107,7 +107,7 @@ class User extends BaseController
 		return ResponseOK($transformed);
 	}
 
-	public function create()
+	public function create($pembina_mutu_id = 0)
 	{
 		$req = $this->request;
 
@@ -115,17 +115,45 @@ class User extends BaseController
 			return ResponseNotAllowed();
 		}
 
+		$checkPm = $this->db->query('SELECT * FROM tbl_pembina_mutu WHERE id = ?', $pembina_mutu_id)->getRow();
+
+		if (!isset($checkPm->id)) {
+			return ResponseNotFound();
+		}
+
 		$this->validation->setRules([
-			'username' => 'required|min_length[3]|valid_email',
-			'password' => 'required|min_length[8]'
+			'jabatan' 			=> 'required|min_length[5]',
+			'unit_kerja' 		=> 'required|min_length[5]',
+			'instansi' 			=> 'required|in_list[KKP,DINAS]',
+			'masih_menjabat' 	=> 'required|in_list[YA,TIDAK]',
+			'tahun_mulai' 		=> 'required|exact_length[4]|numeric',
+			'tahun_selesai' 	=> 'required|exact_length[4]|numeric',
 		], [
-			'username' => [
-				'required' 		=> 'wajib diisi',
-				'valid_email'	=> 'harap gunakan format email'
+			'jabatan' => [
+				'required'		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 2 karakter'
 			],
-			'password' => [
+			'unit_kerja' => [
 				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 8 karakter'
+				'min_length' 	=> 'minimal 5 karakter'
+			],
+			'instansi' => [
+				'required' 		=> 'wajib diisi',
+				'in_list' 		=> 'tidak terdaftar'
+			],
+			'masih_menjabat' => [
+				'required' 		=> 'wajib diisi',
+				'in_list'		=> 'tidak terdaftar'
+			],
+			'tahun_mulai' => [
+				'required' 		=> 'wajib diisi',
+				'exact_length' 	=> 'hanya 4 karakter',
+				'numeric'		=> 'isi dengan format angka tahun'
+			],
+			'tahun_selesai' => [
+				'required' 		=> 'wajib diisi',
+				'exact_length' 	=> 'hanya 4 karakter',
+				'numeric'		=> 'isi dengan format angka tahun'
 			]
 		]);
 
@@ -135,24 +163,16 @@ class User extends BaseController
 			return ResponseError(400, array('message' => $this->validation->getErrors()));
 		}
 
-		$foundRecord = $this->UserModel->where('username', $reqArray['username'])->selectCount('id')->find();
-
-		if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
-			return ResponseConflict(array('message' => 'username already registered'));
-		}
-
 		$insert = array_merge(
 			$reqArray,
 			array(
-				'login_status' 			=> 'inactive',
-				'registration_token' 	=> hash('sha256', 'registration_token'.sha1($reqArray['username'].microtime())),
-				'generated_token' 		=> hash('sha256', 'generated_token'.sha1($reqArray['username'].microtime()))
+				'pembina_mutu_id' => (int)$pembina_mutu_id
 			)
 		);
 
-		$resp = $this->UserModel->save($insert);
+		$resp = $this->PembinaMutuJabatanModel->save($insert);
 
-		return ResponseCreated(array( 'message' => 'user created' ));
+		return ResponseCreated(array( 'message' => 'riwayat pendidikan created' ));
 	}
 
 	public function update($id = 0)
@@ -203,7 +223,7 @@ class User extends BaseController
 		}
 
 		if (isset($reqArray['username'])) {
-			$foundRecord = $this->UserModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
+			$foundRecord = $this->PembinaMutuJabatanModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
 
 			if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
 				return ResponseConflict(array('message' => 'username already registered'));
@@ -212,7 +232,7 @@ class User extends BaseController
 
 		$reqArray['id'] = $id;
 
-		$resp = $this->UserModel->save($reqArray);
+		$resp = $this->PembinaMutuJabatanModel->save($reqArray);
 
 		return ResponseOK(array( 'message' => 'user updated' ));
 	}
@@ -222,8 +242,8 @@ class User extends BaseController
 			return ResponseNotFound();
 		}
 
-		$deleted = $this->UserModel->delete($id);
+		$deleted = $this->PembinaMutuJabatanModel->delete($id);
 
-		return ResponseOK(array( 'message' => 'user deleted' ));
+		return ResponseOK(array( 'message' => 'riwayat pendidikan deleted' ));
 	}
 }

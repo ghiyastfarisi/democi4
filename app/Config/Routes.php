@@ -32,7 +32,6 @@ $routes->setAutoRoute(true);
 
 // api routing
 // sample api
-// $routes->get('/api/user/(:alpha)', 'Api\V1\User::validWith/$1');
 $routes->group('api', function($routes)
 {
 	$routes->group('v1/user', function($routes)
@@ -42,6 +41,42 @@ $routes->group('api', function($routes)
 		$routes->post('create', 'Api\V1\User::create');
 		$routes->put('update/(:num)', 'Api\V1\User::update/$1');
 		$routes->delete('(:num)', 'Api\V1\User::delete/$1');
+	});
+	$routes->group('v1/pembina-mutu', function($routes)
+	{
+		$routes->get('user/(:num)', 'Api\V1\PembinaMutu::GetByUser/$1');
+		$routes->post('create/user/(:num)', 'Api\V1\PembinaMutu::create/$1');
+		// $routes->get('all', 'Api\V1\PembinaMutu::GetAll');
+		// $routes->get('(:num)', 'Api\V1\PembinaMutu::GetById/$1');
+		// $routes->put('update/(:num)', 'Api\V1\PembinaMutu::update/$1');
+		// $routes->delete('(:num)', 'Api\V1\PembinaMutu::delete/$1');
+	});
+	$routes->group('v1/pendidikan', function($routes)
+	{
+		$routes->get('pembina-mutu', 'Api\V1\PembinaMutuPendidikan::GetAll');
+		$routes->post('create/pembina-mutu/(:num)', 'Api\V1\PembinaMutuPendidikan::create/$1');
+		$routes->delete('(:num)', 'Api\V1\PembinaMutuPendidikan::delete/$1');
+		// $routes->get('all', 'Api\V1\PembinaMutu::GetAll');
+		// $routes->get('(:num)', 'Api\V1\PembinaMutu::GetById/$1');
+		// $routes->put('update/(:num)', 'Api\V1\PembinaMutu::update/$1');
+	});
+	$routes->group('v1/jabatan', function($routes)
+	{
+		$routes->get('pembina-mutu', 'Api\V1\PembinaMutuJabatan::GetAll');
+		$routes->post('create/pembina-mutu/(:num)', 'Api\V1\PembinaMutuJabatan::create/$1');
+		$routes->delete('(:num)', 'Api\V1\PembinaMutuJabatan::delete/$1');
+		// $routes->get('all', 'Api\V1\PembinaMutu::GetAll');
+		// $routes->get('(:num)', 'Api\V1\PembinaMutu::GetById/$1');
+		// $routes->put('update/(:num)', 'Api\V1\PembinaMutu::update/$1');
+	});
+	$routes->group('v1/pelatihan', function($routes)
+	{
+		$routes->get('pembina-mutu', 'Api\V1\PembinaMutuPelatihan::GetAll');
+		$routes->post('create/pembina-mutu/(:num)', 'Api\V1\PembinaMutuPelatihan::create/$1');
+		$routes->delete('(:num)', 'Api\V1\PembinaMutuPelatihan::delete/$1');
+		// $routes->get('all', 'Api\V1\PembinaMutu::GetAll');
+		// $routes->get('(:num)', 'Api\V1\PembinaMutu::GetById/$1');
+		// $routes->put('update/(:num)', 'Api\V1\PembinaMutu::update/$1');
 	});
 });
 

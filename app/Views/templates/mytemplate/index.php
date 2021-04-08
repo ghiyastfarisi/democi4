@@ -8,16 +8,32 @@
         <?= (!isset($_PageTitle)) ? 'undefined $_PageTitle' : $_PageTitle ?>
     </title>
     <?= (isset($_LoadCSS)) ? $this->include(ViewPath('base/css')) : '' ?>
+    <script>
+        const BASE_URL = window.location.origin
+        const BASE_API_URL = BASE_URL + '/api/'
+    </script>
 </head>
 <body>
-    <?= $this->include(ViewPath('base/header')) ?>
+    <div class="header-container has-background-white">
+        <?= $this->include(ViewPath('base/header')) ?>
+    </div>
 
-    <h1>Holla this is mytemplate index</h1>
-    <?= isset($username) ? $username : '' ?>
-
-    <?= (isset($_Pages)) ? $this->include(ViewPath($_Pages)) : '' ?>
-
-    <?= $this->include(ViewPath('base/footer')) ?>
+    <div class="column-container">
+        <div class="columns is-gapless is-tablet">
+            <div id="menu-container" class="menu-container px-3 has-background-white sidebar-hidden">
+                <?= $this->include(ViewPath('base/sidebar')) ?>
+            </div>
+            <div class="page-container p-3 container is-fluid">
+                <section class="section py-3 px-3">
+                    <h1 class="title is-4"> <?= PrintArgs($args, '_PageSectionTitle') ?> </h1>
+                    <h2 class="subtitle is-6">
+                        <?= PrintArgs($args, '_PageSectionSubTitle') ?>
+                    </h2>
+                </section>
+                <?= (isset($_Pages)) ? $this->include(ViewPath($_Pages)) : '' ?>
+            </div>
+        </div>
+    </div>
 
     <?= (isset($_LoadJS)) ? $this->include(ViewPath('base/js')) : '' ?>
 </body>

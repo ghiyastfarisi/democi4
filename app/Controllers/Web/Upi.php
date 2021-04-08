@@ -2,24 +2,24 @@
 
 use App\Controllers\BaseController;
 
-class User extends BaseController
+class Upi extends BaseController
 {
 	public function __construct() {}
 
 	public function index($id = 0)
 	{
 		$args = array(
-			'_PageSectionTitle' 	=> 'Manage User',
-			'_PageSectionSubTitle' 	=> 'User Management Page'
+			'_PageSectionTitle' 	=> 'Manage UPI',
+			'_PageSectionSubTitle' 	=> 'UPI Management Page'
 		);
 
 		$data = array(
 			'args' 			=> $args,
-			'_PageTitle' 	=> 'User Management',
-			'_Pages' 		=> 'user/index',
+			'_PageTitle' 	=> 'Upi Management',
+			'_Pages' 		=> 'upi/index',
 			'_LoadCSS'		=> array(),
 			'_LoadJS'		=> array('@/userindex.js'),
-			'_ActiveSlug'	=> 'user'
+			'_ActiveSlug'	=> 'upi'
 		);
 
 		return RenderTemplate($data);

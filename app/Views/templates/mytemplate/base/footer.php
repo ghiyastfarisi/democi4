@@ -1,3 +1,5 @@
-<footer>
-    <h4>this is footer</h4>
+<footer class="footer">
+    <div class="content has-text-centered">
+        copyright @ 2021
+    </div>
 </footer>

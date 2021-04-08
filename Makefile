@@ -16,3 +16,11 @@ build-image:
 
 run-dev:
 	@sh run.sh
+
+run-bundle-watch:
+	@yarn run build-watch
+
+link-dist:
+	@rm -rf public/dist
+	@ln -s src/dist public/dist
+

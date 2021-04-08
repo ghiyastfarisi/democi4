@@ -15,7 +15,7 @@ class Security extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $tokenName = md5('democi4_csrf_token_name');
+	public $tokenName = 'democi4_csrf_token_name';
 
 	/**
 	 * --------------------------------------------------------------------------
@@ -37,7 +37,7 @@ class Security extends BaseConfig
 	 *
 	 * @var string
 	 */
-	 public $cookieName = md5('democi4_csrf_cookie_name');
+	 public $cookieName = 'democi4_csrf_cookie_name';
 
 	/**
 	 * --------------------------------------------------------------------------

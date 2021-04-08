@@ -1,22 +1,19 @@
 <?php namespace App\Controllers\Api\V1;
 
 use App\Controllers\BaseController;
-use App\Models\UserModel;
+use App\Models\PembinaMutuModel;
 
-class User extends BaseController
+class PembinaMutu extends BaseController
 {
-	protected $UserModel;
+	protected $PembinaMutuModel;
 	protected $validation;
+	protected $db;
 
 	function __construct()
 	{
-		$this->UserModel = new UserModel();
+		$this->PembinaMutuModel = new PembinaMutuModel();
 		$this->validation = \Config\Services::validation();
-	}
-
-	public function index()
-	{
-		return 'api user v1 here...';
+		$this->db = \Config\Database::connect();
 	}
 
 	public function GetAll()
@@ -33,8 +30,8 @@ class User extends BaseController
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
 		$offset = ($page - 1) * $limit;
 
-		$resp = $this->UserModel->orderBy('id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->UserModel->selectCount('id')->find();
+		$resp = $this->PembinaMutuModel->orderBy('id', 'desc')->findAll($limit, $offset);
+		$countQuery = $this->PembinaMutuModel->selectCount('id')->find();
 		$count = (int)$countQuery[0]['id'];
 
 		$pageAvailable = ceil((int)$count/(int)$limit);
@@ -98,7 +95,7 @@ class User extends BaseController
 			return ResponseNotAllowed();
 		}
 
-		$resp = $this->UserModel->find($id);
+		$resp = $this->PembinaMutuModel->find($id);
 
 		$transformed = array(
 			'data' => $resp
@@ -107,7 +104,32 @@ class User extends BaseController
 		return ResponseOK($transformed);
 	}
 
-	public function create()
+	public function GetByUser($user_id = 0)
+	{
+		$req = $this->request;
+
+		if (0 === $user_id) {
+			return ResponseNotFound();
+		}
+
+		if ($req->getMethod(TRUE) !== 'GET') {
+			return ResponseNotAllowed();
+		}
+
+		$resp = $this->PembinaMutuModel->where('user_id', $user_id)->find();
+
+		if (count($resp) < 1) {
+			return ResponseNotFound();
+		}
+
+		$transformed = array(
+			'data' => $resp[0]
+		);
+
+		return ResponseOK($transformed);
+	}
+
+	public function create($user_id = 0)
 	{
 		$req = $this->request;
 
@@ -115,17 +137,43 @@ class User extends BaseController
 			return ResponseNotAllowed();
 		}
 
+		$checkUser = $this->db->query('SELECT * FROM tbl_user WHERE id = ?', $user_id)->getRow();
+
+		if (!isset($checkUser->id)) {
+			return ResponseNotFound();
+		}
+
 		$this->validation->setRules([
-			'username' => 'required|min_length[3]|valid_email',
-			'password' => 'required|min_length[8]'
+			'nama_lengkap' 	=> 'required|min_length[3]',
+			'nip' 			=> 'required|min_length[11]',
+			'foto_profil' 	=> 'required|min_length[3]|valid_url',
+			'keahlian' 		=> 'required|min_length[3]',
+			'deskripsi'		=> 'required|min_length[3]',
+			'no_hp'			=> 'required|min_length[10]'
 		], [
-			'username' => [
+			'nama_lengkap' => [
 				'required' 		=> 'wajib diisi',
-				'valid_email'	=> 'harap gunakan format email'
+				'min_length' 	=> 'minimal 3 karakter'
 			],
-			'password' => [
+			'nip' => [
 				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 8 karakter'
+				'min_length' 	=> 'minimal 11 karakter'
+			],
+			'foto_profil' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'keahlian' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'deskripsi' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'no_hp' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 10 karakter'
 			]
 		]);
 
@@ -135,24 +183,23 @@ class User extends BaseController
 			return ResponseError(400, array('message' => $this->validation->getErrors()));
 		}
 
-		$foundRecord = $this->UserModel->where('username', $reqArray['username'])->selectCount('id')->find();
+		$foundRecord = $this->PembinaMutuModel->where('user_id', $user_id)->selectCount('id')->find();
 
 		if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
-			return ResponseConflict(array('message' => 'username already registered'));
+			return ResponseConflict(array('message' => 'data already registered'));
 		}
 
 		$insert = array_merge(
 			$reqArray,
 			array(
-				'login_status' 			=> 'inactive',
-				'registration_token' 	=> hash('sha256', 'registration_token'.sha1($reqArray['username'].microtime())),
-				'generated_token' 		=> hash('sha256', 'generated_token'.sha1($reqArray['username'].microtime()))
+				'user_id' => (int)$user_id
 			)
 		);
 
-		$resp = $this->UserModel->save($insert);
 
-		return ResponseCreated(array( 'message' => 'user created' ));
+		$resp = $this->PembinaMutuModel->save($insert);
+
+		return ResponseCreated(array( 'message' => 'pembina mutu created' ));
 	}
 
 	public function update($id = 0)
@@ -203,7 +250,7 @@ class User extends BaseController
 		}
 
 		if (isset($reqArray['username'])) {
-			$foundRecord = $this->UserModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
+			$foundRecord = $this->PembinaMutuModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
 
 			if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
 				return ResponseConflict(array('message' => 'username already registered'));
@@ -212,7 +259,7 @@ class User extends BaseController
 
 		$reqArray['id'] = $id;
 
-		$resp = $this->UserModel->save($reqArray);
+		$resp = $this->PembinaMutuModel->save($reqArray);
 
 		return ResponseOK(array( 'message' => 'user updated' ));
 	}
@@ -222,7 +269,7 @@ class User extends BaseController
 			return ResponseNotFound();
 		}
 
-		$deleted = $this->UserModel->delete($id);
+		$deleted = $this->PembinaMutuModel->delete($id);
 
 		return ResponseOK(array( 'message' => 'user deleted' ));
 	}

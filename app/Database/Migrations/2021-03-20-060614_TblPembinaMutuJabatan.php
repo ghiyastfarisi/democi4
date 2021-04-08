@@ -40,6 +40,12 @@ class TblPembinaMutuJabatan extends Migration
 				'constraint'    => 4,
 				'null' 			=> false,
 			],
+			'masih_menjabat' => [
+				'type'			=> 'ENUM',
+				'constraint'    => [ 'YA', 'TIDAK' ],
+				'null' 			=> false,
+				'default' 		=> 'TIDAK'
+			],
 			'pembina_mutu_id' => [
 				'type' 			=> 'BIGINT',
 				'constraint' 	=> 20,
@@ -60,7 +66,7 @@ class TblPembinaMutuJabatan extends Migration
 			]
 		]);
 		$this->forge->addKey('id', true);
-		$this->$forge->addForeignKey('pembina_mutu_id','tbl_pembina_mutu','id','CASCADE','CASCADE');
+		$this->forge->addForeignKey('pembina_mutu_id','tbl_pembina_mutu','id','CASCADE','CASCADE');
 		$this->forge->createTable('tbl_pembina_mutu_jabatan');
 	}
 
