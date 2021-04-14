@@ -19,6 +19,12 @@
                 <RiwayatPelatihanForm
                     v-if="modalDep.modalType==='addriwayatpelatihan'"
                     :form-dep="formDep" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
+                <UserPembinaMutuForm
+                    v-if="modalDep.modalType==='adduserpembinamutu'"
+                    :form-dep="formDep" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
+                <PembinaMutuForm
+                    v-if="modalDep.modalType==='addpembinamutu'"
+                    :form-dep="formDep" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
             </div>
         </div>
     </div>
@@ -29,6 +35,8 @@ const UserForm = require('./userform').default
 const RiwayatPendidikanForm = require('./riwayatpendidikanform').default
 const RiwayatJabatanForm = require('./riwayatjabatanform').default
 const RiwayatPelatihanForm = require('./riwayatpelatihanform').default
+const UserPembinaMutuForm = require('./userpembinamutuform').default
+const PembinaMutuForm = require('./pembinamutuform').default
 
 module.exports = {
     created() {
@@ -36,30 +44,32 @@ module.exports = {
     },
     data: function() {
         return {
-            formDep: {
-                submit: this.modalDep.submit,
-                isEdit: this.modalDep.isEdit,
-                fetchEditUrl: this.modalDep.fetchEditUrl,
-                updateUrl: this.modalDep.updateUrl,
-                extra: this.modalDep.extra
-            }
+            formDep: this.modalDep
         }
     },
     components: {
         UserForm,
         RiwayatPendidikanForm,
         RiwayatJabatanForm,
-        RiwayatPelatihanForm
+        RiwayatPelatihanForm,
+        UserPembinaMutuForm,
+        PembinaMutuForm
     },
     props: {
         modalDep: {
-            title: String,
-            submit: String,
-            modalType: String,
-            isEdit: Boolean,
-            fetchEditUrl: String,
-            updateUrl: String,
-            extra: Object
+            type: Object,
+            default: function() {
+                return {
+                    title: '',
+                    submit: '',
+                    modalType: '',
+                    isEdit: false,
+                    createUrl: '',
+                    fetchEditUrl: '',
+                    updateUrl: '',
+                    extra: {}
+                }
+            }
         }
     },
     methods: {

@@ -7,7 +7,7 @@
                         <label class="label">Tahun Pelaksanaan</label>
                         <div class="control is-expanded">
                             <div class="select is-fullwidth">
-                                <select name="tahun_pelaksanaan" id="tahun_pelaksanaan" v-model="tahun_pelaksanaan">
+                                <select name="tahun_pelaksanaan" id="tahun_pelaksanaan" v-model="formValue.tahun_pelaksanaan">
                                     <option v-for="(list, index) in 20" :value="currentYear - list" :key="index">
                                         {{ currentYear - list }}
                                     </option>
@@ -20,13 +20,13 @@
             <div class="field">
                 <label class="label">Penyelenggara</label>
                 <div class="control">
-                    <input class="input" name="penyelenggara" type="text" placeholder="minimum 5 characters" v-model="penyelenggara">
+                    <input class="input" name="penyelenggara" type="text" placeholder="minimum 5 characters" v-model="formValue.penyelenggara">
                 </div>
             </div>
             <div class="field">
                 <label class="label">Nama Pelatihan</label>
                 <div class="control">
-                    <input class="input" name="nama_pelatihan" type="text" placeholder="minimum 5 characters" v-model="nama_pelatihan">
+                    <input class="input" name="nama_pelatihan" type="text" placeholder="minimum 5 characters" v-model="formValue.nama_pelatihan">
                 </div>
             </div>
         </section>
@@ -39,66 +39,119 @@
 
 <script>
 const { AutoClosePopup } = require('../../lib/popup')
+const { HandlePost, HandlePatch, ParseError } = require('../../lib/form')
+const { Sanitize } = require('../../lib/object')
 
 module.exports = {
     data: function() {
         return {
             currentYear: new Date().getFullYear(),
-            tahun_pelaksanaan: 2015,
-            penyelenggara: '',
-            nama_pelatihan: '',
+            formValue: {
+                tahun_pelaksanaan: 2015,
+                penyelenggara: '',
+                nama_pelatihan: '',
+            }
         }
     },
     props: {
         formDep: {
-            submit: String,
-            extra: {
-                pembinaMutuId: Number
+            type: Object,
+            default: function() {
+                return {
+                    submit: '',
+                    isEdit: false,
+                    createUrl: '',
+                    fetchEditUrl: '',
+                    updateUrl: '',
+                    extra: {
+                        userId: 0
+                    }
+                }
             }
+        }
+    },
+    created() {
+        let fd = this.formDep
+
+        if (fd.isEdit) {
+            this.setEditForm()
         }
     },
     methods: {
         submitData() {
-            const url = BASE_API_URL + 'v1/pelatihan/create/pembina-mutu/' + this.formDep.extra.pembinaMutuId
+            let fd = this.formDep
 
-            const payload = JSON.stringify({
-                tahun_pelaksanaan: this.tahun_pelaksanaan,
-                penyelenggara: this.penyelenggara,
-                nama_pelatihan: this.nama_pelatihan
-            })
+            if (fd.isEdit) {
+                return this.updateData()
+            }
 
-            fetch(url, {
-                method: 'POST',
-                body: payload,
-            })
-            .then(resp => {
-                if (!resp.ok) {
-                    return resp.json()
-                        .then(errResp => {
-                            if (errResp && errResp.error && errResp.error.message) {
-                                console.log(errResp.error.message)
-                            }
-                        })
-                        .catch(err => {
-                            console.error(err)
-                        })
-                }
+            return this.createData()
+        },
+        setEditForm() {
+            const url = `${BASE_API_URL}${this.formDep.fetchEditUrl}`
+            fetch(url)
+                .then(stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
 
-                return resp.json()
-            })
-            .catch(err => {
-                console.error(err)
-            })
+                    if (data) {
+                        this.formValue = Sanitize(this.formValue, data)
+                    }
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                })
+        },
+        async createData() {
+            const result = await HandlePost(
+                `${BASE_API_URL}${this.formDep.createUrl}`,
+                JSON.stringify(this.formValue)
+            )
 
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            return this.closeAndPopup(
+                result.message
+            )
+        },
+        async updateData() {
+            const result = await HandlePatch(
+                `${BASE_API_URL}${this.formDep.updateUrl}`,
+                JSON.stringify(this.formValue),
+            )
+
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            return this.closeAndPopup(
+                result.message
+            )
+        },
+        closeAndPopup(title='', body ='', timeout=900) {
             this.Close()
 
             AutoClosePopup({
-                title: 'Create Data Succeeded',
-                body: '',
-                timeout: 900
+                title,
+                body,
+                timeout
             })
 
             this.$emit('update-table')
+        },
+        errorPopup(message) {
+            AutoClosePopup({
+                title: message,
+                body: '',
+                timeout: 900
+            })
         },
         Close() {
             this.$emit('toggle-close')

@@ -214,48 +214,56 @@ class PembinaMutu extends BaseController
 			return ResponseNotAllowed();
 		}
 
-		$vRulesConfig = array(
-			'username' 		=> 'min_length[3]|valid_email',
-			'password' 		=> 'min_length[8]',
-			'login_status' 	=> 'in_list[active,inactive]'
+		$vRules = array(
+			'nama_lengkap' 	=> 'required|min_length[3]',
+			'nip' 			=> 'required|min_length[11]',
+			'no_hp'			=> 'required|min_length[10]',
+			'keahlian'		=> 'required|min_length[3]',
+			'foto_profil'	=> 'min_length[3]|valid_url',
+			'deskripsi'		=> 'min_length[5]',
+			'user_id'		=> 'required'
 		);
-		$vMessagesConfig = array(
-			'username' => [
-				'valid_email'	=> 'harap gunakan format email'
+		$vMessages = array(
+			'nama_lengkap' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
 			],
-			'password' => [
-				'min_length' 	=> 'minimal 8 karakter'
+			'nip' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 11 karakter'
 			],
-			'login_status' => [
-				'in_list'		=> 'tidak terdaftar'
+			'keahlian' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'no_hp' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 10 karakter'
+			],
+			'foto_profil' => [
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'deskripsi' => [
+				'min_length' 	=> 'minimal 5 karakter'
+			],
+			'user_id' => [
+				'required' 		=> 'wajib diisi',
 			]
 		);
 
-		$reqArray = (array) $req->getJSON();
+		$reqArray = (array)$req->getJSON();
 
 		$validationSetRules = array();
 		$validationSetMessages = array();
 
 		foreach ($reqArray as $key => $val) {
-			if ($vRulesConfig[$key] !== null && $vMessagesConfig[$key] !== null) {
-				$validationSetRules[$key] = $vRulesConfig[$key];
-				$validationSetMessages[$key] = $vMessagesConfig[$key];
+			if ($vRules[$key] !== null && $vMessages[$key] !== null) {
+				$validationSetRules[$key] = $vRules[$key];
+				$validationSetMessages[$key] = $vMessages[$key];
 			}
 		}
 
 		$this->validation->setRules($validationSetRules, $validationSetMessages);
-
-		if(!$this->validation->run($reqArray)) {
-			return ResponseError(400, array('message' => $this->validation->getErrors()));
-		}
-
-		if (isset($reqArray['username'])) {
-			$foundRecord = $this->PembinaMutuModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
-
-			if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
-				return ResponseConflict(array('message' => 'username already registered'));
-			}
-		}
 
 		$reqArray['id'] = $id;
 

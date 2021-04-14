@@ -177,19 +177,28 @@ class PembinaMutuPendidikan extends BaseController
 		}
 
 		$vRulesConfig = array(
-			'username' 		=> 'min_length[3]|valid_email',
-			'password' 		=> 'min_length[8]',
-			'login_status' 	=> 'in_list[active,inactive]'
+			'jenjang' 				=> 'required|min_length[2]',
+			'institusi_pendidikan' 	=> 'required|min_length[5]',
+			'program_studi' 		=> 'required|min_length[5]',
+			'tahun_lulus' 			=> 'required|exact_length[4]|numeric',
 		);
 		$vMessagesConfig = array(
-			'username' => [
-				'valid_email'	=> 'harap gunakan format email'
+			'jenjang' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 2 karakter'
 			],
-			'password' => [
-				'min_length' 	=> 'minimal 8 karakter'
+			'institusi_pendidikan' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 5 karakter'
 			],
-			'login_status' => [
-				'in_list'		=> 'tidak terdaftar'
+			'program_studi' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 5 karakter'
+			],
+			'tahun_lulus' => [
+				'required' 		=> 'wajib diisi',
+				'exact_length' 	=> 'hanya 4 karakter',
+				'numeric'		=> 'isi dengan format angka tahun'
 			]
 		);
 
@@ -211,19 +220,11 @@ class PembinaMutuPendidikan extends BaseController
 			return ResponseError(400, array('message' => $this->validation->getErrors()));
 		}
 
-		if (isset($reqArray['username'])) {
-			$foundRecord = $this->PembinaMutuPendidikanModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
-
-			if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
-				return ResponseConflict(array('message' => 'username already registered'));
-			}
-		}
-
 		$reqArray['id'] = $id;
 
 		$resp = $this->PembinaMutuPendidikanModel->save($reqArray);
 
-		return ResponseOK(array( 'message' => 'user updated' ));
+		return ResponseOK(array( 'message' => 'riwayat pendidikan updated' ));
 	}
 
 	public function delete($id = 0) {

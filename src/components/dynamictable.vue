@@ -12,10 +12,10 @@
                         <i class="fas fa-plus"></i>
                     </span>
                     <span>
-                        {{ enableAdd.title }}
+                        {{ enableAdd.addDep.title }}
                     </span>
                 </a>
-                <DynamicModalForm v-bind:modal-dep="modalDep" v-if="showModal" @toggle-close="ToggleModal" @update-table="UpdateTable"/>
+                <DynamicModalForm v-bind:modal-dep="enableAdd.addDep" v-if="showModal" @toggle-close="ToggleModal" @update-table="UpdateTable"/>
             </div>
             <h2 class="title is-6">Showing {{ show }} of {{ total }} data</h2>
             <div class="table-container">
@@ -33,12 +33,12 @@
                                 {{ list[field.origin] }}
                             </td>
                             <td>
-                                <a v-if="enableEdit.valid" class="button is-small is-primary" href="javascript:void(0)">
+                                <a v-if="enableEdit.valid" @click="openEditModal(list.id)" class="button is-small is-primary mb-1" href="javascript:void(0)">
                                     <span class="icon">
                                         <i class="fas fa-edit"></i>
                                     </span>
                                 </a>
-                                <a v-if="tableDep.deleteUrl" class="button is-small is-danger" @click="openDialog(list.id)" href="javascript:void(0)">
+                                <a v-if="tableDep.deleteUrl" class="button is-small is-danger mb-1" @click="openDialog(list.id)" href="javascript:void(0)">
                                     <span class="icon">
                                         <i class="fas fa-times"></i>
                                     </span>
@@ -57,6 +57,12 @@
                     </li>
                 </ul>
             </nav>
+            <DynamicModalForm
+                v-if="enableEdit.valid && showModalEdit"
+                v-bind:modal-dep="enableEdit.editDep"
+                @toggle-close="showModalEdit=!showModalEdit"
+                @update-table="UpdateTable"
+            />
         </div>
     </div>
 </template>
@@ -66,6 +72,7 @@ const UrlParse = require('url-parse')
 const DynamicModalForm = require('./forms/dynamicmodalform').default
 const TableDict = require('../lib/tabledictionary')
 const Swal = require('sweetalert2')
+const { HandleDelete } = require('../lib/form')
 
 module.exports = {
     components: {
@@ -85,15 +92,9 @@ module.exports = {
             pagination: {},
             limit: 0,
             startOrder: 1,
-            modalDep: {
-                title: this.enableAdd.modalTitle,
-                submit: 'Tambah',
-                modalType: this.enableAdd.modalType,
-                isEdit: false,
-                fetchEditUrl: '',
-                updateUrl: '',
-                extra: this.enableAdd.extra,
-            }
+            showModalEdit: false,
+            baseEditFetchUrl: '',
+            baseEditSubmitUrl: '',
         }
     },
     props: {
@@ -111,12 +112,7 @@ module.exports = {
             default: function () {
                 return {
                     valid: false,
-                    title: 'Tambah...',
-                    modalTitle: 'Judul',
-                    modalType: '',
-                    extra: {
-                        pembinaMutuId: 0
-                    }
+                    addDep: {}
                 }
             }
         },
@@ -125,10 +121,7 @@ module.exports = {
             default: function () {
                 return {
                     valid: false,
-                    title: 'Edit',
-                    modalTitle: 'Edit',
-                    modalType: 'editriwayatpendidikan',
-                    extra: {}
+                    editDep: {}
                 }
             }
         }
@@ -198,6 +191,11 @@ module.exports = {
             this.ToggleLoading()
             setTimeout(this.reFetch, 1000)
         },
+        openEditModal(id) {
+            this.enableEdit.editDep.fetchEditUrl = `${this.baseEditFetchUrl}${id}`
+            this.enableEdit.editDep.updateUrl = `${this.baseEditSubmitUrl}${id}`
+            this.showModalEdit = !this.showModalEdit
+        },
         openDialog(id) {
             Swal.fire({
                 title: 'Delete data?',
@@ -210,43 +208,28 @@ module.exports = {
                 }
             })
         },
-        actionDelete(id) {
-            const url = `${BASE_API_URL}${this.tableDep.deleteUrl}${id}`
+        async actionDelete(id) {
+            const result = await HandleDelete(`${BASE_API_URL}${this.tableDep.deleteUrl}${id}`)
 
-            fetch(url, {
-                method: 'DELETE'
-            })
-            .then(resp => {
-                if (!resp.ok) {
-                    return resp.json()
-                        .then(errResp => {
-                            if (errResp && errResp.error && errResp.error.message) {
-                                console.log(errResp.error.message)
-                            }
-                        })
-                        .catch(err => {
-                            console.error(err)
-                        })
-                }
+            if (result.isError) {
+                Swal.fire(ParseError(result.message), '', 'error')
+            } else {
+                Swal.fire(result.message, '', 'success')
+            }
 
-                return resp.json()
-            })
-            .catch(err => {
-                console.error(err)
-            })
-
-            Swal.fire('User Deleted', '', 'success')
 
             this.UpdateTable()
         }
     },
     created() {
         let vm = this
-
         const getFields = TableDict.TableFieldData[vm.tableDep.fieldType]
 
         vm.fields = TableDict.TableFieldData[vm.tableDep.fieldType]
         vm.validFields = getFields.filter(field => !field.decorator)
+
+        this.baseEditFetchUrl = this.enableEdit.editDep.fetchEditUrl
+        this.baseEditSubmitUrl = this.enableEdit.editDep.updateUrl
     },
     mounted() {
         let vm = this

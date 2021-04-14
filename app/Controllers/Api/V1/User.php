@@ -2,6 +2,7 @@
 
 use App\Controllers\BaseController;
 use App\Models\UserModel;
+use App\Models\PembinaMutuModel;
 
 class User extends BaseController
 {
@@ -225,5 +226,105 @@ class User extends BaseController
 		$deleted = $this->UserModel->delete($id);
 
 		return ResponseOK(array( 'message' => 'user deleted' ));
+	}
+
+	public function createPembinaMutu() {
+		$req = $this->request;
+
+		if ($req->getMethod(TRUE) !== 'POST') {
+			return ResponseNotAllowed();
+		}
+
+		$vRules = array(
+			'username' 		=> 'required|min_length[3]|valid_email',
+			'password' 		=> 'required|min_length[8]',
+			'nama_lengkap' 	=> 'required|min_length[3]',
+			'nip' 			=> 'required|min_length[11]',
+			'no_hp'			=> 'required|min_length[10]'
+		);
+		$vMessages = array(
+			'username' => [
+				'required' 		=> 'wajib diisi',
+				'valid_email'	=> 'harap gunakan format email'
+			],
+			'password' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 8 karakter'
+			],
+			'nama_lengkap' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'nip' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 11 karakter'
+			],
+			'foto_profil' => [
+				'min_length' 	=> 'minimal 3 karakter',
+				'valid_url'		=> 'harap isi dengan url gambar yang benar'
+			],
+			'keahlian' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'deskripsi' => [
+				'min_length' 	=> 'minimal 3 karakter'
+			],
+			'no_hp' => [
+				'required' 		=> 'wajib diisi',
+				'min_length' 	=> 'minimal 10 karakter'
+			]
+		);
+
+		$reqArray = (array)$req->getJSON();
+
+		if (isset($reqArray['foto_profil'])) {
+			$vRules['foto_profil'] = 'min_length[3]|valid_url';
+		}
+
+		if (isset($reqArray['deskripsi'])) {
+			$vRules['deskripsi'] = 'min_length[5]';
+		}
+
+
+		$this->validation->setRules($vRules, $vMessages);
+
+		if(!$this->validation->run($reqArray)) {
+			return ResponseError(400, array('message' => $this->validation->getErrors()));
+		}
+
+		$foundRecord = $this->UserModel->where('username', $reqArray['username'])->selectCount('id')->find();
+
+		if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
+			return ResponseConflict(array('message' => 'username already registered'));
+		}
+
+		$insert = array_merge(
+			$reqArray,
+			array(
+				'login_status' 			=> 'inactive',
+				'registration_token' 	=> hash('sha256', 'registration_token'.sha1($reqArray['username'].microtime())),
+				'generated_token' 		=> hash('sha256', 'generated_token'.sha1($reqArray['username'].microtime()))
+			)
+		);
+
+		$saved = $this->UserModel->save($insert);
+
+		if ($saved) {
+			$puModel = new PembinaMutuModel();
+
+			$user_id = $this->UserModel->getInsertID();
+
+			$insertPembinaMutu = array_merge(
+				$reqArray,
+				array(
+					'user_id' => (int)$user_id
+				)
+			);
+
+			$puModel->save($insertPembinaMutu);
+		}
+
+		return ResponseCreated(array( 'message' => 'user and pembina mutu created' ));
 	}
 }

@@ -8,6 +8,42 @@ class PembinaMutuJabatan extends BaseController
 	protected $db;
 	protected $PembinaMutuJabatanModel;
 	protected $validation;
+	protected $vRules = array(
+		'jabatan' 			=> 'required|min_length[5]',
+		'unit_kerja' 		=> 'required|min_length[5]',
+		'instansi' 			=> 'required|in_list[KKP,DINAS]',
+		'masih_menjabat' 	=> 'required|in_list[YA,TIDAK]',
+		'tahun_mulai' 		=> 'required|exact_length[4]|numeric',
+		'tahun_selesai' 	=> 'required|exact_length[4]|numeric',
+	);
+	protected $vRulesMessages = array(
+		'jabatan' => [
+			'required'		=> 'Jabatan wajib diisi',
+			'min_length' 	=> 'Jabatan minimal 2 karakter'
+		],
+		'unit_kerja' => [
+			'required' 		=> 'Unit Kerja wajib diisi',
+			'min_length' 	=> 'Unit Kerja minimal 5 karakter'
+		],
+		'instansi' => [
+			'required' 		=> 'Instansi wajib diisi',
+			'in_list' 		=> 'Instansi tidak terdaftar'
+		],
+		'masih_menjabat' => [
+			'required' 		=> 'Menjabat wajib diisi',
+			'in_list'		=> 'Menjabat tidak terdaftar'
+		],
+		'tahun_mulai' => [
+			'required' 		=> 'Tahun Mulai wajib diisi',
+			'exact_length' 	=> 'Tahun Mulai hanya 4 karakter',
+			'numeric'		=> 'Tahun Mulai isi dengan format angka tahun'
+		],
+		'tahun_selesai' => [
+			'required' 		=> 'Tahun Selesai wajib diisi',
+			'exact_length' 	=> 'Tahun Selesai hanya 4 karakter',
+			'numeric'		=> 'Tahun Selesai isi dengan format angka tahun'
+		]
+	);
 
 	function __construct()
 	{
@@ -121,41 +157,7 @@ class PembinaMutuJabatan extends BaseController
 			return ResponseNotFound();
 		}
 
-		$this->validation->setRules([
-			'jabatan' 			=> 'required|min_length[5]',
-			'unit_kerja' 		=> 'required|min_length[5]',
-			'instansi' 			=> 'required|in_list[KKP,DINAS]',
-			'masih_menjabat' 	=> 'required|in_list[YA,TIDAK]',
-			'tahun_mulai' 		=> 'required|exact_length[4]|numeric',
-			'tahun_selesai' 	=> 'required|exact_length[4]|numeric',
-		], [
-			'jabatan' => [
-				'required'		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 2 karakter'
-			],
-			'unit_kerja' => [
-				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 5 karakter'
-			],
-			'instansi' => [
-				'required' 		=> 'wajib diisi',
-				'in_list' 		=> 'tidak terdaftar'
-			],
-			'masih_menjabat' => [
-				'required' 		=> 'wajib diisi',
-				'in_list'		=> 'tidak terdaftar'
-			],
-			'tahun_mulai' => [
-				'required' 		=> 'wajib diisi',
-				'exact_length' 	=> 'hanya 4 karakter',
-				'numeric'		=> 'isi dengan format angka tahun'
-			],
-			'tahun_selesai' => [
-				'required' 		=> 'wajib diisi',
-				'exact_length' 	=> 'hanya 4 karakter',
-				'numeric'		=> 'isi dengan format angka tahun'
-			]
-		]);
+		$this->validation->setRules($this->vRules, $this->vRulesMessages);
 
 		$reqArray = (array) $req->getJSON();
 
@@ -172,7 +174,7 @@ class PembinaMutuJabatan extends BaseController
 
 		$resp = $this->PembinaMutuJabatanModel->save($insert);
 
-		return ResponseCreated(array( 'message' => 'riwayat pendidikan created' ));
+		return ResponseCreated(array( 'message' => 'riwayat jabatan created' ));
 	}
 
 	public function update($id = 0)
@@ -187,32 +189,15 @@ class PembinaMutuJabatan extends BaseController
 			return ResponseNotAllowed();
 		}
 
-		$vRulesConfig = array(
-			'username' 		=> 'min_length[3]|valid_email',
-			'password' 		=> 'min_length[8]',
-			'login_status' 	=> 'in_list[active,inactive]'
-		);
-		$vMessagesConfig = array(
-			'username' => [
-				'valid_email'	=> 'harap gunakan format email'
-			],
-			'password' => [
-				'min_length' 	=> 'minimal 8 karakter'
-			],
-			'login_status' => [
-				'in_list'		=> 'tidak terdaftar'
-			]
-		);
-
 		$reqArray = (array) $req->getJSON();
 
 		$validationSetRules = array();
 		$validationSetMessages = array();
 
 		foreach ($reqArray as $key => $val) {
-			if ($vRulesConfig[$key] !== null && $vMessagesConfig[$key] !== null) {
-				$validationSetRules[$key] = $vRulesConfig[$key];
-				$validationSetMessages[$key] = $vMessagesConfig[$key];
+			if ($this->vRules[$key] !== null && $this->vRulesMessages[$key] !== null) {
+				$validationSetRules[$key] = $this->vRules[$key];
+				$validationSetMessages[$key] = $this->vRulesMessages[$key];
 			}
 		}
 
@@ -222,19 +207,11 @@ class PembinaMutuJabatan extends BaseController
 			return ResponseError(400, array('message' => $this->validation->getErrors()));
 		}
 
-		if (isset($reqArray['username'])) {
-			$foundRecord = $this->PembinaMutuJabatanModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
-
-			if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
-				return ResponseConflict(array('message' => 'username already registered'));
-			}
-		}
-
 		$reqArray['id'] = $id;
 
 		$resp = $this->PembinaMutuJabatanModel->save($reqArray);
 
-		return ResponseOK(array( 'message' => 'user updated' ));
+		return ResponseOK(array( 'message' => 'riwayat jabatan updated' ));
 	}
 
 	public function delete($id = 0) {
@@ -244,6 +221,6 @@ class PembinaMutuJabatan extends BaseController
 
 		$deleted = $this->PembinaMutuJabatanModel->delete($id);
 
-		return ResponseOK(array( 'message' => 'riwayat pendidikan deleted' ));
+		return ResponseOK(array( 'message' => 'riwayat jabatan deleted' ));
 	}
 }

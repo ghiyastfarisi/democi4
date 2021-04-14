@@ -36,7 +36,7 @@
                                     modalType: 'adduser',
                                     isEdit: true,
                                     fetchEditUrl: `v1/user/${this.uid}`,
-                                    updateUrl: 'v1/user/update',
+                                    updateUrl: `v1/user/update/${this.uid}`,
                                     extra: { userId: this.uid }
                                 }"
                                 @toggle-close="showEditAkun=!showEditAkun"
@@ -76,7 +76,7 @@
                                     <p class="title is-4 is-spaced">Pembina Mutu</p>
                                 </div>
                                 <div class="level-right">
-                                    <a href="javascript:void(0)" class="button is-warning is-small">
+                                    <a href="javascript:void(0)" @click="showEditPembinaMutu=!showEditPembinaMutu" class="button is-warning is-small">
                                         <span class="icon">
                                             <i class="fas fa-edit"></i>
                                         </span>
@@ -86,6 +86,21 @@
                                     </a>
                                 </div>
                             </nav>
+                            <DynamicModalForm
+                                v-if="showEditPembinaMutu"
+                                v-bind:modal-dep="{
+                                    title: 'Update Data',
+                                    submit: 'Update',
+                                    modalType: 'addpembinamutu',
+                                    isEdit: true,
+                                    fetchEditUrl: `v1/pembina-mutu/${this.pembinaMutuData.id}`,
+                                    updateUrl: `v1/pembina-mutu/update/${this.pembinaMutuData.id}`,
+                                    extra: { userId: parseInt(this.uid) }
+                                }"
+                                @toggle-close="showEditPembinaMutu=!showEditPembinaMutu"
+                                @update-table="getData"
+                            />
+
                             <div class="field">
                                 <label class="label"> Nama Lengkap </label>
                                 <div class="control">
@@ -116,6 +131,12 @@
                                     {{ pembinaMutuData.no_hp }}
                                 </div>
                             </div>
+                            <div class="field">
+                                <label class="label"> Deskripsi </label>
+                                <div class="control">
+                                    {{ pembinaMutuData.deskripsi }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -127,11 +148,14 @@
                 <DynamicTable
                     :enable-add="{
                         valid: true,
-                        title: 'Tambah Riwayat',
-                        modalTitle: 'Form Riwayat Pendidikan',
-                        modalType: 'addriwayatpendidikan',
-                        extra: {
-                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        addDep: {
+                            title: 'Tambah Riwayat',
+                            submit: 'Submit Data',
+                            modalType: 'addriwayatpendidikan',
+                            createUrl: `v1/pendidikan/create/pembina-mutu/${this.pembinaMutuData.id}`,
+                            extra: {
+                                pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                            }
                         }
                     }"
                     :table-dep="{
@@ -142,11 +166,14 @@
                     }"
                     :enable-edit="{
                         valid: true,
-                        title: 'Tambah Riwayat',
-                        modalTitle: 'Form Riwayat Pendidikan',
-                        modalType: 'addriwayatpendidikan',
-                        extra: {
-                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        editDep: {
+                            title: 'Update Data',
+                            submit: 'Update',
+                            modalType: 'addriwayatpendidikan',
+                            isEdit: true,
+                            fetchEditUrl: `v1/pendidikan/`,
+                            updateUrl: `v1/pendidikan/update/`,
+                            extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
                         }
                     }"
                 />
@@ -158,11 +185,14 @@
                 <DynamicTable
                     :enable-add="{
                         valid: true,
-                        title: 'Tambah Riwayat',
-                        modalTitle: 'Form Riwayat Jabatan',
-                        modalType: 'addriwayatjabatan',
-                        extra: {
-                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        addDep: {
+                            title: 'Tambah Riwayat',
+                            submit: 'Submit Data',
+                            modalType: 'addriwayatjabatan',
+                            createUrl: `v1/jabatan/create/pembina-mutu/${this.pembinaMutuData.id}`,
+                            extra: {
+                                pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                            }
                         }
                     }"
                     :table-dep="{
@@ -173,11 +203,14 @@
                     }"
                     :enable-edit="{
                         valid: true,
-                        title: 'Tambah Riwayat',
-                        modalTitle: 'Form Riwayat Jabatan',
-                        modalType: 'addriwayatjabatan',
-                        extra: {
-                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        editDep: {
+                            title: 'Update Data',
+                            submit: 'Update',
+                            modalType: 'addriwayatjabatan',
+                            isEdit: true,
+                            fetchEditUrl: `v1/jabatan/`,
+                            updateUrl: `v1/jabatan/update/`,
+                            extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
                         }
                     }"
                 />
@@ -189,11 +222,14 @@
                 <DynamicTable
                     :enable-add="{
                         valid: true,
-                        title: 'Tambah Riwayat',
-                        modalTitle: 'Form Riwayat Pelatihan',
-                        modalType: 'addriwayatpelatihan',
-                        extra: {
-                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        addDep: {
+                            title: 'Tambah Riwayat',
+                            submit: 'Submit Data',
+                            modalType: 'addriwayatpelatihan',
+                            createUrl: `v1/pelatihan/create/pembina-mutu/${this.pembinaMutuData.id}`,
+                            extra: {
+                                pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                            }
                         }
                     }"
                     :table-dep="{
@@ -204,11 +240,14 @@
                     }"
                     :enable-edit="{
                         valid: true,
-                        title: 'Tambah Riwayat',
-                        modalTitle: 'Form Riwayat pelatihan',
-                        modalType: 'addriwayatpelatihan',
-                        extra: {
-                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        editDep: {
+                            title: 'Update Data',
+                            submit: 'Update',
+                            modalType: 'addriwayatpelatihan',
+                            isEdit: true,
+                            fetchEditUrl: `v1/pelatihan/`,
+                            updateUrl: `v1/pelatihan/update/`,
+                            extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
                         }
                     }"
                 />
@@ -241,6 +280,7 @@ module.exports = {
             showPelatihan: false,
             showKunjungan: false,
             showEditAkun: false,
+            showEditPembinaMutu: false,
             userData: {
                 role: 'pembina_mutu'
             },
@@ -248,7 +288,8 @@ module.exports = {
                 nama_lengkap: '',
                 nip: '',
                 no_hp: '',
-                keahlian: ''
+                keahlian: '',
+                deskripsi: '-'
             },
         }
     },

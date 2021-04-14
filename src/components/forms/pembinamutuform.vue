@@ -2,32 +2,41 @@
     <form class="form-name-container" @submit.prevent="submitData">
         <section class="modal-card-body">
             <div class="field">
-                <label class="label">Username</label>
+                <label class="label">Nama Lengkap</label>
                 <div class="control">
-                    <input class="input" name="username" type="email" placeholder="use email format" v-model="iuname" :disabled="formDep.isEdit">
+                    <input class="input" type="text" placeholder="Nama Lengkap" v-model="nama_lengkap">
                 </div>
             </div>
             <div class="field">
-                <label class="label">Password</label>
-                <div v-if="formDep.isEdit" class="block">
-                    <span class="tag is-danger is-light">Hanya isi jika ingin mengganti password</span>
-                </div>
+                <label class="label">NIP</label>
                 <div class="control">
-                    <input class="input" name="password" type="password" placeholder="minimum 8 characters" v-model="ipass">
+                    <input class="input" type="text" placeholder="NIP Lengkap" v-model="nip">
                 </div>
             </div>
-            <div v-if="formDep.isEdit" class="field">
-                <label class="label">Login Status</label>
-                <div class="control is-expanded">
-                    <div class="select is-fullwidth">
-                        <select name="login_status" id="login_status" v-model="iloginStatus">
-                            <option v-for="(list, index) in loginStatusArray" :value="list" :key="index">
-                                {{ list }}
-                            </option>
-                        </select>
-                    </div>
+            <div class="field">
+                <label class="label">No Handphone</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="No Handphone" v-model="no_hp">
                 </div>
             </div>
+            <div class="field">
+                <label class="label">Keahlian</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="Keahlian" v-model="keahlian">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Deskripsi</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="Deskripsi Diri" v-model="deskripsi">
+                </div>
+            </div>
+            <!-- <div class="field">
+                <label class="label">Upload Foto Profil</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="minimum 8 characters" v-model="foto_profil">
+                </div>
+            </div> -->
         </section>
         <footer class="modal-card-foot">
             <button type="submit" class="button is-success">{{ formDep.submit }}</button>
@@ -42,10 +51,12 @@ const { AutoClosePopup } = require('../../lib/popup')
 module.exports = {
     data: function() {
         return {
-            iuname: '',
-            ipass: '',
-            iloginStatus: '',
-            loginStatusArray: [ 'active', 'inactive' ]
+            nama_lengkap: '',
+            nip: '',
+            no_hp: '',
+            keahlian: '',
+            deskripsi: '',
+            foto_profil: '',
         }
     },
     props: {
@@ -55,6 +66,7 @@ module.exports = {
                 return {
                     submit: '',
                     isEdit: false,
+                    createUrl: '',
                     fetchEditUrl: '',
                     updateUrl: '',
                     extra: {
@@ -92,9 +104,12 @@ module.exports = {
                     const { data } = resp
 
                     if (data) {
-                        this.iuname = data.username
-                        this.iloginStatus = data.login_status
-                        console.log(data)
+                        this.nama_lengkap = data.nama_lengkap
+                        this.nip = data.nip
+                        this.no_hp = data.no_hp
+                        this.keahlian = data.keahlian
+                        this.deskripsi = data.deskripsi
+                        this.foto_profil = data.foto_profil
                     }
                 })
                 .catch(err => {
@@ -103,7 +118,7 @@ module.exports = {
                 })
         },
         createData() {
-            const url = `${BASE_API_URL}v1/user/create`
+            const url = `${BASE_API_URL}${this.formDep.createUrl}`
             const payload = JSON.stringify({
                 username: this.iuname,
                 password: this.ipass
@@ -144,10 +159,17 @@ module.exports = {
         updateData() {
             const url = `${BASE_API_URL}${this.formDep.updateUrl}`
             const payload = {
-                login_status: this.iloginStatus
+                nama_lengkap: this.nama_lengkap,
+                nip: this.nip,
+                no_hp: this.no_hp,
+                keahlian: this.keahlian,
+                user_id: this.formDep.extra.userId
             }
-            if (this.ipass !== '' && this.ipass.length > 1) {
-                payload.password = this.password
+            if (this.foto_profil !== '') {
+                payload.foto_profil = this.foto_profil
+            }
+            if (this.deskripsi !== '') {
+                payload.deskripsi = this.deskripsi
             }
             fetch(url, {
                 method: 'PATCH',

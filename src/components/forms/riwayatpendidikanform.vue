@@ -7,7 +7,7 @@
                         <label class="label">Jenjang</label>
                         <div class="control is-expanded">
                             <div class="select is-fullwidth">
-                                <select name="jenjang" id="jenjang" v-model="jenjang">
+                                <select name="jenjang" id="jenjang" v-model="formValue.jenjang">
                                     <option v-for="(list, index) in jenjangArray" :value="list" :key="index">
                                         {{ list }}
                                     </option>
@@ -21,7 +21,7 @@
                         <label class="label">Tahun Lulus</label>
                         <div class="control is-expanded">
                             <div class="select is-fullwidth">
-                                <select name="tahun_lulus" id="tahun_lulus" v-model="tahun_lulus">
+                                <select name="tahun_lulus" id="tahun_lulus" v-model="formValue.tahun_lulus">
                                     <option v-for="(list, index) in 40" :value="currentYear - list" :key="index">
                                         {{ currentYear - list }}
                                     </option>
@@ -34,13 +34,13 @@
             <div class="field">
                 <label class="label">Institusi Pendidikan</label>
                 <div class="control">
-                    <input class="input" name="institusi_pendidikan" type="text" placeholder="minimum 5 characters" v-model="institusi_pendidikan">
+                    <input class="input" name="institusi_pendidikan" type="text" placeholder="minimum 5 characters" v-model="formValue.institusi_pendidikan">
                 </div>
             </div>
             <div class="field">
                 <label class="label">Program Studi</label>
                 <div class="control">
-                    <input class="input" name="program_studi" type="text" placeholder="minimum 5 characters" v-model="program_studi">
+                    <input class="input" name="program_studi" type="text" placeholder="minimum 5 characters" v-model="formValue.program_studi">
                 </div>
             </div>
         </section>
@@ -53,69 +53,122 @@
 
 <script>
 const { AutoClosePopup } = require('../../lib/popup')
+const { HandlePost, HandlePatch, ParseError } = require('../../lib/form')
+const { Sanitize } = require('../../lib/object')
 
 module.exports = {
     data: function() {
         return {
             jenjangArray: ['D3', 'D4', 'S1', 'S2', 'S3'],
             currentYear: new Date().getFullYear(),
-            jenjang: '',
-            tahun_lulus: '',
-            institusi_pendidikan: '',
-            program_studi: '',
+            formValue: {
+                jenjang: '',
+                tahun_lulus: '',
+                institusi_pendidikan: '',
+                program_studi: '',
+            }
         }
     },
     props: {
         formDep: {
-            submit: String,
-            extra: {
-                pembinaMutuId: Number
+            type: Object,
+            default: function() {
+                return {
+                    submit: '',
+                    isEdit: false,
+                    createUrl: '',
+                    fetchEditUrl: '',
+                    updateUrl: '',
+                    extra: {
+                        userId: 0
+                    }
+                }
             }
+        }
+    },
+    created() {
+        let fd = this.formDep
+
+        if (fd.isEdit) {
+            this.setEditForm()
         }
     },
     methods: {
         submitData() {
-            const url = BASE_API_URL + 'v1/pendidikan/create/pembina-mutu/' + this.formDep.extra.pembinaMutuId
+            let fd = this.formDep
 
-            const payload = JSON.stringify({
-                jenjang: this.jenjang,
-                tahun_lulus: this.tahun_lulus,
-                institusi_pendidikan: this.institusi_pendidikan,
-                program_studi: this.program_studi
-            })
+            if (fd.isEdit) {
+                return this.updateData()
+            }
 
-            fetch(url, {
-                method: 'POST',
-                body: payload,
-            })
-            .then(resp => {
-                if (!resp.ok) {
-                    return resp.json()
-                        .then(errResp => {
-                            if (errResp && errResp.error && errResp.error.message) {
-                                console.log(errResp.error.message)
-                            }
-                        })
-                        .catch(err => {
-                            console.error(err)
-                        })
-                }
+            return this.createData()
+        },
+        setEditForm() {
+            const url = `${BASE_API_URL}${this.formDep.fetchEditUrl}`
+            fetch(url)
+                .then(stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
 
-                return resp.json()
-            })
-            .catch(err => {
-                console.error(err)
-            })
+                    if (data) {
+                        this.formValue = Sanitize(this.formValue, data)
+                    }
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                })
+        },
+        async createData() {
+            const result = await HandlePost(
+                `${BASE_API_URL}${this.formDep.createUrl}`,
+                JSON.stringify(this.formValue),
+                'PATCH'
+            )
 
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            return this.closeAndPopup(
+                result.message
+            )
+        },
+        async updateData() {
+            const result = await HandlePatch(
+                `${BASE_API_URL}${this.formDep.updateUrl}`,
+                JSON.stringify(this.formValue),
+            )
+
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            return this.closeAndPopup(
+                result.message
+            )
+        },
+        closeAndPopup(title='', body ='', timeout=900) {
             this.Close()
 
             AutoClosePopup({
-                title: 'Create Data Succeeded',
-                body: '',
-                timeout:1500
+                title,
+                body,
+                timeout
             })
 
             this.$emit('update-table')
+        },
+        errorPopup(message) {
+            AutoClosePopup({
+                title: message,
+                body: '',
+                timeout: 900
+            })
         },
         Close() {
             this.$emit('toggle-close')

@@ -15,6 +15,17 @@
                         Create New User
                     </span>
                 </a>
+                <DynamicModalForm
+                    v-if="showModal"
+                    v-bind:modal-dep="{
+                        title: 'Create Akun',
+                        submit: 'Create',
+                        modalType: 'adduserpembinamutu',
+                        isEdit: false
+                    }"
+                    @toggle-close="ToggleModal"
+                    @update-table="UpdateTable"
+                />
             </div>
             <h2 class="title is-6">Showing {{ show }} of {{ total }} data</h2>
             <div class="table-container">
@@ -56,19 +67,18 @@
                 </ul>
             </nav>
         </div>
-        <ModalForm title="Add New User" submit="Submit" mtype="adduser" v-if="showModal" @toggle-close="ToggleModal" @update-table="UpdateTable"/>
     </div>
 </template>
 
 <script>
 
-const ModalForm = require('./forms/modalform').default
+const DynamicModalForm = require('./forms/dynamicmodalform').default
 const TableDict = require('../lib/tabledictionary')
 const Swal = require('sweetalert2')
 
 module.exports = {
     components: {
-        ModalForm
+        DynamicModalForm
     },
     data: function() {
         return {

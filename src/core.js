@@ -1,4 +1,5 @@
 import './core.scss';
+import 'babel-polyfill';
 
 document.addEventListener('DOMContentLoaded', () => {
     const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);

@@ -8,6 +8,26 @@ class PembinaMutuPelatihan extends BaseController
 	protected $db;
 	protected $PembinaMutuPelatihanModel;
 	protected $validation;
+	protected $vRules = array(
+		'nama_pelatihan' 	=> 'required|min_length[2]',
+		'penyelenggara' 	=> 'required|min_length[2]',
+		'tahun_pelaksanaan'	=> 'required|exact_length[4]|numeric',
+	);
+	protected $vRulesMessages = array(
+		'nama_pelatihan' => [
+			'required' 		=> 'wajib diisi',
+			'min_length' 	=> 'minimal 2 karakter'
+		],
+		'penyelenggara' => [
+			'required' 		=> 'wajib diisi',
+			'min_length' 	=> 'minimal 2 karakter'
+		],
+		'tahun_pelaksanaan' => [
+			'required' 		=> 'wajib diisi',
+			'exact_length' 	=> 'hanya 4 karakter',
+			'numeric'		=> 'isi dengan format angka tahun'
+		]
+	);
 
 	function __construct()
 	{
@@ -121,25 +141,7 @@ class PembinaMutuPelatihan extends BaseController
 			return ResponseNotFound();
 		}
 
-		$this->validation->setRules([
-			'nama_pelatihan' 	=> 'required|min_length[2]',
-			'penyelenggara' 	=> 'required|min_length[2]',
-			'tahun_pelaksanaan'	=> 'required|exact_length[4]|numeric',
-		], [
-			'nama_pelatihan' => [
-				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 2 karakter'
-			],
-			'penyelenggara' => [
-				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 2 karakter'
-			],
-			'tahun_pelaksanaan' => [
-				'required' 		=> 'wajib diisi',
-				'exact_length' 	=> 'hanya 4 karakter',
-				'numeric'		=> 'isi dengan format angka tahun'
-			]
-		]);
+		$this->validation->setRules($this->vRules, $this->vRulesMessages);
 
 		$reqArray = (array) $req->getJSON();
 
@@ -171,32 +173,15 @@ class PembinaMutuPelatihan extends BaseController
 			return ResponseNotAllowed();
 		}
 
-		$vRulesConfig = array(
-			'username' 		=> 'min_length[3]|valid_email',
-			'password' 		=> 'min_length[8]',
-			'login_status' 	=> 'in_list[active,inactive]'
-		);
-		$vMessagesConfig = array(
-			'username' => [
-				'valid_email'	=> 'harap gunakan format email'
-			],
-			'password' => [
-				'min_length' 	=> 'minimal 8 karakter'
-			],
-			'login_status' => [
-				'in_list'		=> 'tidak terdaftar'
-			]
-		);
-
 		$reqArray = (array) $req->getJSON();
 
 		$validationSetRules = array();
 		$validationSetMessages = array();
 
 		foreach ($reqArray as $key => $val) {
-			if ($vRulesConfig[$key] !== null && $vMessagesConfig[$key] !== null) {
-				$validationSetRules[$key] = $vRulesConfig[$key];
-				$validationSetMessages[$key] = $vMessagesConfig[$key];
+			if ($this->vRules[$key] !== null && $this->vRulesMessages[$key] !== null) {
+				$validationSetRules[$key] = $this->vRules[$key];
+				$validationSetMessages[$key] = $this->vRulesMessages[$key];
 			}
 		}
 
@@ -206,19 +191,11 @@ class PembinaMutuPelatihan extends BaseController
 			return ResponseError(400, array('message' => $this->validation->getErrors()));
 		}
 
-		if (isset($reqArray['username'])) {
-			$foundRecord = $this->PembinaMutuPelatihanModel->where('username', $reqArray['username'])->selectCount('id')->find($id);
-
-			if (count($foundRecord) > 0 && (int)$foundRecord[0]['id'] > 0) {
-				return ResponseConflict(array('message' => 'username already registered'));
-			}
-		}
-
 		$reqArray['id'] = $id;
 
 		$resp = $this->PembinaMutuPelatihanModel->save($reqArray);
 
-		return ResponseOK(array( 'message' => 'user updated' ));
+		return ResponseOK(array( 'message' => 'riwayat pelatihan updated' ));
 	}
 
 	public function delete($id = 0) {
