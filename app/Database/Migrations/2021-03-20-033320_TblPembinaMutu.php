@@ -74,6 +74,6 @@ class TblPembinaMutu extends Migration
 
 	public function down()
 	{
-		$this->forge->createTable('tbl_pembina_mutu');
+		$this->forge->dropTable('tbl_pembina_mutu');
 	}
 }
