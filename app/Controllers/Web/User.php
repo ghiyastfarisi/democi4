@@ -29,8 +29,7 @@ class User extends BaseController
 	{
 		$args = array(
 			'_PageSectionTitle' 	=> 'User',
-			'_PageSectionSubTitle' 	=> 'detail page',
-			'user_id'				=> $id
+			'_PageSectionSubTitle' 	=> 'detail page'
 		);
 		$data = array(
 			'args' 			=> $args,

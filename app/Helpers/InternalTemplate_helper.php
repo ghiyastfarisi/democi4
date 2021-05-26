@@ -78,10 +78,22 @@ function RenderTemplate($data = null)
             'url'   => base_url('web/user')
         ),
         array(
+            'slug'  => 'pembina-mutu',
+            'title' => 'Pembina mutu',
+            'icon'  => 'fas fa-user-secret',
+            'url'   => base_url('web/pembina-mutu')
+        ),
+        array(
             'slug'  => 'upi',
             'title' => 'UPI',
             'icon'  => 'fas fa-building',
             'url'   => base_url('web/upi')
+        ),
+        array(
+            'slug'  => 'laporan',
+            'title' => 'Laporan',
+            'icon'  => 'fas fa-book',
+            'url'   => base_url('web/laporan')
         ),
         array(
             'slug'  => 'setting',

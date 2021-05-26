@@ -14,9 +14,9 @@
 </template>
 
 <script>
-const UserForm = require('./userform').default
+import UserForm from './userform'
 
-module.exports = {
+export default {
     data: function() {
         return {}
     },

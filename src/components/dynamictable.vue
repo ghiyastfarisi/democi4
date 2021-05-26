@@ -1,6 +1,20 @@
 <template>
     <div class="ajaxtable">
-        <div class="box">
+        <div class="has-text-centered" v-if="showLoading">
+            <span class="icon is-large">
+                <i class="fas fa-2x fa-cog fa-spin"></i>
+            </span>
+            <span class="title is-3">Loading Data</span>
+        </div>
+        <div class="box notification is-danger" v-if="showError">
+            <span class="icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </span>
+            <span>
+                Data tidak tersedia
+            </span>
+        </div>
+        <div class="box" v-if="dataFound">
             <div v-if="enableAdd.valid" class="mb-4">
                 <a href="javascript:void(0)" :class="{ 'is-loading': isLoading }" class="button is-success is-outlined" @click="UpdateTable">
                     <span class="icon">
@@ -30,7 +44,12 @@
                         <tr v-for="(list, listIndex) in lists" :key="list.id">
                             <th>{{ startOrder + listIndex }}</th>
                             <td v-for="(field, index) in validFields" :key="index">
-                                {{ list[field.origin] }}
+                                <span v-if="field.detail_link">
+                                    <a :href="`${tableDep.detailUrl}${list.id}`">{{ list[field.origin] }}</a>
+                                </span>
+                                <span v-else>
+                                    {{ list[field.origin] }}
+                                </span>
                             </td>
                             <td>
                                 <a v-if="enableEdit.valid" @click="openEditModal(list.id)" class="button is-small is-primary mb-1" href="javascript:void(0)">
@@ -68,18 +87,21 @@
 </template>
 
 <script>
-const UrlParse = require('url-parse')
-const DynamicModalForm = require('./forms/dynamicmodalform').default
-const TableDict = require('../lib/tabledictionary')
-const Swal = require('sweetalert2')
-const { HandleDelete } = require('../lib/form')
+import UrlParse from 'url-parse'
+import DynamicModalForm from './forms/dynamicmodalform'
+import TableDict from '../lib/tabledictionary'
+import Swal from 'sweetalert2'
+import { HandleDelete } from '../lib/form'
 
-module.exports = {
+export default {
     components: {
         DynamicModalForm
     },
     data: function() {
         return {
+            showLoading: true,
+            showError: false,
+            dataFound: false,
             fields: [],
             validFields: [],
             lists: [],
@@ -103,6 +125,7 @@ module.exports = {
             ajaxUri: String,
             showLimit: Number,
             deleteUrl: String,
+            detailUrl: String,
             enableEdit: {
                 valid: true
             }
@@ -164,6 +187,12 @@ module.exports = {
                     this.show = data.length
                     this.limit = q.limit
                     this.startOrder = ((pagination.current - 1) * q.limit) + 1
+                    this.showLoading = false
+                    if (pagination.total > 0) {
+                        this.dataFound = true
+                    } else {
+                        this.showError = true
+                    }
                 })
                 .catch(err => {
                     console.error('Err while FetchAjax:', err)
@@ -235,7 +264,7 @@ module.exports = {
         let vm = this
         vm.getData()
     }
-};
+}
 </script>
 
 <style scoped>

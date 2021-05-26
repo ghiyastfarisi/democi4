@@ -18,7 +18,7 @@ class Upi extends BaseController
 			'_PageTitle' 	=> 'Upi Management',
 			'_Pages' 		=> 'upi/index',
 			'_LoadCSS'		=> array(),
-			'_LoadJS'		=> array('@/userindex.js'),
+			'_LoadJS'		=> array('@/upiindex.js'),
 			'_ActiveSlug'	=> 'upi'
 		);
 
@@ -28,17 +28,33 @@ class Upi extends BaseController
 	public function get($id = 0)
 	{
 		$args = array(
-			'_PageSectionTitle' 	=> 'User',
-			'_PageSectionSubTitle' 	=> 'detail page',
-			'user_id'				=> $id
+			'_PageSectionTitle' 	=> 'UPI',
+			'_PageSectionSubTitle' 	=> 'detail page'
 		);
 		$data = array(
 			'args' 			=> $args,
-			'_PageTitle' 	=> 'User Detail Page',
-			'_Pages' 		=> 'user/get_id',
+			'_PageTitle' 	=> 'Upi Detail Page',
+			'_Pages' 		=> 'upi/get_id',
 			'_LoadCSS'		=> array(),
-			'_LoadJS'		=> array('@/usergetid.js'),
-			'_ActiveSlug'	=> 'user'
+			'_LoadJS'		=> array('@/upigetid.js'),
+			'_ActiveSlug'	=> 'upi'
+		);
+		return RenderTemplate($data);
+	}
+
+	public function edit($id = 0)
+	{
+		$args = array(
+			'_PageSectionTitle' 	=> 'UPI',
+			'_PageSectionSubTitle' 	=> 'edit page'
+		);
+		$data = array(
+			'args' 			=> $args,
+			'_PageTitle' 	=> 'Upi Edit Page',
+			'_Pages' 		=> 'upi/get_id',
+			'_LoadCSS'		=> array(),
+			'_LoadJS'		=> array('@/upiedit.js'),
+			'_ActiveSlug'	=> 'upi'
 		);
 		return RenderTemplate($data);
 	}

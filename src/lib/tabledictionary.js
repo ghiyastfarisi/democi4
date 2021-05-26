@@ -87,6 +87,94 @@ const TableFieldData = {
             origin: 'setting',
             decorator: true
         }
+    ],
+    upi: [
+        {
+            name: 'Nama',
+            origin: 'nama_perusahaan',
+            detail_link: true
+        },
+        {
+            name: 'NIB',
+            origin: 'nib'
+        },
+        {
+            name: 'Kecamatan',
+            origin: 'location_district_name'
+        },
+        {
+            name: 'Kota Kabupaten',
+            origin: 'location_regency_name'
+        },
+        {
+            name: 'Setting',
+            origin: 'setting',
+            decorator: true
+        }
+    ],
+    riwayat_pembinaan: [
+        {
+            name: 'Kegiatan',
+            origin: 'kegiatan',
+            detail_link: true
+        },
+        {
+            name: 'Nama Pembina Mutu',
+            origin: 'nama_pembina_mutu'
+        },
+        {
+            name: 'Unit Kerja',
+            origin: 'unit_kerja_terakhir'
+        },
+        {
+            name: 'Tanggal',
+            origin: 'tanggal_kunjungan'
+        },
+        {
+            name: 'Setting',
+            origin: 'setting',
+            decorator: true
+        }
+    ],
+    pembina_mutu: [
+        {
+            name: 'Nama',
+            origin: 'nama_lengkap',
+            detail_link: true
+        },
+        {
+            name: 'Instansi',
+            origin: 'instansi'
+        },
+        {
+            name: 'Setting',
+            origin: 'setting',
+            decorator: true
+        }
+    ],
+    riwayat_kunjungan: [
+        {
+            name: 'Kegiatan',
+            origin: 'kegiatan',
+            detail_link: true
+        },
+        {
+            name: 'UPI',
+            origin: 'nama_upi'
+        },
+        {
+            name: 'Provinsi',
+            origin: 'nama_provinsi'
+        },
+        {
+            name: 'Tanggal',
+            origin: 'tanggal_kunjungan'
+        },
+        {
+            name: 'Setting',
+            origin: 'setting',
+            decorator: true
+        }
     ]
 }
 

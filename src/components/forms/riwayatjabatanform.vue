@@ -70,11 +70,11 @@
 </template>
 
 <script>
-const { AutoClosePopup } = require('../../lib/popup')
-const { HandlePost, HandlePatch, ParseError } = require('../../lib/form')
-const { Sanitize } = require('../../lib/object')
+import { AutoClosePopup } from '../../lib/popup'
+import { HandlePost, HandlePatch, ParseError } from '../../lib/form'
+import { Sanitize } from '../../lib/object'
 
-module.exports = {
+export default {
     data: function() {
         return {
             instansiArray: ['KKP', 'DINAS'],

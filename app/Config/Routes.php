@@ -34,6 +34,9 @@ $routes->setAutoRoute(true);
 // sample api
 $routes->group('api', function($routes)
 {
+	$routes->get('v1/country', 'Api\V1\Country::Get');
+	$routes->get('v1/location', 'Api\V1\Location::Get');
+	$routes->get('v1/produk', 'Api\V1\Produk::Get');
 	$routes->group('v1/user', function($routes)
 	{
 		$routes->get('all', 'Api\V1\User::GetAll');
@@ -45,6 +48,7 @@ $routes->group('api', function($routes)
 	});
 	$routes->group('v1/pembina-mutu', function($routes)
 	{
+		$routes->get('all', 'Api\V1\PembinaMutu::GetAll');
 		$routes->get('user/(:num)', 'Api\V1\PembinaMutu::GetByUser/$1');
 		$routes->post('create/user/(:num)', 'Api\V1\PembinaMutu::create/$1');
 		$routes->get('(:num)', 'Api\V1\PembinaMutu::GetById/$1');
@@ -74,6 +78,51 @@ $routes->group('api', function($routes)
 		$routes->get('(:num)', 'Api\V1\PembinaMutuPelatihan::GetById/$1');
 		$routes->patch('update/(:num)', 'Api\V1\PembinaMutuPelatihan::update/$1');
 	});
+	$routes->group('v1/upi', function($routes)
+	{
+		$routes->get('all', 'Api\V1\Upi::GetAll');
+		$routes->get('(:num)', 'Api\V1\Upi::GetById/$1');
+		$routes->get('(:num)/complete', 'Api\V1\Upi::GetCompleteById/$1');
+		$routes->post('create/complete', 'Api\V1\Upi::createComplete');
+		$routes->patch('(:num)/update/complete', 'Api\V1\Upi::updateComplete/$1');
+		$routes->post('(:num)/request/perubahan-upi', 'Api\V1\Upi::requestUpdate/$1');
+		$routes->post('(:num)/update/perubahan-upi/(:string)', 'Api\V1\Upi::requestUpdatePerubahaUpi/$1/$2');
+	});
+	$routes->group('v1/produksi', function($routes)
+	{
+		$routes->get('upi/(:num)', 'Api\V1\UpiProduksi::GetByUpi/$1');
+	});
+	$routes->group('v1/tenaga-kerja', function($routes)
+	{
+		$routes->get('upi/(:num)', 'Api\V1\UpiTenagaKerja::GetByUpi/$1');
+	});
+	$routes->group('v1/sarpras', function($routes)
+	{
+		$routes->get('upi/(:num)', 'Api\V1\UpiSarpras::GetByUpi/$1');
+	});
+	$routes->group('v1/kunjungan', function($routes)
+	{
+		$routes->get('all', 'Api\V1\Kunjungan::GetAll');
+		$routes->get('(:num)', 'Api\V1\Kunjungan::GetById/$1');
+		$routes->post('create', 'Api\V1\Kunjungan::create');
+		$routes->patch('update/(:num)', 'Api\V1\Kunjungan::update/$1');
+		$routes->delete('(:num)', 'Api\V1\Kunjungan::delete/$1');
+	});
+	$routes->group('v1/perubahan-upi', function($routes)
+	{
+		$routes->get('all', 'Api\V1\PerubahanUpi::GetAll');
+		$routes->get('(:num)', 'Api\V1\PerubahanUpi::GetById/$1');
+	});
+	$routes->group('v1/upload', function($routes)
+	{
+		$routes->post('file', 'Api\V1\Upload::file');
+	});
+});
+
+$routes->group('web', function($routes)
+{
+	$routes->get('pembina-mutu', 'Web\PembinaMutu::index');
+	$routes->get('pembina-mutu/(:num)', 'Web\PembinaMutu::detail/$1');
 });
 
 /*

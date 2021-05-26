@@ -2,6 +2,12 @@
     <div class="columns is-multiline">
         <div class="column is-12">
             <div class="box">
+                <div class="has-text-centered" v-if="showLoading">
+                    <span class="icon is-large">
+                        <i class="fas fa-2x fa-cog fa-spin"></i>
+                    </span>
+                    <span class="title is-3">Loading Data</span>
+                </div>
                 <div v-cloak v-if="showError" class="notification is-danger">
                     <span class="icon">
                         <i class="fas fa-exclamation-circle"></i>
@@ -256,23 +262,40 @@
         <div class="column is-12">
             <div class="box" v-if="showKunjungan">
                 <div class="title is-4">Riwayat Kunjungan</div>
+                <DynamicTable
+                    :enable-add="{
+                        valid: false,
+                        addDep: {}
+                    }"
+                    :table-dep="{
+                        fieldType: 'riwayat_kunjungan',
+                        ajaxUri: `v1/kunjungan/all?getDetailPembinaMutu=true&pembinaMutuId=${this.pembinaMutuData.id}`,
+                        showLimit: 10,
+                        deleteUrl: 'v1/kunjungan/'
+                    }"
+                    :enable-edit="{
+                        valid: false,
+                        editDep: {}
+                    }"
+                />
             </div>
         </div>
     </div>
 </template>
 
 <script>
-var dayjs = require('dayjs')
-var DynamicTable = require('./dynamictable').default
-var DynamicModalForm = require('./forms/dynamicmodalform').default
+import dayjs from 'dayjs'
+import DynamicTable from '../dynamictable'
+import DynamicModalForm from '../forms/dynamicmodalform'
 
-module.exports = {
+export default {
     components: {
         DynamicTable,
         DynamicModalForm,
     },
     data: function() {
         return {
+            showLoading: true,
             showError: false,
             showData: false,
             showPendidikan: false,
@@ -299,7 +322,7 @@ module.exports = {
     },
     methods: {
         getPembinaMutu(id = 0) {
-            const url = BASE_API_URL + `/v1/pembina-mutu/user/` + id
+            const url = `${BASE_API_URL}/v1/pembina-mutu/${id}`
 
             fetch(url)
                 .then(stream => stream.json())
@@ -307,6 +330,8 @@ module.exports = {
                     const { data } = resp
 
                     if (data !== null) {
+                        this.getUserData(data.user_id)
+
                         this.pembinaMutuData = data
 
                         if (this.rpAdd && this.rpAdd.extra)  {
@@ -316,6 +341,7 @@ module.exports = {
                         this.showPendidikan = true
                         this.showJabatan = true
                         this.showPelatihan = true
+                        this.showKunjungan = true
                     }
 
                     return true
@@ -325,13 +351,15 @@ module.exports = {
                     console.error(err)
                 })
         },
-        getData() {
-            const url = BASE_API_URL + this.ajaxUri
+        getUserData(user_id) {
+            const url = `${BASE_API_URL}/v1/user/${user_id}`
 
             fetch(url)
                 .then(stream => stream.json())
                 .then(resp => {
                     const { data } = resp
+
+                    this.showLoading = false
 
                     if (data !== null) {
                         this.showData = true
@@ -340,8 +368,6 @@ module.exports = {
                         data.registration_date = dayjs(data.created_at).format('DD - MM - YYYY')
 
                         this.userData = data
-
-                        this.getPembinaMutu(this.uid)
                     } else {
                         this.showError = true
                     }
@@ -353,10 +379,13 @@ module.exports = {
                     console.error(err)
                 })
         },
+        getData() {
+            this.getPembinaMutu(this.uid)
+        },
     },
     mounted() {
         let vm = this
-        vm.getData()
+        setTimeout(function(){ vm.getData() }, 800);
     }
 };
 </script>

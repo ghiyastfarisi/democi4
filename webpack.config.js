@@ -7,7 +7,15 @@ module.exports = {
     entry: {
         core: './src/core.js',
         userindex: './src/pages/userindex.js',
-        usergetid: './src/pages/usergetid.js'
+        usergetid: './src/pages/usergetid.js',
+        pembinamutuindex: './src/pages/pembinamutuindex.js',
+        pembinamutugetid: './src/pages/pembinamutugetid.js',
+        upiindex: './src/pages/upiindex.js',
+        upigetid: './src/pages/upigetid.js',
+        upiedit: './src/pages/upiedit.js',
+        dashboard: './src/pages/dashboard.js',
+        laporanindex: './src/pages/laporanindex.js',
+        laporancreate: './src/pages/laporancreate.js'
     },
     output: {
         path: join(__dirname, './public/dist'),
@@ -49,8 +57,8 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
+        new MiniCSSExtractPlugin(),
         new VueLoaderPlugin(),
-        new MiniCSSExtractPlugin()
     ],
     resolve: {
         alias: {

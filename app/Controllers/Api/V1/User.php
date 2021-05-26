@@ -151,7 +151,7 @@ class User extends BaseController
 			)
 		);
 
-		$resp = $this->UserModel->save($insert);
+		$this->UserModel->save($insert);
 
 		return ResponseCreated(array( 'message' => 'user created' ));
 	}
@@ -213,7 +213,7 @@ class User extends BaseController
 
 		$reqArray['id'] = $id;
 
-		$resp = $this->UserModel->save($reqArray);
+		$this->UserModel->save($reqArray);
 
 		return ResponseOK(array( 'message' => 'user updated' ));
 	}

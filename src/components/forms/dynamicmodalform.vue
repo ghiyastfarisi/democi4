@@ -31,14 +31,14 @@
 </template>
 
 <script>
-const UserForm = require('./userform').default
-const RiwayatPendidikanForm = require('./riwayatpendidikanform').default
-const RiwayatJabatanForm = require('./riwayatjabatanform').default
-const RiwayatPelatihanForm = require('./riwayatpelatihanform').default
-const UserPembinaMutuForm = require('./userpembinamutuform').default
-const PembinaMutuForm = require('./pembinamutuform').default
+import UserForm from './userform'
+import RiwayatPendidikanForm from './riwayatpendidikanform'
+import RiwayatJabatanForm from './riwayatjabatanform'
+import RiwayatPelatihanForm from './riwayatpelatihanform'
+import UserPembinaMutuForm from './userpembinamutuform'
+import PembinaMutuForm from './pembinamutuform'
 
-module.exports = {
+export default {
     created() {
         console.log("modalDep:", this.modalDep)
     },

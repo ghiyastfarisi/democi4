@@ -2,6 +2,7 @@
 
 use App\Controllers\BaseController;
 use App\Models\PembinaMutuModel;
+use App\Models\PembinaMutuJabatanModel;
 
 class PembinaMutu extends BaseController
 {
@@ -26,12 +27,16 @@ class PembinaMutu extends BaseController
 
 		$q = $req->getGet();
 
+		$getInstansi = isset($q['getInstansi']) && filter_var($q['getInstansi'], FILTER_VALIDATE_BOOLEAN) ? true : false;
+
 		$page = (isset($q['page'])) ? $q['page'] : 1;
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
 		$offset = ($page - 1) * $limit;
 
-		$resp = $this->PembinaMutuModel->orderBy('id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->PembinaMutuModel->selectCount('id')->find();
+		$joinQuery = 'tbl_user.id = tbl_pembina_mutu.user_id AND tbl_user.deleted_at IS NULL';
+
+		$resp = $this->PembinaMutuModel->select('tbl_pembina_mutu.*')->join('tbl_user', $joinQuery)->orderBy('tbl_pembina_mutu.id', 'desc')->findAll($limit, $offset);
+		$countQuery = $this->PembinaMutuModel->join('tbl_user', $joinQuery)->selectCount('tbl_pembina_mutu.id')->find();
 		$count = (int)$countQuery[0]['id'];
 
 		$pageAvailable = ceil((int)$count/(int)$limit);
@@ -43,6 +48,25 @@ class PembinaMutu extends BaseController
 		$lists = [];
 
 		if (count($resp) > 0) {
+			if ($getInstansi)
+			{
+				$pmjm = new PembinaMutuJabatanModel();
+
+				foreach($resp as $key => $value)
+				{
+					$getPmjm = $pmjm->where(array(
+						'pembina_mutu_id' 	=> $value['id'],
+						'masih_menjabat'	=> 'YA'
+					))->orderBy('id', 'desc')->first();
+
+					if ($getPmjm != null) {
+						$resp[$key]['instansi'] = $getPmjm['instansi'];
+					} else {
+						$resp[$key]['instansi'] = 'Tidak ada instansi';
+					}
+				}
+			}
+
 			$lists = [ (int)$current ];
 
 			if ($prev > 0) {

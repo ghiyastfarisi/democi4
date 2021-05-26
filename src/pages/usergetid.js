@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import UserDetail from '../components/userdetail'
+import UserDetail from '../components/pages/userdetail'
 import UrlParse from 'url-parse'
 
 const currentUri = new UrlParse(window.location.href, true)

@@ -72,11 +72,11 @@
 
 <script>
 
-const DynamicModalForm = require('./forms/dynamicmodalform').default
-const TableDict = require('../lib/tabledictionary')
-const Swal = require('sweetalert2')
+import DynamicModalForm from './forms/dynamicmodalform'
+import TableDict from '../lib/tabledictionary'
+import Swal from 'sweetalert2'
 
-module.exports = {
+export default {
     components: {
         DynamicModalForm
     },

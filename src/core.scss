@@ -4,7 +4,8 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/brands';
 @import '~@fortawesome/fontawesome-free/scss/regular';
 @import '~@fortawesome/fontawesome-free/scss/solid';
-@import "~bulma/bulma";
+@import '~bulma/bulma';
+@import '~bulma-multiselect/sass/multiselect';
 
 html, body {
     background: #F3F3F3;

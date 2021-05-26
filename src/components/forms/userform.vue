@@ -37,9 +37,9 @@
 </template>
 
 <script>
-const { AutoClosePopup } = require('../../lib/popup')
+import { AutoClosePopup } from '../../lib/popup'
 
-module.exports = {
+export default {
     data: function() {
         return {
             iuname: '',

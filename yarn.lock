@@ -1470,6 +1470,11 @@ buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz"
   integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
 
+bulma-multiselect@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/bulma-multiselect/-/bulma-multiselect-0.0.8.tgz#36a1ac0949b1cff5781812bfab58b6c52b1aaf3a"
+  integrity sha512-g5O1+HEkQj53ZTqpaSr2dOVXa+kyjeBWyZBUrJPdh6cVflVt6YA/9Hy9LI88Iqq6IMYuNRZ5GS7m66bZjyKasw==
+
 bulma@^0.9.2:
   version "0.9.2"
   resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.9.2.tgz"
@@ -4311,6 +4316,11 @@ vue-loader@^15.9.6:
     loader-utils "^1.1.0"
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
+
+vue-multiselect@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-2.1.6.tgz#5be5d811a224804a15c43a4edbb7485028a89c7f"
+  integrity sha512-s7jmZPlm9FeueJg1RwJtnE9KNPtME/7C8uRWSfp9/yEN4M8XcS/d+bddoyVwVnvFyRh9msFo0HWeW0vTL8Qv+w==
 
 vue-style-loader@^4.1.0:
   version "4.1.3"

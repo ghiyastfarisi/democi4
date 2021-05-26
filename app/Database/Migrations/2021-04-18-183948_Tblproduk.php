@@ -15,6 +15,11 @@ class Tblproduk extends Migration
 				'unsigned'       => true,
 				'auto_increment' => true,
 			],
+			'kategori_produk' => [
+				'type'			=> 'VARCHAR',
+				'constraint'    => 255,
+				'null'			=> false
+			],
 			'nama_produk' => [
 				'type'			=> 'VARCHAR',
 				'constraint'    => 255,
@@ -24,6 +29,18 @@ class Tblproduk extends Migration
 				'type'			=> 'VARCHAR',
 				'constraint'    => 255,
 				'null'			=> true
+			],
+			'status_produk' => [
+				'type'			=> 'INT',
+				'constraint'    => 1,
+				'null'			=> false,
+				'default'		=> 2
+			],
+			'flag' => [
+				'type'			=> 'VARCHAR',
+				'constraint'    => 20,
+				'null'			=> true,
+				'default'		=> ''
 			],
 			'created_at' => [
 				'type'	=> 'DATETIME',
