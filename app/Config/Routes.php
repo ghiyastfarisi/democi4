@@ -83,6 +83,7 @@ $routes->group('api', function($routes)
 		$routes->get('all', 'Api\V1\Upi::GetAll');
 		$routes->get('(:num)', 'Api\V1\Upi::GetById/$1');
 		$routes->get('(:num)/complete', 'Api\V1\Upi::GetCompleteById/$1');
+		$routes->get('search', 'Api\V1\Upi::Search');
 		$routes->post('create/complete', 'Api\V1\Upi::createComplete');
 		$routes->patch('(:num)/update/complete', 'Api\V1\Upi::updateComplete/$1');
 		$routes->post('(:num)/request/perubahan-upi', 'Api\V1\Upi::requestUpdate/$1');
@@ -124,6 +125,10 @@ $routes->group('web', function($routes)
 	$routes->get('pembina-mutu', 'Web\PembinaMutu::index');
 	$routes->get('pembina-mutu/(:num)', 'Web\PembinaMutu::detail/$1');
 });
+
+$routes->get('login', 'Auth::login');
+$routes->get('logout', 'Auth::logout');
+
 
 /*
  * --------------------------------------------------------------------

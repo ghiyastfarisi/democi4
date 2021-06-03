@@ -1,10 +1,10 @@
 import Vue from 'vue';
-import Dashboard from '../components/pages/dashboard';
+import LaporanIndex from '../components/pages/laporanindex';
 
 new Vue({
     el: '#vuec',
     render: function (createElement) {
-        return createElement(Dashboard,  {
+        return createElement(LaporanIndex,  {
             props: {}
         })
     }

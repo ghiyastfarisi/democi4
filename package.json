@@ -19,8 +19,10 @@
   },
   "homepage": "https://github.com/ghiyastfarisi/democi4#readme",
   "dependencies": {
+    "@creativebulma/bulma-tagsinput": "^1.0.3",
     "vue": "^2.6.12",
-    "vue-multiselect": "^2.1.6"
+    "vue-multiselect": "^2.1.6",
+    "vuejs-datepicker": "^1.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",

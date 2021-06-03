@@ -1,13 +1,6 @@
 <template>
     <div class="columns is-multiline">
         <div class="column is-12">
-            <LaporanForm
-                v-bind:block-dep="{
-                    editMode: 'edit',
-                    ajaxUri: `v1/upi/${this.uid}/complete`,
-                    upiId: this.uid
-                }"
-            />
         </div>
     </div>
 </template>

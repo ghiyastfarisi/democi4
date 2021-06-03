@@ -25,6 +25,9 @@
                 <PembinaMutuForm
                     v-if="modalDep.modalType==='addpembinamutu'"
                     :form-dep="formDep" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
+                <LaporanForm
+                    v-if="modalDep.modalType==='addlaporan'"
+                    :form-dep="formDep" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
             </div>
         </div>
     </div>
@@ -37,11 +40,9 @@ import RiwayatJabatanForm from './riwayatjabatanform'
 import RiwayatPelatihanForm from './riwayatpelatihanform'
 import UserPembinaMutuForm from './userpembinamutuform'
 import PembinaMutuForm from './pembinamutuform'
+import LaporanForm from './laporanform'
 
 export default {
-    created() {
-        console.log("modalDep:", this.modalDep)
-    },
     data: function() {
         return {
             formDep: this.modalDep
@@ -53,7 +54,8 @@ export default {
         RiwayatJabatanForm,
         RiwayatPelatihanForm,
         UserPembinaMutuForm,
-        PembinaMutuForm
+        PembinaMutuForm,
+        LaporanForm
     },
     props: {
         modalDep: {

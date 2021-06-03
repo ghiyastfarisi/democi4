@@ -17,16 +17,17 @@ class Upi extends BaseController
 	protected $UpiModel;
 	protected $validation;
 	protected $db;
+	protected $sertifikasiPerusahaan = array('SKP', 'HACCP', 'HALAL', 'BRC', 'ISO 9001');
 	protected $upiDataUmum = array(
 		'validation' => [
 			'nama_perusahaan' 			=> 'required|min_length[5]',
 			'alamat_pabrik' 			=> 'required|min_length[5]',
 			'koordinat_lokasi' 			=> 'if_exist|min_length[5]',
 			'no_kusuka' 				=> 'required|min_length[5]',
-			'npwp'						=> 'required|numeric|min_length[5]',
+			'npwp'						=> 'required|numeric|min_length[15]|max_length[15]',
 			'nib'						=> 'required|min_length[5]',
 			'sertifikasi_perusahaan'	=> 'required|min_length[3]',
-			'sumber_permodalan' 		=> 'required|min_length[5]',
+			'sumber_permodalan' 		=> 'required|min_length[3]|in_list[PMDN,PMA]',
 			'deskripsi' 				=> 'if_exist|min_length[5]',
 			'website' 					=> 'if_exist|min_length[5]',
 			'nama_pemilik' 				=> 'required|min_length[5]',
@@ -55,7 +56,8 @@ class Upi extends BaseController
 			'npwp'				=> [
 				'required' 		=> 'wajib diisi',
 				'numeric'		=> 'hanya angka NPWP saja',
-				'min_length'	=> 'minimum 5 karakter'
+				'min_length'	=> '15 karakter',
+				'max_length'	=> '15 karakter'
 			],
 			'nib'				=> [
 				'required' 		=> 'wajib diisi',
@@ -67,7 +69,8 @@ class Upi extends BaseController
 			],
 			'sumber_permodalan'=> [
 				'required' 		=> 'wajib diisi',
-				'min_length'	=> 'minimum 5 karakter'
+				'min_length'	=> 'wajib diisi',
+				'in_list'		=> 'input tidak valid'
 			],
 			'deskripsi'=> [
 				'min_length'	=> 'minimum 5 karakter'
@@ -435,6 +438,7 @@ class Upi extends BaseController
 
 			foreach($upiSarpras as $k => $v) {
 				$upiSarpras[$k] = $this->_cleanField((array)$v);
+				$upiSarpras[$k]['satuan'] = 'kg';
 			}
 
 			$upiTenagaKerja = $upiTenagaKerjaModel->where('upi_id', $upiId)->first();
@@ -989,5 +993,65 @@ class Upi extends BaseController
 	public function requestUpdatePerubahaUpi($id = 0, $action = 'rejected')
 	{
 
+	}
+
+	public function search()
+	{
+		$req = $this->request;
+
+		if ($req->getMethod(TRUE) !== 'GET') {
+			return ResponseNotAllowed();
+		}
+
+		$q = $req->getGet();
+
+		$keyword = isset($q['keyword']) ? $q['keyword'] : '';
+		$mapSelect = (isset($q['mapSelect']) && filter_var($q['mapSelect'], FILTER_VALIDATE_BOOLEAN)) ? true : false;
+		$minSearch = 1;
+
+		if (strlen($keyword) < $minSearch) {
+			return ResponseBadRequest(array('message' => 'minimal '.$minSearch.' karakter'));
+		}
+
+		if (strlen($keyword) > 50) {
+			return ResponseBadRequest(array('message' => 'keyword terlalu panjang'));
+		}
+
+		$cleanKey = "'%" . $this->db->escapeLikeString($keyword) . "%' ESCAPE '!'";
+		$resp = $this->UpiModel->where('nama_perusahaan LIKE' . $cleanKey)->findAll(50, 0);
+		$clean = array();
+
+		foreach($resp as $key => $value) {
+			$locationModel = new LocationModel();
+
+			$province = $locationModel->GetProvinceById($value['provinsi']);
+			$regency = $locationModel->GetRegencyById($value['kab_kota']);
+			$district = $locationModel->GetDistrictById($value['kecamatan']);
+			$subDistrict = $locationModel->GetSubDistrictById($value['kelurahan_desa']);
+
+			$resp[$key]['location_province_name'] = $province->name;
+			$resp[$key]['location_regency_name'] = $regency->name;
+			$resp[$key]['location_district_name'] = $district->name;
+			$resp[$key]['location_sub_district_name'] = $subDistrict->name;
+
+			if ($mapSelect) {
+				$clean[$key] = array(
+					'id'				=> $value['id'],
+					'label'		=> $value['nama_perusahaan'] . ' - ' . $regency->name . ' - ' . $province->name
+				);
+			} else {
+				$clean[$key] = array(
+					'id'				=> $value['id'],
+					'nama_perusahaan'	=> $value['nama_perusahaan'],
+					'show_search'		=> $value['nama_perusahaan'] . ' - ' . $regency->name . ' - ' . $province->name
+				);
+			}
+		}
+
+		$transformed = array(
+			'data' => $clean
+		);
+
+		return ResponseOK($transformed);
 	}
 }

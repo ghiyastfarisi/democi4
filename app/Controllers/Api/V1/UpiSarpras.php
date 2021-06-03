@@ -37,8 +37,6 @@ class UpiSarpras extends BaseController
 
 		$resp = $this->UpiSarprasModel->findAll();
 
-		// dd($this->db->getLastQuery()->getQuery());
-
 		$transformed = array(
 			'data' => $resp
 		);

@@ -143,7 +143,6 @@ export default {
             const result = await HandlePost(
                 `${BASE_API_URL}${this.formDep.createUrl}`,
                 JSON.stringify(this.formValue),
-                'PATCH'
             )
 
             if (result.isError) {

@@ -2,13 +2,13 @@
 
 use CodeIgniter\Model;
 
-class KunjunganModel extends Model {
-    protected $table                = 'tbl_kunjungan';
+class FileUploadModel extends Model {
+    protected $table                = 'tbl_file_upload';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
     protected $returnType           = 'array';
     protected $useSoftDeletes       = true;
-    protected $allowedFields        = [ 'pembina_mutu_id', 'upi_id', 'tanggal_kunjungan', 'kegiatan', 'catatan' ];
+    protected $allowedFields        = [ 'upload_path', 'file_type', 'usage' ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';
     protected $updatedField         = 'updated_at';

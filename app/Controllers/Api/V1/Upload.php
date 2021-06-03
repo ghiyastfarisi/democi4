@@ -1,19 +1,35 @@
 <?php namespace App\Controllers\Api\V1;
 
 use App\Controllers\BaseController;
-// use App\Models\FileModel;
+use App\Models\FileUploadModel;
 
 class Upload extends BaseController
 {
-	protected $KunjunganModel;
+	protected $FileUploadModel;
 	protected $validation;
 	protected $db;
+	protected $uploadUsageFolder = [
+		'gambar_laporan' 	=> array('laporan', 'gambar'),
+		'dokumen_laporan' 	=> array('laporan', 'dokumen'),
+		'profil_upi'		=> array('upi', 'profil'),
+		'produk_upi'		=> array('upi', 'produk'),
+	];
+	protected $validType = [
+		'image_upload'   	=> array(
+			'image/png' 	=> true,
+			'image/jpg' 	=> true,
+			'image/jpeg'	=> true
+		),
+		'document_upload' 	=> array(
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'application/pdf'
+		)
+	];
 
 	function __construct()
 	{
-		// $this->KunjunganModel = new KunjunganModel();
+		$this->FileUploadModel = new FileUploadModel();
 		$this->validation = \Config\Services::validation();
-		$this->db = db_connect();not found
 	}
 
 	public function file()
@@ -24,48 +40,62 @@ class Upload extends BaseController
 			return ResponseNotAllowed();
 		}
 
+		$savePath = array('files');
+		$uploadType = $req->getPost('upload_type');
+		$uploadUsage = $req->getPost('upload_usage');
+		$validTypes = array();
+
+		if (isset($this->uploadUsageFolder[$uploadUsage]))
+		{
+			$savePath = array_merge($savePath, $this->uploadUsageFolder[$uploadUsage]);
+		} else {
+			return ResponseError(400, array('message' => 'usage is required'));
+		}
+
+		if (isset($this->validType[$uploadType]))
+		{
+			$validTypes = $this->validType[$uploadType];
+		} else {
+			return ResponseError(400, array('message' => 'invalid upload type'));
+		}
+
 		$uploadFiles = $req->getFiles();
-		$uploadType = $req->getPost('type');
 		$uploaded = array();
 
+		// validate
 		foreach($uploadFiles['files'] as $file)
 		{
-			if ($file->isValid() && ! $file->hasMoved())
+			if ($file->isValid() && !$file->hasMoved())
 			{
-				$newName = $file->getRandomName();
-				$file->move('./files', $newName);
-				array_push($uploaded, '/files/'.$newName);
+				$fileType = $file->getClientMimeType();
+				$oriname = $file->getName();
+
+				if (!isset($validTypes[$fileType])) {
+					return ResponseError(400, array('message' => 'tipe file tidak valid: '.$oriname));
+				}
+			} else {
+				return ResponseError(400, array('message' => $file->getErrorString().'('.$file->getError().')'));
 			}
 		}
 
-		// $this->validation->setRules(
-		// 	$this->kunjunganField['validation'],
-		// 	$this->kunjunganField['message'],
-		// );
+		// upload
+		foreach($uploadFiles['files'] as $file)
+		{
+			if ($file->isValid() && !$file->hasMoved())
+			{
+				$fileType = $file->getClientMimeType();
+				$newName = $file->getRandomName();
+				$saveLocation = implode('/', $savePath);
+				$file->move('./'.$saveLocation, $newName);
+				array_push($uploaded, array(
+					'upload_path' 	=> $saveLocation.'/'.$newName,
+					'file_type'		=> $fileType,
+					'usage'			=> $uploadUsage
+				));
+			}
+		}
 
-		// $reqArray = (array) $req->getJSON();
-
-		// if(!$this->validation->run($reqArray)) {
-		// 	return ResponseError(400, array('message' => $this->validation->getErrors()));
-		// }
-
-		// $UpiModel = new UpiModel();
-		// $upi = $UpiModel->find($reqArray['upi_id']);
-
-		// if ($upi == NULL) {
-		// 	return ResponseNotFound();
-		// }
-
-		// $pembinaMutuId = 10;
-
-		// $insert = array_merge(
-		// 	$reqArray,
-		// 	array(
-		// 		'pembina_mutu_id'	=> $pembinaMutuId
-		// 	)
-		// );
-
-		// $this->KunjunganModel->save($insert);
+		$this->FileUploadModel->insertBatch($uploaded);
 
 		return ResponseCreated(array( 'message' => 'file uploaded', 'path' => $uploaded ));
 	}

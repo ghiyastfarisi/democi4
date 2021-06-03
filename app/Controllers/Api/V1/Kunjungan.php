@@ -14,7 +14,8 @@ class Kunjungan extends BaseController
 		'validation' 			=> array(
 			'upi_id'			=> 'required|numeric',
 			'tanggal_kunjungan'	=> 'required|valid_date[Y-m-d]',
-			'kegiatan'			=> 'required'
+			'kegiatan'			=> 'required|min_length[5]|max_length[70]',
+			'catatan'			=> 'required'
 		),
 		'message'				=> array(
 			'upi_id'			=> [
@@ -26,6 +27,11 @@ class Kunjungan extends BaseController
 				'valid_date'	=> 'format tanggal tidak sesuai'
 			],
 			'kegiatan'			=> [
+				'required'		=> 'wajib diisi',
+				'min_length'	=> 'minimal 5 huruf',
+				'max_length'	=> 'maksimal 70 huruf',
+			],
+			'catatan'			=> [
 				'required'		=> 'wajib diisi'
 			]
 		)

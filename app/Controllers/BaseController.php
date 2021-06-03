@@ -38,13 +38,39 @@ class BaseController extends Controller
 	 */
 	public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
 	{
-		// Do Not Edit This Line
 		parent::initController($request, $response, $logger);
 
-		//--------------------------------------------------------------------
-		// Preload any models, libraries, etc, here.
-		//--------------------------------------------------------------------
-		// E.g.: $this->session = \Config\Services::session();
-		$db = \Config\Database::connect();
+		$this->db = \Config\Database::connect();
+		$this->session = \Config\Services::session();
+	}
+
+	public function GetSession()
+	{
+		return $this->session->get('auth');
+	}
+
+	public function SetSession($data)
+	{
+		return $this->session->set('auth', $data);
+	}
+
+	public function DestroySession()
+	{
+		return $this->session->destroy();
+	}
+
+	public function IsLoggedIn()
+	{
+		$gs = $this->GetSession();
+
+		if (!isset($gs)) {
+			return false;
+		}
+
+		if (isset($gs['login']) && $gs['login'] == true) {
+			return true;
+		}
+
+		return false;
 	}
 }

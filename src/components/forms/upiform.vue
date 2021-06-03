@@ -126,7 +126,12 @@
                         <div class="field">
                             <label class="label"> Sumber Permodalan </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Sumber Permodalan" v-model="list.data_umum.sumber_permodalan">
+                                <div class="select is-fullwidth">
+                                    <select v-model="list.data_umum.sumber_permodalan">
+                                        <option value="PMDN">PMDN</option>
+                                        <option value="PMA">PMA</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="field">
@@ -165,6 +170,7 @@
                                     :options="master.products"
                                     track-by="id"
                                     label="label"
+                                    style="width:100%"
                                 />
                             </div>
                         </div>
@@ -183,7 +189,17 @@
                         <div class="field">
                             <label class="label"> Merk Dagang </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Merk Dagang" v-model="list.data_produksi.merk_dagang">
+                                <Multiselect
+                                    v-model="transformed.data_produksi.merk_dagang"
+                                    tag-placeholder="Enter untuk tambah merk baru"
+                                    placeholder="Tambah Merk Dagang"
+                                    :multiple="true"
+                                    :taggable="true"
+                                    @tag="addTag"
+                                    :options="transformed.data_produksi.merk_dagang"
+                                    style="width:100%"
+                                />
+                                <!-- <input class="input" type="text" placeholder="Merk Dagang" v-model="list.data_produksi.merk_dagang"> -->
                             </div>
                         </div>
                         <div class="field">
@@ -213,6 +229,7 @@
                                     :options="master.domestik"
                                     track-by="id"
                                     label="label"
+                                    style="width:100%"
                                 />
                             </div>
                         </div>
@@ -225,6 +242,7 @@
                                     :options="master.ekspor"
                                     track-by="id"
                                     label="label"
+                                    style="width:100%"
                                 />
                             </div>
                         </div>
@@ -237,32 +255,110 @@
                         </div>
                         <div class="field">
                             <label class="label"> Karyawan Tetap </label>
-                            <div class="control mb-3">
-                                <input class="input" type="text" placeholder="Karyawan Tetap Perempuan" v-model="list.data_tenaga_kerja.karyawan_tetap_p">
+                        </div>
+                        <div class="field">
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_p" />
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-static">
+                                                Perempuan
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="Karyawan Tetap Laki-Laki" v-model="list.data_tenaga_kerja.karyawan_tetap_l">
+                        </div>
+                        <div class="field">
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_l" />
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-static">
+                                                Laki-laki
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="field">
                             <label class="label"> Karyawan Harian </label>
-                            <div class="control mb-3">
-                                <input class="input" type="text" placeholder="Karyawan Harian Perempuan" v-model="list.data_tenaga_kerja.karyawan_harian_p">
+                        </div>
+                        <div class="field">
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_p" />
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-static">
+                                                Perempuan
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="Karyawan Harian Laki-Laki" v-model="list.data_tenaga_kerja.karyawan_harian_l">
+                        </div>
+                        <div class="field">
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_l" />
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-static">
+                                                Laki-laki
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="field">
                             <label class="label"> Jumlah Hari Kerja per Bulan </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="Jumlah Hari Kerja per Bulan" v-model="list.data_tenaga_kerja.hari_kerja_bulan">
+                        </div>
+                        <div class="field">
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" placeholder="Jumlah Hari Kerja per Bulan" v-model="list.data_tenaga_kerja.hari_kerja_bulan" />
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-static">
+                                                Hari / Bulan
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="field">
                             <label class="label"> Jumlah Shift per Hari </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="Jumlah Shift per Hari" v-model="list.data_tenaga_kerja.shift_kerja_hari">
+                        </div>
+                        <div class="field">
+                            <div class="field-body">
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <p class="control is-expanded">
+                                            <input class="input" type="text" placeholder="Jumlah Shift per Hari" v-model="list.data_tenaga_kerja.shift_kerja_hari" />
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-static">
+                                                Shift / Hari
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -293,7 +389,18 @@
                                         <td>
                                             <input class="input" type="text" placeholder="Kapasitas" v-model="l.nilai_kapasitas">
                                         </td>
-                                        <td>Kg</td>
+                                        <td>
+                                            <div class="field">
+                                                <div class="control">
+                                                    <div class="select is-fullwidth">
+                                                        <select v-model="l.satuan">
+                                                            <option value="kg">kg</option>
+                                                            <option value="ton">ton</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -315,7 +422,6 @@ import DynamicModalForm from '../forms/dynamicmodalform'
 import { HandlePatch, ParseError } from '../../lib/form'
 import { AutoClosePopup } from '../../lib/popup'
 import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
 
 export default {
     created() {},
@@ -341,7 +447,8 @@ export default {
                 data_produksi: {
                     produk_dihasilkan: [],
                     pemasaran_domestik: [],
-                    pemasaran_ekspor: []
+                    pemasaran_ekspor: [],
+                    merk_dagang: []
                 }
             },
             list: {
@@ -349,7 +456,8 @@ export default {
                 data_produksi: {
                     produk_dihasilkan: [],
                     pemasaran_domestik: [],
-                    pemasaran_ekspor:[]
+                    pemasaran_ekspor:[],
+                    merk_dagang: []
                 },
                 data_tenaga_kerja: {},
                 data_sarpras: {}
@@ -370,6 +478,9 @@ export default {
     },
     methods: {
         Close() {},
+        addTag (newTag) {
+            this.transformed.data_produksi.merk_dagang.push(newTag)
+        },
         getCountry() {
             const url = new UrlParse(`${BASE_API_URL}v1/country`, true)
 
@@ -452,14 +563,13 @@ export default {
             payload.data_produksi.produk_dihasilkan = this.transformArrayObject(this.transformed.data_produksi.produk_dihasilkan)
             payload.data_produksi.pemasaran_domestik = this.transformArrayObject(this.transformed.data_produksi.pemasaran_domestik)
             payload.data_produksi.pemasaran_ekspor = this.transformArrayObject(this.transformed.data_produksi.pemasaran_ekspor)
+            payload.data_produksi.merk_dagang = this.transformed.data_produksi.merk_dagang.join(',')
 
             delete payload.data_produksi.id
             delete payload.data_produksi.upi_id
             delete payload.data_produksi.foto_produk
             delete payload.data_tenaga_kerja.id
             delete payload.data_tenaga_kerja.upi_id
-
-            // console.log(payload.data_produksi)
 
             this.editData(payload)
         },
@@ -479,7 +589,7 @@ export default {
             AutoClosePopup({
                 title: message,
                 body: '',
-                timeout: 900
+                timeout: 60000
             })
         },
         async editData(payload) {
@@ -494,9 +604,7 @@ export default {
                 )
             }
 
-            return this.closeAndPopup(
-                result.message
-            )
+            return this.closeAndPopup(result.message)
         },
         getData() {
             const url = `${BASE_API_URL}${this.blockDep.ajaxUri}`
@@ -526,6 +634,7 @@ export default {
                                 label: el.name
                             }
                         })
+                        this.transformed.data_produksi.merk_dagang = data.data_produksi.merk_dagang.split(",")
                         this.list = data
                         this.reloadLocation(data)
                     } else {
@@ -598,7 +707,7 @@ export default {
                     sarpras_id: el.sarpras_id ? el.sarpras_id : el.upi_sarpras_id,
                     nilai_unit: el.nilai_unit ? el.nilai_unit : 0,
                     nilai_kapasitas: el.nilai_kapasitas ? el.nilai_kapasitas : 0,
-                    satuan: "kg"
+                    satuan: el.satuan ? el.satuan : 'kg'
                 }
             })
         }

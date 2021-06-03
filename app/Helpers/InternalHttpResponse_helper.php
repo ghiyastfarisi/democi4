@@ -81,3 +81,8 @@ function ResponseConflict($message = array('message' => 'record already exist'))
 {
     ResponseError(409, $message);
 }
+
+function ResponseBadRequest($message = array('message' => 'request invalid'))
+{
+    ResponseError(400, $message);
+}

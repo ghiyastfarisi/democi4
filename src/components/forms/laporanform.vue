@@ -1,228 +1,195 @@
 <template>
-    <div class="box">
-        <div class="block">
-            <form class="form-name-container" @submit.prevent="submitData">
-                <div class="columns is-multiline">
-                    <div class="column is-6">
-                        <div class="field">
-                            <label class="label"> Nama Perusahaan </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Notes </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Upload Images </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Upload Documents </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Kegiatan </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Tanggal Kunjungan </label>
-                            <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
-                            </div>
-                        </div>
-                    </div>
+    <form class="form-name-container" @submit.prevent="submitData">
+        <section class="modal-card-body">
+            <div class="field">
+                <label class="label">Kegiatan</label>
+                <div class="control">
+                    <input class="input" name="institusi_pendidikan" type="text" placeholder="5 - 70 characters" v-model="formValue.kegiatan">
                 </div>
-                <div>
-                    <button type="submit" class="button is-success">Update</button>
-                    <button type="cancel" @click="Close" class="button">Cancel</button>
+            </div>
+            <div class="field">
+                <label class="label">UPI</label>
+                <Multiselect
+                    v-model="formValue.selectedUpi"
+                    id="ajax"
+                    track-by="id"
+                    label="label"
+                    placeholder="Search UPI"
+                    selectLabel=""
+                    deselectLabel=""
+                    selectedLabel=""
+                    open-direction="bottom"
+                    :options="searchedUpi"
+                    :searchable="true"
+                    :loading="isLoading"
+                    :internal-search="false"
+                    :close-on-select="true"
+                    :options-limit="300"
+                    :limit-text="limitText"
+                    :max-height="600"
+                    :show-no-results="false"
+                    :hide-selected="false"
+                    :allowEmpty="false"
+                    :preserveSearch="true"
+                    @search-change="asyncFind"
+                    style="width:100%"
+                >
+                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                    <span slot="noOptions">Ketik keyword untuk mencari nama upi</span>
+                </Multiselect>
+            </div>
+            <div class="field">
+                <label class="label">Tanggal Kunjungan</label>
+                <div class="control">
+                    <datepicker
+                        placeholder="Pilih Tanggal Kunjungan"
+                        v-model="formValue.tgl_kunjungan"
+                        name="tgl_kunjungan"
+                        input-class="input"
+                        :highlighted="selectedDate"
+                    ></datepicker>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
+            <div class="field">
+                <label class="label"> Catatan </label>
+                <div class="control">
+                    <textarea class="textarea" placeholder="Catatan" v-model="formValue.catatan"></textarea>
+                </div>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button type="submit" class="button is-success">{{ formDep.submit }}</button>
+            <button type="cancel" @click="Close" class="button">Cancel</button>
+        </footer>
+    </form>
 </template>
 
 <script>
-import UrlParse from 'url-parse'
-import DynamicModalForm from '../forms/dynamicmodalform'
-import { HandlePatch, ParseError } from '../../lib/form'
 import { AutoClosePopup } from '../../lib/popup'
+import { HandlePost, HandlePatch, ParseError } from '../../lib/form'
+import { Sanitize } from '../../lib/object'
 import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import UrlParse from 'url-parse'
+import Datepicker from 'vuejs-datepicker'
+import dayjs from 'dayjs'
 
 export default {
-    created() {},
     components: {
-        DynamicModalForm,
-        Multiselect
+        Multiselect,
+        Datepicker
     },
     data: function() {
         return {
-            showEditAkun: false,
-            showError: false,
-            showData: false,
-            master: {
-                province: [],
-                regency: [],
-                district: [],
-                sub_district: [],
-                products: [],
-                ekspor: [],
-                domestik: []
-            },
-            transformed: {
-                data_produksi: {
-                    produk_dihasilkan: [],
-                    pemasaran_domestik: [],
-                    pemasaran_ekspor: []
-                }
-            },
-            list: {
-                data_umum: {},
-                data_produksi: {
-                    produk_dihasilkan: [],
-                    pemasaran_domestik: [],
-                    pemasaran_ekspor:[]
-                },
-                data_tenaga_kerja: {},
-                data_sarpras: {}
+            isLoading: false,
+            searchedUpi: [],
+            currentYear: new Date().getFullYear(),
+            selectedDate: {},
+            formValue: {
+                selectedUpi: 0,
+                kegiatan: '',
+                upi: 0,
+                tgl_kunjungan: '',
+                catatan: ''
             }
         }
     },
     props: {
-        blockDep: {
+        formDep: {
             type: Object,
-            default: function () {
+            default: function() {
                 return {
-                    editMode: 'request',
-                    ajaxUri: '',
-                    upiId: 0
+                    submit: '',
+                    isEdit: false,
+                    createUrl: '',
+                    fetchEditUrl: '',
+                    updateUrl: '',
+                    extra: {
+                        userId: 0
+                    }
                 }
             }
         }
     },
+    mounted() {
+        let fd = this.formDep
+
+        console.log(fd)
+
+        if (fd.isEdit) {
+            this.setEditForm()
+        }
+    },
     methods: {
-        Close() {},
-        getCountry() {
-            const url = new UrlParse(`${BASE_API_URL}v1/country`, true)
+        async asyncFind (query) {
+            const q = {
+                mapSelect: true,
+                keyword: query
+            }
+            const url = new UrlParse(`${BASE_API_URL}/v1/upi/search`, true)
 
-            url.query.transformLabel = true
+            url.query.mapSelect = q.mapSelect
+            url.query.keyword = q.keyword
 
-            fetch(url)
-                .then(stream => stream.json())
-                .then(resp => {
-                    const { data } = resp
-
-                    if (data !== null) {
-                        this.master.ekspor = data
-                    }
-
-                    return true
-                })
-                .catch(err => {
-                    console.error('Err while FetchAjax:', err)
-                    console.error(err)
-                })
+            if (query.length > 0) {
+                this.isLoading = true
+                fetch(url.toString())
+                    .then(stream => stream.json())
+                    .then(resp => {
+                        const { data } = resp
+                        this.searchedUpi = data
+                        this.isLoading = false
+                    })
+                    .catch(err => {
+                        console.error(err)
+                        this.errorPopup(
+                            ParseError("Terjadi kesalahan ketika mencari")
+                        )
+                    })
+            }
         },
-        getRegency() {
-            const url = new UrlParse(`${BASE_API_URL}v1/location`, true)
-
-            url.query.getType = 'regency'
-            url.query.transformLabel = true
-
-            fetch(url)
-                .then(stream => stream.json())
-                .then(resp => {
-                    const { data } = resp
-
-                    if (data !== null) {
-                        this.master.domestik = data
-                    }
-
-                    return true
-                })
-                .catch(err => {
-                    console.error('Err while FetchAjax:', err)
-                    console.error(err)
-                })
+        limitText (count) {
+            return `and ${count} other upi`
         },
-        getProduct() {
-            const url = new UrlParse(`${BASE_API_URL}v1/produk`, true)
-
-            url.query.transformLabel = true
-
-            fetch(url)
-                .then(stream => stream.json())
-                .then(resp => {
-                    const { data } = resp
-
-                    if (data !== null) {
-                        this.master.products = data
-                    }
-
-                    return true
-                })
-                .catch(err => {
-                    console.error('Err while FetchAjax:', err)
-                    console.error(err)
-                })
-        },
-        locatorButtonPressed() {
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const latlong = `${position.coords.latitude}, ${position.coords.longitude}`
-                    this.list.data_umum.koordinat_lokasi = latlong
-                },
-                error => {
-                    console.log(error.message);
-                },
-            )
+        clearAll () {
+            this.formValue.selectedUpi = []
         },
         submitData() {
-            const payload = Object.assign({}, this.list)
+            let fd = this.formDep
 
-            payload.data_sarpras = this.transformSarprasForm(payload.data_sarpras)
-            payload.data_produksi.produk_dihasilkan = this.transformArrayObject(this.transformed.data_produksi.produk_dihasilkan)
-            payload.data_produksi.pemasaran_domestik = this.transformArrayObject(this.transformed.data_produksi.pemasaran_domestik)
-            payload.data_produksi.pemasaran_ekspor = this.transformArrayObject(this.transformed.data_produksi.pemasaran_ekspor)
 
-            delete payload.data_produksi.id
-            delete payload.data_produksi.upi_id
-            delete payload.data_produksi.foto_produk
-            delete payload.data_tenaga_kerja.id
-            delete payload.data_tenaga_kerja.upi_id
+            if (fd.isEdit) {
+                    return this.updateData()
+            }
 
-            this.editData(payload)
+            return this.createData()
         },
-        closeAndPopup(title='', body ='', timeout=900) {
-            AutoClosePopup({
-                title,
-                body,
-                timeout
-            })
+        setEditForm() {
+            const url = `${BASE_API_URL}${this.formDep.fetchEditUrl}`
+            fetch(url)
+                .then(stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
 
-            this.getData()
+                    if (data) {
+                        this.formValue = Sanitize(this.formValue, data)
+                    }
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                })
         },
-        errorPopup(message) {
-            AutoClosePopup({
-                title: message,
-                body: '',
-                timeout: 900
-            })
-        },
-        async editData(payload) {
-            const result = await HandlePatch(
-                `${BASE_API_URL}v1/upi/${this.blockDep.upiId}/update/complete`,
-                JSON.stringify(payload)
+        async createData() {
+            const payload = {
+                kegiatan: this.formValue.kegiatan,
+                upi_id: Number(this.formValue.selectedUpi.id),
+                tanggal_kunjungan: dayjs(this.formValue.tgl_kunjungan).format('YYYY-MM-DD'),
+                catatan: this.formValue.catatan
+            }
+
+            const result = await HandlePost(
+                `${BASE_API_URL}${this.formDep.createUrl}`,
+                JSON.stringify(payload),
             )
 
             if (result.isError) {
@@ -235,117 +202,46 @@ export default {
                 result.message
             )
         },
-        getData() {
-            const url = `${BASE_API_URL}${this.blockDep.ajaxUri}`
+        async updateData() {
+            const result = await HandlePatch(
+                `${BASE_API_URL}${this.formDep.updateUrl}`,
+                JSON.stringify(this.formValue),
+            )
 
-            fetch(url)
-                .then(stream => stream.json())
-                .then(resp => {
-                    const { data } = resp
-
-                    if (data !== null) {
-                        this.showData = true
-                        this.transformed.data_produksi.produk_dihasilkan = data.data_produksi.produk_dihasilkan.map(el => {
-                            return {
-                                id: el.id,
-                                label: el.nama_produk
-                            }
-                        })
-                        this.transformed.data_produksi.pemasaran_domestik = data.data_produksi.pemasaran_domestik.map(el => {
-                            return {
-                                id: el.id,
-                                label: el.name
-                            }
-                        })
-                        this.transformed.data_produksi.pemasaran_ekspor = data.data_produksi.pemasaran_ekspor.map(el => {
-                            return {
-                                id: el.id,
-                                label: el.name
-                            }
-                        })
-                        this.list = data
-                        this.reloadLocation(data)
-                    } else {
-                        this.showError = true
-                    }
-
-                    return true
-                })
-                .catch(err => {
-                    console.error('Err while FetchAjax:', err)
-                    console.error(err)
-                })
-        },
-        reloadLocation() {
-            this.getLocation('province', 0)
-            this.getLocation('regency', this.list.data_umum.provinsi)
-            this.getLocation('district', this.list.data_umum.kab_kota)
-            this.getLocation('sub_district', this.list.data_umum.kecamatan)
-        },
-        reloadSelect(target) {
-            if (target === 'kab_kota') {
-                this.master.regency = []
-                this.master.district = []
-                this.master.sub_district = []
-                this.getLocation('regency', this.list.data_umum.provinsi)
-            } else if (target === 'kecamatan') {
-                this.master.district = []
-                this.master.sub_district = []
-                this.getLocation('district', this.list.data_umum.kab_kota)
-            } else if (target === 'kelurahan_desa') {
-                this.master.sub_district = []
-                this.getLocation('sub_district', this.list.data_umum.kecamatan)
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
             }
+
+            return this.closeAndPopup(
+                result.message
+            )
         },
-        getLocation(type, parent) {
-            const url = new UrlParse(`${BASE_API_URL}v1/location`, true)
+        closeAndPopup(title='', body ='', timeout=900) {
+            this.Close()
 
-            url.query.getParent = parent
-            url.query.getType = type
+            AutoClosePopup({
+                title,
+                body,
+                timeout
+            })
 
-            fetch(url)
-                .then(stream => stream.json())
-                .then(resp => {
-                    const { data } = resp
-
-                    if (data !== null) {
-                        this.master[type] = data
-                    }
-
-                    return true
-                })
-                .catch(err => {
-                    console.error('Err while FetchAjax:', err)
-                    console.error(err)
-                })
+            this.$emit('update-table')
         },
-        transformArrayObject(data) {
-            return data.map(el => {
-                return parseInt(el.id)
+        errorPopup(message) {
+            AutoClosePopup({
+                title: message,
+                body: '',
+                timeout: 900
             })
         },
-        transformArrayObjectStr(data) {
-            return data.map(el => {
-                return `${el.id}`
-            })
+        Close() {
+            this.$emit('toggle-close')
         },
-        transformSarprasForm(sarpras) {
-            return sarpras.map(el => {
-                return {
-                    sarpras_id: el.sarpras_id ? el.sarpras_id : el.upi_sarpras_id,
-                    nilai_unit: el.nilai_unit ? el.nilai_unit : 0,
-                    nilai_kapasitas: el.nilai_kapasitas ? el.nilai_kapasitas : 0,
-                    satuan: "kg"
-                }
-            })
-        }
-    },
-    mounted() {
-        let vm = this
-        // vm.getProduct()
-        // vm.getRegency()
-        // vm.getCountry()
-        // vm.getData()
     }
 };
 </script>
+
+<style scoped>
+</style>

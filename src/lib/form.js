@@ -117,9 +117,16 @@ module.exports = {
     },
     ParseError(resp) {
         let msg = ''
+        const dataType = typeof resp
 
-        for (const val in resp) {
-            msg += `${resp[val]}<br/>`
+        if (dataType === 'array' || dataType === 'object') {
+            for (const val in resp) {
+                const prefix = dataType === 'object' ? `${val}: ` : ''
+
+                msg += `${prefix}${resp[val]}<br/>`
+            }
+        } else {
+            msg = resp
         }
 
         return msg
