@@ -16,5 +16,20 @@ class KunjunganModel extends Model {
     protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
-    protected $db;
+    protected $beforeInsert         = [ 'cleanNotes' ];
+    protected $beforeUpdate         = [ 'cleanNotes' ];
+
+    function SaveKunjunganFileUpload($batchData)
+    {
+        $fkb = $this->db->table('tbl_file_kunjungan');
+        return $fkb->insertBatch($batchData);
+    }
+
+    protected function cleanNotes(array $data)
+    {
+        $data['data']['catatan'] = htmlentities($data['data']['catatan']);
+
+        return $data;
+    }
+
 }

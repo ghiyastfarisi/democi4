@@ -9,7 +9,7 @@ class UserModel extends Model {
     protected $useAutoIncrement     = true;
     protected $returnType           = 'array';
     protected $useSoftDeletes       = true;
-    protected $allowedFields        = [ 'username', 'password', 'login_status', 'registration_token' ];
+    protected $allowedFields        = [ 'username', 'password', 'login_status', 'registration_token', 'generated_token', 'role' ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';
     protected $updatedField         = 'updated_at';
@@ -27,7 +27,9 @@ class UserModel extends Model {
 
         if (!isset($data['data']['password'])) return $data;
 
-        $data['data']['password'] = password_hash(SecureDecorator($data['data']['password']), PASSWORD_BCRYPT);
+        $pass = $data['data']['password'].$data['data']['generated_token'];
+
+        $data['data']['password'] = password_hash($pass, PASSWORD_BCRYPT);
 
         return $data;
     }

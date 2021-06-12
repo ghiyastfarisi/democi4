@@ -8,7 +8,7 @@ class PembinaMutuModel extends Model {
     protected $useAutoIncrement     = true;
     protected $returnType           = 'array';
     protected $useSoftDeletes       = true;
-    protected $allowedFields        = [ 'nama_lengkap', 'nip', 'foto_profil', 'keahlian', 'deskripsi', 'no_hp', 'user_id' ];
+    protected $allowedFields        = [ 'email', 'nama_lengkap', 'nip', 'foto_profil', 'keahlian', 'deskripsi', 'no_hp', 'user_id' ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';
     protected $updatedField         = 'updated_at';

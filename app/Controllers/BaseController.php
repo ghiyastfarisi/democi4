@@ -28,6 +28,8 @@ class BaseController extends Controller
 	 * @var array
 	 */
 	protected $helpers = [ 'InternalHttpResponse', 'InternalTemplate', 'html' ];
+	protected $db;
+	protected $session;
 
 	/**
 	 * Constructor.

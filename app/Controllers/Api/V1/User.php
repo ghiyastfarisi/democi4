@@ -318,7 +318,8 @@ class User extends BaseController
 			$insertPembinaMutu = array_merge(
 				$reqArray,
 				array(
-					'user_id' => (int)$user_id
+					'user_id' 	=> (int)$user_id,
+					'email'		=> $reqArray['username']
 				)
 			);
 
@@ -326,5 +327,78 @@ class User extends BaseController
 		}
 
 		return ResponseCreated(array( 'message' => 'user and pembina mutu created' ));
+	}
+
+	public function register()
+	{
+		$req = $this->request;
+
+		if ($req->getMethod(TRUE) !== 'POST') {
+			return ResponseNotAllowed();
+		}
+
+		return $this->createPembinaMutu();
+	}
+
+	public function login()
+	{
+		$req = $this->request;
+
+		if ($req->getMethod(TRUE) !== 'POST') {
+			return ResponseNotAllowed();
+		}
+
+		$this->validation->setRules([
+			'username' => 'required|valid_email',
+			'password' => 'required'
+		], [
+			'username' => [
+				'required' 		=> 'wajib diisi',
+				'valid_email'	=> 'harap gunakan format email'
+			],
+			'password' => [
+				'required' 		=> 'wajib diisi'
+			]
+		]);
+
+		$reqArray = (array) $req->getJSON();
+
+		if(!$this->validation->run($reqArray)) {
+			return ResponseError(400, array('message' => $this->validation->getErrors()));
+		}
+
+		$foundRecord = $this->UserModel
+			->select('tbl_user.*, tbl_pembina_mutu.id as pmid')
+			->join('tbl_pembina_mutu', 'tbl_pembina_mutu.user_id = tbl_user.id')
+			->where('tbl_user.username', $reqArray['username'])->get()->getRow();
+
+		if (null == $foundRecord || (int)$foundRecord->id == 0) {
+			return ResponseError(403, array('message' => 'user belum terdaftar'));
+		}
+
+		if ($foundRecord->login_status!=='active')
+		{
+			return ResponseError(403, array('message' => 'user belum aktif'));
+		}
+
+		$pass = $reqArray['password'].$foundRecord->generated_token;
+
+		$valid = password_verify($pass, $foundRecord->password);
+
+		if (!$valid) {
+			return ResponseError(403, array('message' => 'email atau password salah'));
+		}
+
+		$session = array(
+            'login'     => true,
+            'uid'       => $foundRecord->id,
+            'pmid'      => $foundRecord->pmid,
+            'username'  => $foundRecord->username,
+            'role'      => $foundRecord->role,
+        );
+
+		$this->SetSession($session);
+
+		return ResponseOK(array( 'data' => $session  ));
 	}
 }

@@ -574,15 +574,11 @@ export default {
             this.editData(payload)
         },
         closeAndPopup(title='', body ='', timeout=900) {
-            // this.Close()
-
             AutoClosePopup({
                 title,
                 body,
                 timeout
             })
-
-            // this.$emit('update-table')
             this.getData()
         },
         errorPopup(message) {

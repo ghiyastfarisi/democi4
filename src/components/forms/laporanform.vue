@@ -53,7 +53,8 @@
             <div class="field">
                 <label class="label"> Catatan </label>
                 <div class="control">
-                    <textarea class="textarea" placeholder="Catatan" v-model="formValue.catatan"></textarea>
+                    <textarea v-if="formDep.isEdit" v-html="formValue.catatan" v-model="formValue.catatan" class="textarea" placeholder="Catatan"></textarea>
+                    <textarea v-if="!formDep.isEdit" v-model="formValue.catatan" class="textarea" placeholder="Catatan"></textarea>
                 </div>
             </div>
         </section>
@@ -85,7 +86,7 @@ export default {
             currentYear: new Date().getFullYear(),
             selectedDate: {},
             formValue: {
-                selectedUpi: 0,
+                selectedUpi: { id: 0 },
                 kegiatan: '',
                 upi: 0,
                 tgl_kunjungan: '',
@@ -112,8 +113,6 @@ export default {
     },
     mounted() {
         let fd = this.formDep
-
-        console.log(fd)
 
         if (fd.isEdit) {
             this.setEditForm()
@@ -156,7 +155,6 @@ export default {
         submitData() {
             let fd = this.formDep
 
-
             if (fd.isEdit) {
                     return this.updateData()
             }
@@ -172,6 +170,9 @@ export default {
 
                     if (data) {
                         this.formValue = Sanitize(this.formValue, data)
+                        this.formValue.tgl_kunjungan = data.tanggal_kunjungan
+                        this.formValue.upi = data.upi_id
+                        this.formValue.selectedUpi = data.selected_upi
                     }
                 })
                 .catch(err => {
@@ -203,9 +204,20 @@ export default {
             )
         },
         async updateData() {
+            const upiId = (this.formValue.selectedUpi && this.formValue.selectedUpi.id && Number(this.formValue.selectedUpi.id)) > 0
+                ? Number(this.formValue.selectedUpi.id)
+                : Number(this.formValue.upi)
+
+            const payload = {
+                kegiatan: this.formValue.kegiatan,
+                upi_id: upiId,
+                tanggal_kunjungan: dayjs(this.formValue.tgl_kunjungan).format('YYYY-MM-DD'),
+                catatan: this.formValue.catatan
+            }
+
             const result = await HandlePatch(
                 `${BASE_API_URL}${this.formDep.updateUrl}`,
-                JSON.stringify(this.formValue),
+                JSON.stringify(payload),
             )
 
             if (result.isError) {
@@ -218,7 +230,7 @@ export default {
                 result.message
             )
         },
-        closeAndPopup(title='', body ='', timeout=900) {
+        closeAndPopup(title='', body ='', timeout=2000) {
             this.Close()
 
             AutoClosePopup({

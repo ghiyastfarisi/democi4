@@ -11,10 +11,10 @@
                 <i class="fas fa-exclamation-circle"></i>
             </span>
             <span>
-                Data tidak tersedia
+                Belum ada data tersimpan
             </span>
         </div>
-        <div class="box" v-if="dataFound">
+        <div class="box">
             <div v-if="enableAdd.valid" class="mb-4">
                 <a href="javascript:void(0)" :class="{ 'is-loading': isLoading }" class="button is-success is-outlined" @click="UpdateTable">
                     <span class="icon">
@@ -45,7 +45,7 @@
                             <th>{{ startOrder + listIndex }}</th>
                             <td v-for="(field, index) in validFields" :key="index">
                                 <span v-if="field.detail_link">
-                                    <a :href="`${tableDep.detailUrl}${list.id}`">{{ list[field.origin] }}</a>
+                                    <a :href="`${baseUrl}/web/${tableDep.detailUrl}${list.id}`">{{ list[field.origin] }}</a>
                                 </span>
                                 <span v-else>
                                     {{ list[field.origin] }}
@@ -91,7 +91,7 @@ import UrlParse from 'url-parse'
 import DynamicModalForm from './forms/dynamicmodalform'
 import TableDict from '../lib/tabledictionary'
 import Swal from 'sweetalert2'
-import { HandleDelete } from '../lib/form'
+import { HandleDelete, ParseError } from '../lib/form'
 
 export default {
     components: {
@@ -99,9 +99,9 @@ export default {
     },
     data: function() {
         return {
+            baseUrl: BASE_URL,
             showLoading: true,
             showError: false,
-            dataFound: false,
             fields: [],
             validFields: [],
             lists: [],
@@ -189,7 +189,7 @@ export default {
                     this.startOrder = ((pagination.current - 1) * q.limit) + 1
                     this.showLoading = false
                     if (pagination.total > 0) {
-                        this.dataFound = true
+                        this.showError = false
                     } else {
                         this.showError = true
                     }

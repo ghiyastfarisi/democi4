@@ -50,7 +50,6 @@ class TblPembinaMutuPelatihan extends Migration
 			]
 		]);
 		$this->forge->addKey('id', true);
-		$this->forge->addForeignKey('pembina_mutu_id','tbl_pembina_mutu','id','CASCADE','CASCADE');
 		$this->forge->createTable('tbl_pembina_mutu_pelatihan');
 	}
 

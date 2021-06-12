@@ -20,7 +20,7 @@ class Filters extends BaseConfig
 		'toolbar'  		=> DebugToolbar::class,
 		'honeypot' 		=> Honeypot::class,
 		'checkLogin'	=> \App\Filters\CheckLogin::class,
-		'apiLogin'		=> \App\Filters\ApiLogin::class,
+		'apiLogin'		=> \App\Filters\ApiLogin::class
 	];
 
 	/**
@@ -35,7 +35,7 @@ class Filters extends BaseConfig
 				'except' => [
 					'api/*',
 					'login',
-					'web/login'
+					'register'
 				]
 			],
 			// 'honeypot',
@@ -68,6 +68,6 @@ class Filters extends BaseConfig
 	 * @var array
 	 */
 	public $filters = [
-		'apiLogin' => [ 'before' => [ 'api/*' ] ]
+		'apiLogin' 	=> [ 'before' => [ 'api/*' ], ],
 	];
 }

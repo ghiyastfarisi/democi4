@@ -8,7 +8,7 @@ class FileUploadModel extends Model {
     protected $useAutoIncrement     = true;
     protected $returnType           = 'array';
     protected $useSoftDeletes       = true;
-    protected $allowedFields        = [ 'upload_path', 'file_type', 'usage' ];
+    protected $allowedFields        = [ 'upload_path', 'file_name','file_type', 'usage' ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';
     protected $updatedField         = 'updated_at';

@@ -143,6 +143,10 @@ const TableFieldData = {
             detail_link: true
         },
         {
+            name: 'Email',
+            origin: 'email'
+        },
+        {
             name: 'Instansi',
             origin: 'instansi'
         },

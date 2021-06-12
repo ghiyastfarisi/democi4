@@ -25,6 +25,25 @@ class Laporan extends BaseController
 		return RenderTemplate($data);
 	}
 
+	public function get($id = 0)
+	{
+		$args = array(
+			'_PageSectionTitle' 	=> 'Laporan Detail',
+			'_PageSectionSubTitle' 	=> 'Laporan Kegiatan Pembina Mutu'
+		);
+
+		$data = array(
+			'args' 			=> $args,
+			'_PageTitle' 	=> 'Laporan Detail',
+			'_Pages' 		=> 'laporan/detail',
+			'_LoadCSS'		=> array(),
+			'_LoadJS'		=> array('@/laporandetail.js'),
+			'_ActiveSlug'	=> 'laporan'
+		);
+
+		return RenderTemplate($data);
+	}
+
 	public function create($id = 0)
 	{
 		$args = array(

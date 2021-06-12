@@ -123,11 +123,6 @@ class Tblupi extends Migration
 			]
 		]);
 		$this->forge->addKey('id', true);
-		// $this->forge->addForeignKey('created_by', 'tbl_user', 'id', 'CASCADE', 'CASCADE');
-		// $this->forge->addForeignKey('kelurahan_desa', 'tbl_location', 'id', 'CASCADE', 'CASCADE');
-		// $this->forge->addForeignKey('kecamatan', 'tbl_location', 'id', 'CASCADE', 'CASCADE');
-		// $this->forge->addForeignKey('kab_kota', 'tbl_location', 'id', 'CASCADE', 'CASCADE');
-		// $this->forge->addForeignKey('provinsi', 'tbl_location', 'id', 'CASCADE', 'CASCADE');
 		$this->forge->createTable('tbl_upi');
 	}
 

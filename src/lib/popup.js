@@ -2,11 +2,12 @@ const Swal = require('sweetalert2')
 
 module.exports = {
     AutoClosePopup: ({
-        title, body, timeout
+        title, body, timeout, icon = ''
     }) => {
         let timerInterval
 
         Swal.fire({
+            ...(icon !== '' ? { icon } : {} ),
             title,
             html: body,
             timer: timeout,

@@ -41,7 +41,7 @@ function ReplaceAlias($path)
 
 function RenderTemplate($data = null)
 {
-    if (isset($data['_Pages'])) {
+    if (isset($data['_Pages']) && $data['_Pages'] != '') {
         $data['_Pages'] = 'pages/'.$data['_Pages'];
     }
 
@@ -110,7 +110,15 @@ function RenderTemplate($data = null)
     );
     $data['_Menu'] = $menuData;
 
-    return view(ViewPath(), (null !== $data) ? $data : array());
+    $vp =  ViewPath();
+
+    if (isset($data['_ExtendPath']))
+    {
+        $vp = ViewPath($data['_ExtendPath']);
+    }
+
+
+    return view($vp, (null !== $data) ? $data : array());
 }
 
 function PrintArgs($args = array(), $type = "") {

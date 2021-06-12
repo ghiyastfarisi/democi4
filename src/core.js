@@ -15,3 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+const cookie = document.cookie
+const splitted = decodeURIComponent(cookie).split('=')
+const COOKIE_OBJECT = (splitted.length > 0 && splitted[0] === 'auth') ? Object.freeze(JSON.parse(splitted[1])) : {}

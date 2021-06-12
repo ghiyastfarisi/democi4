@@ -11,6 +11,7 @@ class UserSeeder extends Seeder
         $data = [
             'username'      => 'moeghifar@gmail.com',
             'login_status'  => 'active',
+            'role'          => 'admin',
             'created_at'    => Time::Now(),
             'updated_at'    => Time::Now()
         ];

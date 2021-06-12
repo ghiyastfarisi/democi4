@@ -108,6 +108,8 @@ $routes->group('api', function($routes)
 		$routes->post('create', 'Api\V1\Kunjungan::create');
 		$routes->patch('update/(:num)', 'Api\V1\Kunjungan::update/$1');
 		$routes->delete('(:num)', 'Api\V1\Kunjungan::delete/$1');
+		$routes->get('(:num)/file', 'Api\V1\Kunjungan::GetFileByKunjunganId/$1');
+		$routes->delete('file/(:num)', 'Api\V1\Kunjungan::deleteFile/$1');
 	});
 	$routes->group('v1/perubahan-upi', function($routes)
 	{
@@ -123,10 +125,12 @@ $routes->group('api', function($routes)
 $routes->group('web', function($routes)
 {
 	$routes->get('pembina-mutu', 'Web\PembinaMutu::index');
-	$routes->get('pembina-mutu/(:num)', 'Web\PembinaMutu::detail/$1');
-});
+	$routes->get('pembina-mutu/get/(:num)', 'Web\PembinaMutu::get/$1');
+}
+);
 
-$routes->get('login', 'Auth::login');
+$routes->post('login', 'Api\V1\User::login');
+$routes->post('register', 'Api\V1\User::register');
 $routes->get('logout', 'Auth::logout');
 
 

@@ -238,6 +238,7 @@ class Upi extends BaseController
 		]
 	);
 	protected $upiCompleteStructure = array();
+	protected $userSession;
 
 	function __construct()
 	{
@@ -255,6 +256,7 @@ class Upi extends BaseController
 			'data_tenaga_kerja'	=> array(),
 			'data_sarpras'		=> array(),
 		);
+		$this->userSession = session('auth');
 	}
 
 	public function GetAll()
@@ -978,7 +980,7 @@ class Upi extends BaseController
 			return ResponseError(400, array('message' => $validate));
 		}
 
-		$pembinaMutuId = 1;
+		$pembinaMutuId = (isset($this->userSession['pmid'])) ? (int)$this->userSession['pmid'] : 0;
 
 		$updated = $this->_requestUpdatePerubahanUpi(array(
 			'upi_id' 			=> $id,

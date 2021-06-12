@@ -16,10 +16,11 @@
                     fieldType: 'riwayat_kunjungan',
                     ajaxUri: `v1/kunjungan/all?getDetailPembinaMutu=true`,
                     showLimit: 10,
-                    deleteUrl: 'v1/kunjungan/'
+                    deleteUrl: 'v1/kunjungan/',
+                    detailUrl: 'laporan/get/'
                 }"
                 :enable-edit="{
-                    valid: true,
+                    valid: false,
                     editDep: {
                         title: 'Update Data',
                         submit: 'Update',
@@ -27,7 +28,7 @@
                         isEdit: true,
                         fetchEditUrl: `v1/pendidikan/`,
                         updateUrl: `v1/pendidikan/update/`,
-                        extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
+                        extra: { laporanId: parseInt(this.pembinaMutuData.id) }
                     }
                 }"
             />

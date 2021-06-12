@@ -1,3 +1,5 @@
+<?php if (!isset($_COOKIE['auth']) && null!=session('auth')) { setcookie('auth', json_encode(session('auth')), time()+1*60*60, '/'); } ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +21,7 @@
     </div>
 
     <div class="column-container">
-        <div class="columns is-gapless is-tablet">
+        <div class="columns is-gapless is-desktop">
             <div id="menu-container" class="menu-container px-3 has-background-white sidebar-hidden">
                 <?= $this->include(ViewPath('base/sidebar')) ?>
             </div>
@@ -34,7 +36,6 @@
             </div>
         </div>
     </div>
-
     <?= (isset($_LoadJS)) ? $this->include(ViewPath('base/js')) : '' ?>
 </body>
 </html>

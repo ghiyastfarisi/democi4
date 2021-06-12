@@ -25,7 +25,7 @@ html, body {
     bottom: 0;
     min-width: 260px;
     box-shadow: 5px 0px 15px 1px #DDDDDD;
-    padding-top: 75px !important;
+    padding-top: 25px !important;
     transition: left 0.2s;
     transition-timing-function: linear;
     -webkit-transition-duration: 0.2s;
@@ -36,7 +36,7 @@ html, body {
     padding-bottom: 10px;
 }
 .page-container {
-    padding-top: 75px !important;
+    padding-top: 5px !important;
 }
 
 .sidebar-hidden{
@@ -58,4 +58,13 @@ html, body {
 
 .header-container .navbar-item {
     padding: 0 !important;
+}
+
+.column-container {
+    @include until($desktop) {
+        margin-top:70px;
+    }
+    @include from($desktop) {
+        margin-top:50px;
+    }
 }

@@ -34,6 +34,16 @@ class TblUser extends Migration
 				'type' => 'TEXT',
 				'null' => false
 			],
+			'generated_token' => [
+				'type' => 'TEXT',
+				'null' => false
+			],
+			'role' => [
+				'type' 			=> 'VARCHAR',
+				'constraint' 	=> '255',
+				'null' 			=> false,
+				'default'		=> 'pembina_mutu' // admin & pembina_mutu (all users must use KKP email)
+			],
 			'created_at' => [
 				'type'	=> 'DATETIME',
 				'null'	=> false

@@ -2,7 +2,7 @@
     <div class="modalform">
         <div class="modal is-active">
             <div class="modal-background"></div>
-            <div class="modal-card">
+            <div class="modal-card" style="width:1000px;">
                 <header class="modal-card-head">
                     <p class="modal-card-title">{{ modalDep.title }}</p>
                     <button @click="emitClose" class="delete" aria-label="close"></button>

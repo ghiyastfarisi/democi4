@@ -25,7 +25,7 @@ class PembinaMutu extends BaseController
 		return RenderTemplate($data);
 	}
 
-	public function detail($id = 0)
+	public function get($id = 0)
 	{
 		$args = array(
 			'_PageSectionTitle' 	=> 'Pembina Mutu',

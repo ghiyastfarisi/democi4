@@ -16,6 +16,9 @@
                     </div>
                 </nav>
                 <div class="columns is-multiline">
+                    <div class="column is-12">
+                        <img :src="list.foto_pabrik" style="max-width:400px;max-height:400px;">
+                    </div>
                     <div class="column is-6">
                         <div class="field">
                             <label class="label"> Nama Perusahaan </label>
@@ -86,12 +89,6 @@
                             <label class="label"> Sumber Permodalan </label>
                             <div class="control">
                                 {{ list.sumber_permodalan }}
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Foto Pabrik </label>
-                            <div class="control">
-                                {{ list.foto_pabrik && list.foto_pabrik !== '' ? list.foto_pabrik : '-' }}
                             </div>
                         </div>
                         <div class="field">

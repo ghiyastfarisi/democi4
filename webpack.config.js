@@ -6,6 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
     entry: {
         core: './src/core.js',
+        login: './src/pages/login.js',
         userindex: './src/pages/userindex.js',
         usergetid: './src/pages/usergetid.js',
         pembinamutuindex: './src/pages/pembinamutuindex.js',
@@ -15,6 +16,7 @@ module.exports = {
         upiedit: './src/pages/upiedit.js',
         dashboard: './src/pages/dashboard.js',
         laporanindex: './src/pages/laporanindex.js',
+        laporandetail: './src/pages/laporandetail.js',
         laporancreate: './src/pages/laporancreate.js'
     },
     output: {

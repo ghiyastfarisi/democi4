@@ -9,21 +9,20 @@ class Login extends BaseController
 	public function index($id = 0)
 	{
 		$args = array(
-			'_PageSectionTitle' 	=> 'Kuy Login',
+			'_PageSectionTitle' 	=> 'Login',
 			'_PageSectionSubTitle' 	=> ''
 		);
 
 		$data = array(
 			'args' 			=> $args,
 			'_PageTitle' 	=> 'Dashboard',
-			'_Pages' 		=> 'dashboard/index',
+			'_Pages' 		=> '',
 			'_LoadCSS'		=> array(),
-			'_LoadJS'		=> array('@/dashboard.js'),
-			'_ActiveSlug'	=> 'dashboard'
+			'_LoadJS'		=> array('@/login.js'),
+			'_ActiveSlug'	=> '',
+			'_ExtendPath'	=> 'login'
 		);
 
-
-		echo RenderTemplate($data);
-        echo '<a href="/login">LOGIN</a>';
+		return RenderTemplate($data);
 	}
 }

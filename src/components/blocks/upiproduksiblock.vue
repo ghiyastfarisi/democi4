@@ -7,11 +7,14 @@
                         <p class="title is-4 is-spaced">Data Produksi</p>
                     </div>
                 </nav>
-
                 <div class="field">
                     <label class="label"> Merk Dagang </label>
                     <div class="control">
-                        {{ list.merk_dagang }}
+                        <div class="tags are-medium">
+                            <span class="tag" v-for="(l, i) in list.merk_dagang_arr" :key="i">
+                                {{ l }}
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <div class="field">
@@ -119,6 +122,9 @@ export default {
 
                     if (data && data !== null) {
                         this.showData = true
+
+                        data.merk_dagang_arr = data.merk_dagang.split(',')
+
                         this.list = data
                     } else {
                         this.showError = true

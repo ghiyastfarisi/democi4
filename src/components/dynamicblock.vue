@@ -47,6 +47,14 @@
             v-if="blockDep.blockType==='upi_tenaga_kerja'"
             :block-dep="blockDep"
         />
+        <LaporanBlock
+            v-if="blockDep.blockType==='laporan'"
+            :block-dep="blockDep"
+        />
+        <LaporanUploadBlock
+            v-if="blockDep.blockType==='laporanupload'"
+            :block-dep="blockDep"
+        />
     </div>
 </template>
 
@@ -55,6 +63,8 @@ import UpiBlock from './blocks/upiblock'
 import UpiProduksiBlock from './blocks/upiproduksiblock'
 import UpiSarprasBlock from './blocks/upisarprasblock'
 import UpiTenagaKerjaBlock from './blocks/upitenagakerjablock'
+import LaporanBlock from './blocks/laporanblock'
+import LaporanUploadBlock from './blocks/laporanuploadblock'
 
 export default {
     created() {},
@@ -62,7 +72,9 @@ export default {
         UpiBlock,
         UpiProduksiBlock,
         UpiSarprasBlock,
-        UpiTenagaKerjaBlock
+        UpiTenagaKerjaBlock,
+        LaporanBlock,
+        LaporanUploadBlock
     },
     data: function() {
         return {
@@ -79,7 +91,8 @@ export default {
                 return {
                     enableEdit: false,
                     ajaxUri: '',
-                    blockType: ''
+                    blockType: '',
+                    extra: {}
                 }
             }
         }

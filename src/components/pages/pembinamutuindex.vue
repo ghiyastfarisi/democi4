@@ -11,7 +11,7 @@
                     ajaxUri: `v1/pembina-mutu/all?getInstansi=true`,
                     showLimit: 20,
                     deleteUrl: 'v1/pembina-mutu/',
-                    detailUrl: 'pembina-mutu/'
+                    detailUrl: 'pembina-mutu/get/'
                 }"
                 :enable-edit="{
                     valid: false,

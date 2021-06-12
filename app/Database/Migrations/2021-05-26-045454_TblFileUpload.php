@@ -15,8 +15,12 @@ class TblFileUpload extends Migration
 				'unsigned'       => true,
 				'auto_increment' => true
 			],
-			'upload_path' => [
+			'upload_path' 		=> [
 				'type'          => 'TEXT',
+				'null'			=> false
+			],
+			'file_name' 		=> [
+				'type'			=> 'TEXT',
 				'null'			=> false
 			],
 			'file_type' 		=> [
