@@ -38,20 +38,36 @@
         <div class="column is-12">
             <div class="box" v-if="showPembinaan">
                 <div class="title is-4">Riwayat Pembinaan</div>
-                <DynamicTable
-                    :enable-add="{
-                        valid: false,
-                        addDep: {}
-                    }"
-                    :table-dep="{
-                        fieldType: 'riwayat_pembinaan',
+                <NewDynamicTable
+                    :tableDep="{
                         ajaxUri: `v1/kunjungan/all?getDetailPembinaMutu=true&upiId=${this.uid}`,
-                        showLimit: 10,
-                        deleteUrl: 'v1/kunjungan/'
-                    }"
-                    :enable-edit="{
-                        valid: false,
-                        editDep: {}
+                        showLimit: 2,
+                        renderObject: [
+                            {
+                                fieldName: 'Kegiatan',
+                                objectField: 'kegiatan',
+                                link: {
+                                    path: '/web/laporan/get/{id}',
+                                    parser: [ { replace: 'id', with: 'id' } ]
+                                }
+                            },
+                            {
+                                fieldName: 'Nama Pembina Mutu',
+                                objectField: 'nama_pembina_mutu',
+                                link: {
+                                    path: '/web/pembina-mutu/get/{pembina_mutu_id}',
+                                    parser: [ { replace: 'pembina_mutu_id', with: 'pembina_mutu_id' } ]
+                                }
+                            },
+                            {
+                                fieldName: 'Unit Kerja',
+                                objectField: 'unit_kerja_terakhir'
+                            },
+                            {
+                                fieldName: 'Tanggal Kunjungan',
+                                objectField: 'tanggal_kunjungan'
+                            }
+                        ]
                     }"
                 />
             </div>
@@ -61,11 +77,13 @@
 <script>
 import DynamicBlock from '../dynamicblock'
 import DynamicTable from '../dynamictable'
+import NewDynamicTable from '../dynamic/table'
 
 export default {
     components: {
         DynamicBlock,
-        DynamicTable
+        DynamicTable,
+        NewDynamicTable
     },
     data: function() {
         return {

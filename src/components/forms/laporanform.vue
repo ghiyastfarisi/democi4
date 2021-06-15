@@ -9,7 +9,9 @@
             </div>
             <div class="field">
                 <label class="label">UPI</label>
+                <input class="input" readonly="readonly" disabled type="text" v-if="formDep.isEdit" v-model="selectedUpi">
                 <Multiselect
+                    v-if="!formDep.isEdit"
                     v-model="formValue.selectedUpi"
                     id="ajax"
                     track-by="id"
@@ -85,6 +87,7 @@ export default {
             searchedUpi: [],
             currentYear: new Date().getFullYear(),
             selectedDate: {},
+            selectedUpi: '',
             formValue: {
                 selectedUpi: { id: 0 },
                 kegiatan: '',
@@ -156,7 +159,7 @@ export default {
             let fd = this.formDep
 
             if (fd.isEdit) {
-                    return this.updateData()
+                return this.updateData()
             }
 
             return this.createData()
@@ -169,10 +172,12 @@ export default {
                     const { data } = resp
 
                     if (data) {
+                        this.searchedUpi = [ data.upi_label ]
                         this.formValue = Sanitize(this.formValue, data)
                         this.formValue.tgl_kunjungan = data.tanggal_kunjungan
                         this.formValue.upi = data.upi_id
-                        this.formValue.selectedUpi = data.selected_upi
+                        this.formValue.selectedUpi = data.upi_id
+                        this.selectedUpi = data.upi_label.label
                     }
                 })
                 .catch(err => {

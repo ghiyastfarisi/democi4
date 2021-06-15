@@ -10,7 +10,6 @@ class Kunjungan extends BaseController
 {
 	protected $KunjunganModel;
 	protected $validation;
-	protected $db;
 	protected $kunjunganField = array(
 		'validation' 			=> array(
 			'upi_id'			=> 'required|numeric',
@@ -52,12 +51,14 @@ class Kunjungan extends BaseController
 		'12' 	=> 	'Des'
 	);
 	protected $userSession;
+	protected $db;
 
 	function __construct()
 	{
 		$this->KunjunganModel = new KunjunganModel();
 		$this->validation = \Config\Services::validation();
 		$this->userSession = session('auth');
+		$this->db = \Config\Database::connect();
 	}
 
 	public function GetAll()
@@ -209,6 +210,9 @@ class Kunjungan extends BaseController
 			return ResponseNotAllowed();
 		}
 
+		$q = $req->getGet();
+		$upiLabel = isset($q['upiLabel']) && filter_var($q['upiLabel'], FILTER_VALIDATE_BOOLEAN) ? true : false;
+
 		$selectQuery = 'tbl_kunjungan.*';
 		$joinTables = array();
 		$joinCondition = array();
@@ -221,17 +225,30 @@ class Kunjungan extends BaseController
 		array_push($joinTables, 'tbl_upi');
 		array_push($joinCondition, 'tbl_upi.id = tbl_kunjungan.upi_id');
 
-		$selectQuery .= ', tbl_location.name as nama_provinsi';
-		array_push($joinTables, 'tbl_location');
-		array_push($joinCondition, 'tbl_upi.provinsi = tbl_location.id');
+		$selectQuery .= ', tl1.name as nama_provinsi';
+		array_push($joinTables, 'tbl_location tl1');
+		array_push($joinCondition, 'tbl_upi.provinsi = tl1.id');
+
+		$selectQuery .= ', tl2.name as nama_kabkota';
+		array_push($joinTables, 'tbl_location tl2');
+		array_push($joinCondition, 'tbl_upi.kab_kota = tl2.id');
 
 		$resp = $this->KunjunganModel->select($selectQuery)
 			->join($joinTables[0], $joinCondition[0])
 			->join($joinTables[1], $joinCondition[1])
 			->join($joinTables[2], $joinCondition[2])
+			->join($joinTables[3], $joinCondition[3])
 			->orderBy('tbl_kunjungan.id', 'desc')->find($id);
 
 		$resp['catatan'] = html_entity_decode($resp['catatan']);
+
+		if ($upiLabel)
+		{
+			$resp['upi_label'] = array(
+				"id"	=> $resp['upi_id'],
+				"label"	=> $resp['nama_upi'] . ' - ' . $resp['nama_kabkota'] . ' - ' . $resp['nama_provinsi']
+			);
+		}
 
 		$transformed = array(
 			'data' => $resp

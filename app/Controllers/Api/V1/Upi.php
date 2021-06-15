@@ -1038,7 +1038,7 @@ class Upi extends BaseController
 
 			if ($mapSelect) {
 				$clean[$key] = array(
-					'id'				=> $value['id'],
+					'id'		=> $value['id'],
 					'label'		=> $value['nama_perusahaan'] . ' - ' . $regency->name . ' - ' . $province->name
 				);
 			} else {

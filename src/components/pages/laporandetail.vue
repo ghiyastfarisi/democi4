@@ -9,7 +9,7 @@
                     submit: 'Update Laporan',
                     modalType: 'addlaporan',
                     isEdit: true,
-                    fetchEditUrl: `v1/kunjungan/${kunjunganId}`,
+                    fetchEditUrl: `v1/kunjungan/${kunjunganId}?upiLabel=true`,
                     updateUrl: `v1/kunjungan/update/${kunjunganId}`,
                     extra: { kunjunganId: parseInt(kunjunganId) }
                 }"

@@ -262,20 +262,36 @@
         <div class="column is-12">
             <div class="box" v-if="showKunjungan">
                 <div class="title is-4">Riwayat Kunjungan</div>
-                <DynamicTable
-                    :enable-add="{
-                        valid: false,
-                        addDep: {}
-                    }"
-                    :table-dep="{
-                        fieldType: 'riwayat_kunjungan',
+                <NewDynamicTable
+                    :tableDep="{
                         ajaxUri: `v1/kunjungan/all?getDetailPembinaMutu=true&pembinaMutuId=${this.pembinaMutuData.id}`,
-                        showLimit: 10,
-                        deleteUrl: 'v1/kunjungan/'
-                    }"
-                    :enable-edit="{
-                        valid: false,
-                        editDep: {}
+                        showLimit: 2,
+                        renderObject: [
+                            {
+                                fieldName: 'Kegiatan',
+                                objectField: 'kegiatan',
+                                link: {
+                                    path: '/web/laporan/get/{id}',
+                                    parser: [ { replace: 'id', with: 'id' } ]
+                                }
+                            },
+                            {
+                                fieldName: 'Nama UPI',
+                                objectField: 'nama_upi',
+                                link: {
+                                    path: '/web/upi/get/{upi_id}',
+                                    parser: [ { replace: 'upi_id', with: 'upi_id' } ]
+                                }
+                            },
+                            {
+                                fieldName: 'Provinsi',
+                                objectField: 'nama_provinsi'
+                            },
+                            {
+                                fieldName: 'Tanggal Kunjungan',
+                                objectField: 'tanggal_kunjungan'
+                            }
+                        ]
                     }"
                 />
             </div>
@@ -287,11 +303,13 @@
 import dayjs from 'dayjs'
 import DynamicTable from '../dynamictable'
 import DynamicModalForm from '../forms/dynamicmodalform'
+import NewDynamicTable from '../dynamic/table'
 
 export default {
     components: {
         DynamicTable,
         DynamicModalForm,
+        NewDynamicTable
     },
     data: function() {
         return {
