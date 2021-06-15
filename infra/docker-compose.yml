@@ -1,0 +1,12 @@
+version: "3"
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.3-focal
+    volumes:
+      - ./datadir/mariadb:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: true

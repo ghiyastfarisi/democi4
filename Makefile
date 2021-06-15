@@ -2,7 +2,7 @@ PROJECT_NAME := "democi4"
 
 .PHONY: all
 
-all: build-image run-dev
+all: build-image run-production
 
 migration-create:
 	@docker exec -it ${PROJECT_NAME} php spark migrate:create $(FILE)
@@ -17,10 +17,8 @@ build-image:
 run-dev:
 	@sh run.sh
 
+run-production:
+	@sh run-production.sh
+
 run-bundle-watch:
 	@yarn run build-watch
-
-link-dist:
-	@rm -rf public/dist
-	@ln -s src/dist public/dist
-
