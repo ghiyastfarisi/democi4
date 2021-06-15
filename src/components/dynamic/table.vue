@@ -241,9 +241,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.ajaxtable tr {
-    padding: 30px;
-}
-</style>
