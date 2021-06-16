@@ -7,7 +7,7 @@ services:
     volumes:
       - ./datadir/mariadb:/var/lib/mysql
     ports:
-      - "3306"
+      - "3306:3306"
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: VAg2s9b6CfvqwhBs2g57yYY5xCHerj2hrkg
+      MYSQL_ROOT_PASSWORD: 1XAmpleXample1
