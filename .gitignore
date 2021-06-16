@@ -128,6 +128,8 @@ nb-configuration.xml
 # nodejs
 node_modules/
 
+public/dist/
+
 # file upload exclude file
 public/files/*/
 
