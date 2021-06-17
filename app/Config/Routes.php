@@ -87,11 +87,15 @@ $routes->group('api', function($routes)
 		$routes->post('create/complete', 'Api\V1\Upi::createComplete');
 		$routes->patch('(:num)/update/complete', 'Api\V1\Upi::updateComplete/$1');
 		$routes->post('(:num)/request/perubahan-upi', 'Api\V1\Upi::requestUpdate/$1');
-		$routes->post('(:num)/update/perubahan-upi/(:string)', 'Api\V1\Upi::requestUpdatePerubahaUpi/$1/$2');
+		$routes->post('update/perubahan-upi/(:num)/(:alpha)', 'Api\V1\Upi::requestUpdatePerubahaUpi/$1/$2');
 	});
 	$routes->group('v1/produksi', function($routes)
 	{
 		$routes->get('upi/(:num)', 'Api\V1\UpiProduksi::GetByUpi/$1');
+	});
+	$routes->group('v1/badge', function($routes)
+	{
+		$routes->get('all', 'Api\V1\Badge::Get');
 	});
 	$routes->group('v1/tenaga-kerja', function($routes)
 	{

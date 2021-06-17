@@ -8,7 +8,7 @@ class PerubahanUpiModel extends Model {
     protected $useAutoIncrement     = true;
     protected $returnType           = 'array';
     protected $useSoftDeletes       = true;
-    protected $allowedFields        = [ 'upi_id', 'pembina_mutu_id', 'status', 'data_perubahan' ];
+    protected $allowedFields        = [ 'upi_id', 'pembina_mutu_id', 'kunjungan_id', 'status', 'data_perubahan', 'catatan' ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';
     protected $updatedField         = 'updated_at';

@@ -11,10 +11,13 @@ use App\Models\ProduksiPemasaranModel;
 use App\Models\UpiSarprasModel;
 use App\Models\UpiTenagaKerjaModel;
 use App\Models\PerubahanUpiModel;
+use App\Models\RiwayatPerubahanUpiModel;
 
 class Upi extends BaseController
 {
 	protected $UpiModel;
+	protected $PerubahanUpiModel;
+	protected $RiwayatPerubahanUpiModel;
 	protected $validation;
 	protected $db;
 	protected $sertifikasiPerusahaan = array('SKP', 'HACCP', 'HALAL', 'BRC', 'ISO 9001');
@@ -243,6 +246,8 @@ class Upi extends BaseController
 	function __construct()
 	{
 		$this->UpiModel = new UpiModel();
+		$this->PerubahanUpiModel = new PerubahanUpiModel();
+		$this->RiwayatPerubahanUpiModel = new RiwayatPerubahanUpiModel();
 		$this->validation = \Config\Services::validation();
 		$this->db = db_connect();
 		$this->upiCompleteStructure = array(
@@ -389,6 +394,11 @@ class Upi extends BaseController
 	public function GetCompleteById($id = 0)
 	{
 		$resp = $this->UpiModel->find($id);
+
+		if ($resp == null)
+		{
+			return ResponseNotFound();
+		}
 
 		$transformed = array(
 			'data' => $this->_mapCompleteUpi($resp)
@@ -956,9 +966,7 @@ class Upi extends BaseController
 
 	public function _requestUpdatePerubahanUpi($data)
 	{
-		$perubahanUpiModel = new PerubahanUpiModel();
-
-		return $perubahanUpiModel->save($data);
+		return $this->PerubahanUpiModel->save($data);
 	}
 
 	public function requestUpdate($id = 0)
@@ -980,21 +988,97 @@ class Upi extends BaseController
 			return ResponseError(400, array('message' => $validate));
 		}
 
+		$kunjunganId = isset($reqArray['kunjungan_id']) ? $reqArray['kunjungan_id'] : 0;
+		$catatan = isset($reqArray['catatan']) ? $reqArray['catatan'] : 'requested';
 		$pembinaMutuId = (isset($this->userSession['pmid'])) ? (int)$this->userSession['pmid'] : 0;
+
+		$upi = $this->UpiModel->find($id);
+		if (null == $upi)
+		{
+			return ResponseBadRequest(array('message' => 'upi tidak terdaftar'));
+		}
 
 		$updated = $this->_requestUpdatePerubahanUpi(array(
 			'upi_id' 			=> $id,
 			'pembina_mutu_id'	=> $pembinaMutuId,
 			'status'			=> 'requested',
-			'data_perubahan'	=> json_encode($reqArray)
+			'data_perubahan'	=> json_encode($reqArray),
+			'kunjungan_id'		=> $kunjunganId,
+			'catatan'			=> $catatan
 		));
 
-		return ResponseCreated(array( 'message' => 'Request Perubahan Data UPI Created' ));
+		$insertedId = $this->PerubahanUpiModel->insertID();
+
+		if ($insertedId > 0)
+		{
+			$this->RiwayatPerubahanUpiModel->save(array(
+				'perubahan_upi_id'	=> $insertedId,
+				'catatan'			=> $catatan
+			));
+		}
+
+		return ResponseCreated(array( 'message' => 'Request perubahan data UPI berhasil dibuat' ));
 	}
 
-	public function requestUpdatePerubahaUpi($id = 0, $action = 'rejected')
+	public function requestUpdatePerubahaUpi($id = 0, $action = '')
 	{
+		if (0 == $id) {
+			return ResponseNotFound();
+		}
 
+		$req = $this->request;
+		$reqArray = $req->getJSON(true);
+
+		if ($req->getMethod(TRUE) !== 'POST') {
+			return ResponseNotAllowed();
+		}
+
+		$actions = array('approved' => true, 'rejected' => true);
+
+		if (!isset($actions[$action]))
+		{
+			return ResponseBadRequest(array('message' => 'invalid action'));
+		}
+
+		$data = $this->PerubahanUpiModel->find($id);
+
+		if (null == $data)
+		{
+			return ResponseNotFound();
+		}
+
+		if ($action == $data['status'])
+		{
+			return ResponseBadRequest(array('message' => 'action already executed'));
+		}
+
+		$decodedStdClass = json_decode($data['data_perubahan'], true);
+		$upiId = (int)$data['upi_id'];
+
+		$validate = $this->_validateUpiCompleteInput($decodedStdClass);
+
+		if (is_array($validate)) {
+			return ResponseError(400, array('message' => $validate));
+		}
+
+		// set update
+		$updated = $this->_updateUpiComplete($upiId, $decodedStdClass);
+
+		if (is_array($updated)) {
+			return ResponseError(400, array('message' => 'Failed to save data: '.$updated['message']));
+		}
+		// write history
+		$this->RiwayatPerubahanUpiModel->save(array(
+			'perubahan_upi_id'	=> $id,
+			'catatan'			=> $action
+		));
+		// update approved
+		$this->PerubahanUpiModel->save(array(
+			'id'				=> $id,
+			'status'			=> $action
+		));
+
+		return ResponseOK(array('data' => 'Update request perubahan data UPI berhasil'));
 	}
 
 	public function search()

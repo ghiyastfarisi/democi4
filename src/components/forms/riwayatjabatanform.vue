@@ -8,8 +8,8 @@
                         <div class="control is-expanded">
                             <div class="select is-fullwidth">
                                 <select name="tahun_mulai" id="tahun_mulai" v-model="formValue.tahun_mulai">
-                                    <option v-for="(list, index) in 25" :value="currentYear - list" :key="index">
-                                        {{ currentYear - list }}
+                                    <option v-for="(list, index) in 25" :value="currentYear - (list - 1)" :key="index">
+                                        {{ currentYear - (list - 1) }}
                                     </option>
                                 </select>
                             </div>
@@ -22,8 +22,8 @@
                         <div class="control is-expanded">
                             <div class="select is-fullwidth">
                                 <select name="tahun_selesai" id="tahun_selesai" v-model="formValue.tahun_selesai">
-                                    <option v-for="(list, index) in 25" :value="currentYear - list" :key="index">
-                                        {{ currentYear - list }}
+                                    <option v-for="(list, index) in 25" :value="currentYear - (list - 1)" :key="index">
+                                        {{ currentYear - (list - 1)}}
                                     </option>
                                 </select>
                             </div>
@@ -81,7 +81,7 @@ export default {
             currentYear: new Date().getFullYear(),
             formValue: {
                 jabatan: '',
-                tahun_selesai: 2020,
+                tahun_selesai: new Date().getFullYear(),
                 tahun_mulai: 2010,
                 unit_kerja: '',
                 instansi: '',

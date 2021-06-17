@@ -8,8 +8,8 @@
                         <div class="control is-expanded">
                             <div class="select is-fullwidth">
                                 <select name="tahun_pelaksanaan" id="tahun_pelaksanaan" v-model="formValue.tahun_pelaksanaan">
-                                    <option v-for="(list, index) in 20" :value="currentYear - list" :key="index">
-                                        {{ currentYear - list }}
+                                    <option v-for="(list, index) in 20" :value="currentYear - (list - 1)" :key="index">
+                                        {{ currentYear - (list - 1) }}
                                     </option>
                                 </select>
                             </div>
