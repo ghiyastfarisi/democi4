@@ -120,7 +120,15 @@
                         <div class="field">
                             <label class="label"> Sertifikasi Perusahaan </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Sertifikasi Perusahaan" v-model="list.data_umum.sertifikasi_perusahaan">
+                                <Multiselect
+                                    :multiple="true"
+                                    v-model="transformed.sertifikasi"
+                                    :options="master.badges"
+                                    placeholder="Pilih Sertifikasi"
+                                    track-by="id"
+                                    label="label"
+                                    style="width:100%"
+                                />
                             </div>
                         </div>
                         <div class="field">
@@ -199,7 +207,6 @@
                                     :options="transformed.data_produksi.merk_dagang"
                                     style="width:100%"
                                 />
-                                <!-- <input class="input" type="text" placeholder="Merk Dagang" v-model="list.data_produksi.merk_dagang"> -->
                             </div>
                         </div>
                         <div class="field">
@@ -424,7 +431,6 @@ import { AutoClosePopup } from '../../lib/popup'
 import Multiselect from 'vue-multiselect'
 
 export default {
-    created() {},
     components: {
         DynamicModalForm,
         Multiselect
@@ -441,9 +447,11 @@ export default {
                 sub_district: [],
                 products: [],
                 ekspor: [],
-                domestik: []
+                domestik: [],
+                badges: []
             },
             transformed: {
+                sertifikasi: [],
                 data_produksi: {
                     produk_dihasilkan: [],
                     pemasaran_domestik: [],
@@ -480,6 +488,24 @@ export default {
         Close() {},
         addTag (newTag) {
             this.transformed.data_produksi.merk_dagang.push(newTag)
+        },
+        getBadge() {
+            const url = `${BASE_API_URL}/v1/badge/all?category=upi&transformLabel=true`
+            fetch(url)
+                .then(stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
+
+                    if (data) {
+                        this.master.badges = data
+                    }
+
+                    return true
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                })
         },
         getCountry() {
             const url = new UrlParse(`${BASE_API_URL}v1/country`, true)
@@ -564,6 +590,7 @@ export default {
             payload.data_produksi.pemasaran_domestik = this.transformArrayObject(this.transformed.data_produksi.pemasaran_domestik)
             payload.data_produksi.pemasaran_ekspor = this.transformArrayObject(this.transformed.data_produksi.pemasaran_ekspor)
             payload.data_produksi.merk_dagang = this.transformed.data_produksi.merk_dagang.join(',')
+            payload.data_umum.sertifikasi = this.transformArrayObject(this.transformed.sertifikasi);
 
             delete payload.data_produksi.id
             delete payload.data_produksi.upi_id
@@ -632,6 +659,12 @@ export default {
                         })
                         this.transformed.data_produksi.merk_dagang = data.data_produksi.merk_dagang.split(",")
                         this.list = data
+                        this.transformed.sertifikasi = data.data_umum.sertifikasi.map(el => {
+                            return {
+                                id: el.badge_id,
+                                label: el.name
+                            }
+                        })
                         this.reloadLocation(data)
                     } else {
                         this.showError = true
@@ -710,6 +743,7 @@ export default {
     },
     mounted() {
         let vm = this
+        vm.getBadge()
         vm.getProduct()
         vm.getRegency()
         vm.getCountry()

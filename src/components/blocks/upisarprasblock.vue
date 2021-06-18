@@ -4,11 +4,11 @@
             <div class="block">
                 <nav class="level">
                     <div class="level-left">
-                        <p class="title is-4 is-spaced">Data Kapasitas Sarana dan Prasarana</p>
+                        <p class="title is-4 is-spaced">Data SarPras</p>
                     </div>
                 </nav>
                 <div class="field">
-                    <div class="control">
+                    <div class="control" style="overflow-x:scroll;">
                         <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>

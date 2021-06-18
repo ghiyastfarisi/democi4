@@ -3,16 +3,19 @@
 use App\Controllers\BaseController;
 use App\Models\PembinaMutuModel;
 use App\Models\PembinaMutuJabatanModel;
+use App\Models\PembinaMutuKeahlianModel;
 
 class PembinaMutu extends BaseController
 {
 	protected $PembinaMutuModel;
+	protected $PembinaMutuKeahlianModel;
 	protected $validation;
 	protected $db;
 
 	function __construct()
 	{
 		$this->PembinaMutuModel = new PembinaMutuModel();
+		$this->PembinaMutuKeahlianModel = new PembinaMutuKeahlianModel();
 		$this->validation = \Config\Services::validation();
 		$this->db = \Config\Database::connect();
 	}
@@ -120,6 +123,10 @@ class PembinaMutu extends BaseController
 		}
 
 		$resp = $this->PembinaMutuModel->find($id);
+		$resp['keahlian'] = $this->PembinaMutuKeahlianModel
+			->select('tbl_badge.category, tbl_badge.name, tbl_badge.code, tbl_pembina_mutu_keahlian.id, tbl_pembina_mutu_keahlian.badge_id')
+			->join('tbl_badge', 'tbl_badge.id = tbl_pembina_mutu_keahlian.badge_id')
+			->where('pembina_mutu_id', $id)->findAll();
 
 		$transformed = array(
 			'data' => $resp
@@ -171,8 +178,6 @@ class PembinaMutu extends BaseController
 			'nama_lengkap' 	=> 'required|min_length[3]',
 			'nip' 			=> 'required|min_length[11]',
 			'foto_profil' 	=> 'required|min_length[3]|valid_url',
-			'keahlian' 		=> 'required|min_length[3]',
-			'deskripsi'		=> 'required|min_length[3]',
 			'no_hp'			=> 'required|min_length[10]'
 		], [
 			'nama_lengkap' => [
@@ -184,14 +189,6 @@ class PembinaMutu extends BaseController
 				'min_length' 	=> 'minimal 11 karakter'
 			],
 			'foto_profil' => [
-				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 3 karakter'
-			],
-			'keahlian' => [
-				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 3 karakter'
-			],
-			'deskripsi' => [
 				'required' 		=> 'wajib diisi',
 				'min_length' 	=> 'minimal 3 karakter'
 			],
@@ -242,9 +239,6 @@ class PembinaMutu extends BaseController
 			'nama_lengkap' 	=> 'required|min_length[3]',
 			'nip' 			=> 'required|min_length[11]',
 			'no_hp'			=> 'required|min_length[10]',
-			'keahlian'		=> 'required|min_length[3]',
-			'foto_profil'	=> 'min_length[3]|valid_url',
-			'deskripsi'		=> 'min_length[5]',
 			'user_id'		=> 'required'
 		);
 		$vMessages = array(
@@ -256,19 +250,9 @@ class PembinaMutu extends BaseController
 				'required' 		=> 'wajib diisi',
 				'min_length' 	=> 'minimal 11 karakter'
 			],
-			'keahlian' => [
-				'required' 		=> 'wajib diisi',
-				'min_length' 	=> 'minimal 3 karakter'
-			],
 			'no_hp' => [
 				'required' 		=> 'wajib diisi',
 				'min_length' 	=> 'minimal 10 karakter'
-			],
-			'foto_profil' => [
-				'min_length' 	=> 'minimal 3 karakter'
-			],
-			'deskripsi' => [
-				'min_length' 	=> 'minimal 5 karakter'
 			],
 			'user_id' => [
 				'required' 		=> 'wajib diisi',
@@ -281,7 +265,7 @@ class PembinaMutu extends BaseController
 		$validationSetMessages = array();
 
 		foreach ($reqArray as $key => $val) {
-			if ($vRules[$key] !== null && $vMessages[$key] !== null) {
+			if (isset($vRules[$key]) && isset($vMessages[$key])) {
 				$validationSetRules[$key] = $vRules[$key];
 				$validationSetMessages[$key] = $vMessages[$key];
 			}
@@ -290,10 +274,46 @@ class PembinaMutu extends BaseController
 		$this->validation->setRules($validationSetRules, $validationSetMessages);
 
 		$reqArray['id'] = $id;
+		$keahlian = $reqArray['keahlian'];
+		$reqArray['keahlian'] = '';
 
 		$resp = $this->PembinaMutuModel->save($reqArray);
 
+		if (count($keahlian) > 0)
+		{
+			$this->_deleteAllPembinaMutuKeahlian($id);
+			foreach($keahlian as $v)
+			{
+				if ((int)$v > 0)
+				{
+					$this->_upsertPembinaMutuKeahlian($id, $v);
+				}
+			}
+		}
+
 		return ResponseOK(array( 'message' => 'user updated' ));
+	}
+
+	public function _deleteAllPembinaMutuKeahlian($pmId)
+	{
+		return $this->PembinaMutuKeahlianModel->where([ 'pembina_mutu_id' => $pmId ])->delete();
+	}
+
+	public function _upsertPembinaMutuKeahlian($pmId, $badgeId)
+	{
+		$badge = $this->PembinaMutuKeahlianModel->where(['pembina_mutu_id' => $pmId, 'badge_id' => $badgeId ])->get()->getRow();
+		$payload = array(
+			'pembina_mutu_id' 	=> $pmId,
+			'badge_id'			=> $badgeId,
+			'deleted_at'		=> NULL
+		);
+
+		if (null!=$badge)
+		{
+			$payload['id'] = $badge->id;
+		}
+
+		return $this->PembinaMutuKeahlianModel->save($payload);
 	}
 
 	public function delete($id = 0) {

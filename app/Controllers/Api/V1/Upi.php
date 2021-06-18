@@ -12,15 +12,16 @@ use App\Models\UpiSarprasModel;
 use App\Models\UpiTenagaKerjaModel;
 use App\Models\PerubahanUpiModel;
 use App\Models\RiwayatPerubahanUpiModel;
+use App\Models\UpiSertifikasiModel;
 
 class Upi extends BaseController
 {
 	protected $UpiModel;
 	protected $PerubahanUpiModel;
 	protected $RiwayatPerubahanUpiModel;
+	protected $UpiSertifikasiModel;
 	protected $validation;
 	protected $db;
-	protected $sertifikasiPerusahaan = array('SKP', 'HACCP', 'HALAL', 'BRC', 'ISO 9001');
 	protected $upiDataUmum = array(
 		'validation' => [
 			'nama_perusahaan' 			=> 'required|min_length[5]',
@@ -29,10 +30,7 @@ class Upi extends BaseController
 			'no_kusuka' 				=> 'required|min_length[5]',
 			'npwp'						=> 'required|numeric|min_length[15]|max_length[15]',
 			'nib'						=> 'required|min_length[5]',
-			'sertifikasi_perusahaan'	=> 'required|min_length[3]',
 			'sumber_permodalan' 		=> 'required|min_length[3]|in_list[PMDN,PMA]',
-			'deskripsi' 				=> 'if_exist|min_length[5]',
-			'website' 					=> 'if_exist|min_length[5]',
 			'nama_pemilik' 				=> 'required|min_length[5]',
 			'nama_kontak_upi' 			=> 'required|min_length[5]',
 			'foto_pabrik' 				=> 'if_exist|valid_url',
@@ -66,20 +64,10 @@ class Upi extends BaseController
 				'required' 		=> 'wajib diisi',
 				'min_length'	=> 'minimum 5 karakter'
 			],
-			'sertifikasi_perusahaan'=> [
-				'required' 		=> 'wajib diisi',
-				'min_length'	=> 'minimum 3 karakter'
-			],
 			'sumber_permodalan'=> [
 				'required' 		=> 'wajib diisi',
 				'min_length'	=> 'wajib diisi',
 				'in_list'		=> 'input tidak valid'
-			],
-			'deskripsi'=> [
-				'min_length'	=> 'minimum 5 karakter'
-			],
-			'website'=> [
-				'min_length'	=> 'minimum 5 karakter'
 			],
 			'nama_pemilik'=> [
 				'required' 		=> 'wajib diisi',
@@ -248,6 +236,7 @@ class Upi extends BaseController
 		$this->UpiModel = new UpiModel();
 		$this->PerubahanUpiModel = new PerubahanUpiModel();
 		$this->RiwayatPerubahanUpiModel = new RiwayatPerubahanUpiModel();
+		$this->UpiSertifikasiModel = new UpiSertifikasiModel();
 		$this->validation = \Config\Services::validation();
 		$this->db = db_connect();
 		$this->upiCompleteStructure = array(
@@ -384,6 +373,11 @@ class Upi extends BaseController
 			}
 		}
 
+		$resp['sertifikasi'] = $this->UpiSertifikasiModel
+			->select('tbl_badge.category, tbl_badge.name, tbl_badge.code, tbl_upi_sertifikasi.id, tbl_upi_sertifikasi.badge_id')
+			->join('tbl_badge', 'tbl_badge.id = tbl_upi_sertifikasi.badge_id')
+			->where('upi_id', $id)->findAll();
+
 		$transformed = array(
 			'data' => $resp
 		);
@@ -460,6 +454,11 @@ class Upi extends BaseController
 			$transformed['data_produksi']['pemasaran_domestik'] = $upiPemasaranDomestik;
 			$transformed['data_sarpras'] = $upiSarpras;
 			$transformed['data_tenaga_kerja'] = $this->_cleanField($upiTenagaKerja);
+
+			$transformed['data_umum']['sertifikasi'] = $this->UpiSertifikasiModel
+				->select('tbl_badge.category, tbl_badge.name, tbl_badge.code, tbl_upi_sertifikasi.id, tbl_upi_sertifikasi.badge_id')
+				->join('tbl_badge', 'tbl_badge.id = tbl_upi_sertifikasi.badge_id')
+				->where('upi_id', $upiId)->findAll();
 		}
 
 		return $transformed;
@@ -761,9 +760,12 @@ class Upi extends BaseController
 			}
 		}
 
+		$sertifikasi = $reqArray['data_umum']['sertifikasi'];
+
 		$this->db->transBegin();
 		$now = date("Y-m-d H:i:s");
 		// update data umum to tbl_upi
+		unset($reqArray['data_umum']['sertifikasi']);
 		$insertDataUpi = $reqArray['data_umum'];
 		$insertDataUpi['updated_at'] = $now;
 		// TODO: inject user id while create new upi data
@@ -923,6 +925,19 @@ class Upi extends BaseController
 		}
 		if (count($updateBatchDomestikProduksiPemasaran)>0) {
 			$this->db->table('tbl_produksi_pemasaran')->updateBatch($updateBatchDomestikProduksiPemasaran, 'id');
+		}
+
+		// upsert sertifikasi upi
+		if (isset($sertifikasi) && count($sertifikasi) > 0)
+		{
+			$this->_deleteAllUpiSertifikasi($upiId);
+			foreach($sertifikasi as $v)
+			{
+				if ((int)$v > 0)
+				{
+					$this->_upsertUpiSertifikasi($upiId, $v);
+				}
+			}
 		}
 
 		if ($this->db->transStatus() === FALSE) {
@@ -1139,5 +1154,27 @@ class Upi extends BaseController
 		);
 
 		return ResponseOK($transformed);
+	}
+
+	function _upsertUpiSertifikasi($upiId, $badgeId)
+	{
+		$badge = $this->UpiSertifikasiModel->where(['upi_id' => $upiId, 'badge_id' => $badgeId ])->get()->getRow();
+		$payload = array(
+			'upi_id' 		=> $upiId,
+			'badge_id'		=> $badgeId,
+			'deleted_at'	=> NULL
+		);
+
+		if (null!=$badge)
+		{
+			$payload['id'] = $badge->id;
+		}
+
+		return $this->UpiSertifikasiModel->save($payload);
+	}
+
+	function _deleteAllUpiSertifikasi($upiId)
+	{
+		return $this->UpiSertifikasiModel->where([ 'upi_id', $upiId ])->delete();
 	}
 }

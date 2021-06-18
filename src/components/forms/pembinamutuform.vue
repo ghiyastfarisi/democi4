@@ -22,7 +22,15 @@
             <div class="field">
                 <label class="label">Keahlian</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="Keahlian" v-model="keahlian">
+                    <Multiselect
+                        :multiple="true"
+                        v-model="selected.keahlian"
+                        :options="master.badges"
+                        placeholder="Pilih Keahlian"
+                        track-by="id"
+                        label="label"
+                        style="width:100%"
+                    />
                 </div>
             </div>
             <div class="field">
@@ -47,10 +55,20 @@
 
 <script>
 import { AutoClosePopup } from '../../lib/popup'
+import Multiselect from 'vue-multiselect'
 
 export default {
+    components: {
+        Multiselect
+    },
     data: function() {
         return {
+            master: {
+                badges: []
+            },
+            selected: {
+                keahlian: []
+            },
             nama_lengkap: '',
             nip: '',
             no_hp: '',
@@ -70,7 +88,7 @@ export default {
                     fetchEditUrl: '',
                     updateUrl: '',
                     extra: {
-                        userId: 0
+                        pembinaMutuId: 0
                     }
                 }
             }
@@ -79,8 +97,10 @@ export default {
     created() {
         let fd = this.formDep
 
+        this.setMaster()
+
         if (fd.isEdit) {
-            this.setEditForm(fd.extra.userId)
+            this.setEditForm()
         }
     },
     methods: {
@@ -96,6 +116,22 @@ export default {
         Close() {
             this.$emit('toggle-close')
         },
+        setMaster() {
+            const url = `${BASE_API_URL}/v1/badge/all?category=pm&transformLabel=true`
+            fetch(url)
+                .then(stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
+
+                    if (data) {
+                        this.master.badges = data
+                    }
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                })
+        },
         setEditForm() {
             const url = `${BASE_API_URL}${this.formDep.fetchEditUrl}`
             fetch(url)
@@ -104,10 +140,17 @@ export default {
                     const { data } = resp
 
                     if (data) {
+                        if (data.keahlian.length > 0) {
+                            this.selected.keahlian = data.keahlian.map(el => {
+                                return {
+                                    id: el.badge_id,
+                                    label: el.name
+                                }
+                            })
+                        }
                         this.nama_lengkap = data.nama_lengkap
                         this.nip = data.nip
                         this.no_hp = data.no_hp
-                        this.keahlian = data.keahlian
                         this.deskripsi = data.deskripsi
                         this.foto_profil = data.foto_profil
                     }
@@ -158,12 +201,14 @@ export default {
         },
         updateData() {
             const url = `${BASE_API_URL}${this.formDep.updateUrl}`
+
+            this.keahlian = this.selected.keahlian.map(el => el.id)
+
             const payload = {
                 nama_lengkap: this.nama_lengkap,
                 nip: this.nip,
                 no_hp: this.no_hp,
-                keahlian: this.keahlian,
-                user_id: this.formDep.extra.userId
+                keahlian: this.keahlian
             }
             if (this.foto_profil !== '') {
                 payload.foto_profil = this.foto_profil

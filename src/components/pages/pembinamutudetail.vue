@@ -101,7 +101,7 @@
                                     isEdit: true,
                                     fetchEditUrl: `v1/pembina-mutu/${this.pembinaMutuData.id}`,
                                     updateUrl: `v1/pembina-mutu/update/${this.pembinaMutuData.id}`,
-                                    extra: { userId: parseInt(this.uid) }
+                                    extra: { pembinaMutuId: parseInt(this.uid) }
                                 }"
                                 @toggle-close="showEditPembinaMutu=!showEditPembinaMutu"
                                 @update-table="getData"
@@ -128,7 +128,9 @@
                             <div class="field">
                                 <label class="label"> Keahlian </label>
                                 <div class="control">
-                                    {{ pembinaMutuData.keahlian }}
+                                    <span v-for="list in pembinaMutuData.keahlian" :key="list.id">
+                                        <img :src="`${baseUrl}/asset/${list.category}/${list.code}.png`" style="width:100px;height:100px;margin-right:15px;">
+                                    </span>
                                 </div>
                             </div>
                             <div class="field">
@@ -313,6 +315,7 @@ export default {
     },
     data: function() {
         return {
+            baseUrl: BASE_URL,
             showLoading: true,
             showError: false,
             showData: false,

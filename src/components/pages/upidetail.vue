@@ -19,7 +19,7 @@
                 }"
             />
         </div>
-        <div class="column is-6">
+        <div class="column is-half-desktop">
             <DynamicBlock
                 v-bind:block-dep="{
                     ajaxUri: `v1/sarpras/upi/${this.uid}`,
@@ -27,7 +27,7 @@
                 }"
             />
         </div>
-        <div class="column is-6">
+        <div class="column is-half-desktop">
             <DynamicBlock
                 v-bind:block-dep="{
                     ajaxUri: `v1/tenaga-kerja/upi/${this.uid}`,

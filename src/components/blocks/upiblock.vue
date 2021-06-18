@@ -17,7 +17,14 @@
                 </nav>
                 <div class="columns is-multiline">
                     <div class="column is-12">
-                        <img :src="list.foto_pabrik" style="max-width:400px;max-height:400px;">
+                        <figure class="image">
+                            <img v-if="list.foto_pabrik!=''" :src="list.foto_pabrik" style="max-width:400px;max-height:400px;">
+                        </figure>
+                    </div>
+                    <div class="column is-12">
+                        <span v-for="list in list.sertifikasi" :key="list.id">
+                            <img :src="`${baseUrl}/asset/${list.category}/${list.code}.png`" style="width:100px;height:100px;margin-right:15px;">
+                        </span>
                     </div>
                     <div class="column is-6">
                         <div class="field">
@@ -79,12 +86,14 @@
                                 {{ list.nama_kontak_upi }}
                             </div>
                         </div>
-                        <div class="field">
+                        <!-- <div class="field">
                             <label class="label"> Sertifikasi Perusahaan </label>
                             <div class="control">
-                                {{ list.sertifikasi_perusahaan }}
+                                <span v-for="list in list.sertifikasi" :key="list.id">
+                                    <img :src="`${baseUrl}/asset/${list.category}/${list.code}.png`" style="width:100px;height:100px;margin-right:15px;">
+                                </span>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="field">
                             <label class="label"> Sumber Permodalan </label>
                             <div class="control">
@@ -120,6 +129,7 @@ export default {
     },
     data: function() {
         return {
+            baseUrl: BASE_URL,
             showEditAkun: false,
             showError: false,
             showData: false,

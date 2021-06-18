@@ -34,7 +34,14 @@
             <div class="field">
                 <label class="label">Keahlian</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="Keahlian" v-model="keahlian">
+                    <Multiselect
+                        :multiple="true"
+                        v-model="transformed.data_produksi.pemasaran_ekspor"
+                        :options="master.ekspor"
+                        track-by="id"
+                        label="label"
+                        style="width:100%"
+                    />
                 </div>
             </div>
             <div class="field">

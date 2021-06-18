@@ -77,7 +77,6 @@
 <script>
 import UrlParse from 'url-parse'
 import DynamicModalForm from '../forms/dynamicmodalform.vue'
-// import TableDict from '../lib/tabledictionary'
 import Swal from 'sweetalert2'
 import { HandleDelete, ParseError } from '../../lib/form'
 
@@ -177,7 +176,6 @@ export default {
                     } else {
                         this.showError = true
                     }
-                    console.log(this.lists)
                 })
                 .catch(err => {
                     console.error('Err while FetchAjax:', err)

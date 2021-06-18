@@ -14,7 +14,6 @@ class UpiModel extends Model {
                                         'nib',
                                         'no_kusuka',
                                         'npwp',
-                                        'sertifikasi_perusahaan',
                                         'sumber_permodalan',
                                         'deskripsi',
                                         'website',
