@@ -124,7 +124,6 @@ export default {
                     if (data) {
                         this.iuname = data.username
                         this.iloginStatus = data.login_status
-                        console.log(data)
                     }
                 })
                 .catch(err => {

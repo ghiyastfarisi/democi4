@@ -1,7 +1,21 @@
 <template>
     <div class="box">
         <div class="block">
-            <form class="form-name-container" @submit.prevent="submitData">
+            <div v-if="!showData && !showError" class="has-text-centered">
+                <span class="icon is-large">
+                    <i class="fas fa-2x fa-cog fa-spin"></i>
+                </span>
+                <span class="title is-3">Loading Data</span>
+            </div>
+            <div v-cloak v-if="showError" class="notification is-danger">
+                <span class="icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </span>
+                <span>
+                    UPI not found
+                </span>
+            </div>
+            <form v-cloak v-if="showData" class="form-name-container" @submit.prevent="submitData">
                 <div class="columns is-multiline">
                     <div class="column is-6">
                         <div class="field">
@@ -440,6 +454,7 @@ export default {
             showEditAkun: false,
             showError: false,
             showData: false,
+            backUrl: `${BASE_URL}/web/upi/get/${this.blockDep.upiId}`,
             master: {
                 province: [],
                 regency: [],
@@ -578,7 +593,7 @@ export default {
                     this.list.data_umum.koordinat_lokasi = latlong
                 },
                 error => {
-                    console.log(error.message);
+                    console.error(error.message);
                 },
             )
         },
@@ -600,13 +615,18 @@ export default {
 
             this.editData(payload)
         },
-        closeAndPopup(title='', body ='', timeout=900) {
+        closeAndPopup(title='', body ='', timeout=900, redirect=false) {
             AutoClosePopup({
                 title,
                 body,
                 timeout
             })
-            this.getData()
+
+            const getBack = this.backUrl
+
+            if (redirect) {
+                setTimeout(function() { window.location.replace(getBack) } , timeout+250)
+            }
         },
         errorPopup(message) {
             AutoClosePopup({
@@ -627,7 +647,7 @@ export default {
                 )
             }
 
-            return this.closeAndPopup(result.message)
+            return this.closeAndPopup(result.message, '', 900, true)
         },
         getData() {
             const url = `${BASE_API_URL}${this.blockDep.ajaxUri}`
@@ -637,7 +657,7 @@ export default {
                 .then(resp => {
                     const { data } = resp
 
-                    if (data !== null) {
+                    if (data && data !== null) {
                         this.showData = true
                         this.transformed.data_produksi.produk_dihasilkan = data.data_produksi.produk_dihasilkan.map(el => {
                             return {
@@ -675,6 +695,7 @@ export default {
                 .catch(err => {
                     console.error('Err while FetchAjax:', err)
                     console.error(err)
+                    this.showError = true
                 })
         },
         reloadLocation() {

@@ -43,6 +43,15 @@
                             </div>
                         </div>
                         <div class="field">
+                            <div class="control">
+                                <a :href="list.website">
+                                    <span class="icon">
+                                        <i class="fas fa-link"></i>
+                                    </span> Link Website
+                                </a>
+                            </div>
+                        </div>
+                        <div class="field">
                             <label class="label"> Koordinat Lokasi </label>
                             <div class="control">
                                 {{ list.koordinat_lokasi && list.koordinat_lokasi !== '' ? list.koordinat_lokasi : '-' }}
@@ -80,24 +89,10 @@
                                 {{ list.nama_kontak_upi }}
                             </div>
                         </div>
-                        <!-- <div class="field">
-                            <label class="label"> Sertifikasi Perusahaan </label>
-                            <div class="control">
-                                <span v-for="list in list.sertifikasi" :key="list.id">
-                                    <img :src="`${baseUrl}/asset/${list.category}/${list.code}.png`" style="width:100px;height:100px;margin-right:15px;">
-                                </span>
-                            </div>
-                        </div> -->
                         <div class="field">
                             <label class="label"> Sumber Permodalan </label>
                             <div class="control">
                                 {{ list.sumber_permodalan }}
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label class="label"> Website </label>
-                            <div class="control">
-                                {{ list.website && list.website !== '' ? list.website : '-' }}
                             </div>
                         </div>
                         <div class="field">

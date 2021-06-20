@@ -11,7 +11,7 @@
                     <label class="label"> Merk Dagang </label>
                     <div class="control">
                         <div class="tags are-medium">
-                            <span class="tag" v-for="(l, i) in list.merk_dagang_arr" :key="i">
+                            <span class="tag is-info is-light" v-for="(l, i) in list.merk_dagang_arr" :key="i">
                                 {{ l }}
                             </span>
                         </div>
@@ -45,7 +45,7 @@
                     <label class="label"> Produk yang Dihasilkan </label>
                     <div class="control">
                         <div class="tags are-medium">
-                            <span class="tag" v-for="(l, i) in list.produk_dihasilkan" :key="i">
+                            <span class="tag is-info is-light" v-for="(l, i) in list.produk_dihasilkan" :key="i">
                                 {{ l.nama_produk }}
                             </span>
                         </div>
@@ -55,7 +55,7 @@
                     <label class="label"> Wilayah Pemasaran Domestik </label>
                     <div class="control">
                         <div class="tags are-medium">
-                            <span class="tag" v-for="(l, i) in list.pemasaran_domestik" :key="i">
+                            <span class="tag is-info is-light" v-for="(l, i) in list.pemasaran_domestik" :key="i">
                                 {{ l.name }}
                             </span>
                         </div>
@@ -65,7 +65,7 @@
                     <label class="label"> Negara Pemasaran </label>
                     <div class="control">
                         <div class="tags are-medium">
-                            <span class="tag" v-for="(l, i) in list.pemasaran_mancanegara" :key="i">
+                            <span class="tag is-info is-light" v-for="(l, i) in list.pemasaran_mancanegara" :key="i">
                                 {{ l.name_id !== '' ? l.name_id : l.name }}
                             </span>
                         </div>

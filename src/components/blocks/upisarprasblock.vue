@@ -56,6 +56,17 @@ export default {
         }
     },
     methods: {
+        notAllNull(data){
+            let isError = true
+
+            data.forEach(d => {
+                if (d.upi_id !== null) {
+                    isError = false
+                }
+            })
+
+            return isError
+        },
         numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         },
@@ -68,8 +79,12 @@ export default {
                     const { data } = resp
 
                     if (data && data !== null) {
-                        this.showData = true
-                        this.list = data
+                        if (!this.notAllNull(data)) {
+                            this.showData = true
+                            this.list = data
+                        } else {
+                            this.showError = true
+                        }
                     } else {
                         this.showError = true
                     }

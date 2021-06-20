@@ -371,12 +371,12 @@ class Upi extends BaseController
 					'sub_district' 	=> $locationModel->GetSubDistrictById($resp['kelurahan_desa'])
 				);
 			}
+			$resp['sertifikasi'] = $this->UpiSertifikasiModel
+				->select('tbl_badge.category, tbl_badge.name, tbl_badge.code, tbl_upi_sertifikasi.id, tbl_upi_sertifikasi.badge_id')
+				->join('tbl_badge', 'tbl_badge.id = tbl_upi_sertifikasi.badge_id')
+				->where('upi_id', $id)->findAll();
 		}
 
-		$resp['sertifikasi'] = $this->UpiSertifikasiModel
-			->select('tbl_badge.category, tbl_badge.name, tbl_badge.code, tbl_upi_sertifikasi.id, tbl_upi_sertifikasi.badge_id')
-			->join('tbl_badge', 'tbl_badge.id = tbl_upi_sertifikasi.badge_id')
-			->where('upi_id', $id)->findAll();
 
 		$transformed = array(
 			'data' => $resp

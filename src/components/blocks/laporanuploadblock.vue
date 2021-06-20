@@ -211,7 +211,6 @@ export default {
             this.showModalImage = !this.showModalImage
         },
         reloadPage(){
-            console.log('---reload hit!')
             this.getData()
         },
         getData() {
