@@ -12,7 +12,7 @@
             <div v-cloak v-if="showData">
                 <nav class="level">
                     <div class="level-left">
-                        <p class="title is-4 is-spaced">Data Umum</p>
+                        <p class="title is-4 is-spaced">{{ list.nama_perusahaan }}</p>
                     </div>
                 </nav>
                 <div class="columns is-multiline">
@@ -27,12 +27,6 @@
                         </span>
                     </div>
                     <div class="column is-6">
-                        <div class="field">
-                            <label class="label"> Nama Perusahaan </label>
-                            <div class="control">
-                                {{ list.nama_perusahaan }}
-                            </div>
-                        </div>
                         <div class="field">
                             <label class="label"> Alamat Pabrik </label>
                             <div class="control">

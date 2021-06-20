@@ -1,3 +1,4 @@
+// this is example page of using table.vue
 <template>
     <div class="columns is-multiline">
         <div class="column is-12">
@@ -6,7 +7,13 @@
                     valid: true,
                     displayLink: 'Buat UPI Baru',
                     useLink: {
-                        url: addUrl
+                        title: 'Form User Pembina Mutu',
+                        submit: 'Submit Data',
+                        modalType: 'userform',
+                        createUrl: `v1/pendidikan/create/pembina-mutu/${this.pembinaMutuData.id}`,
+                        extra: {
+                            pembinaMutuId: parseInt(this.pembinaMutuData.id)
+                        }
                     }
                 }"
                 :tableDep="{
@@ -38,6 +45,22 @@
                             type: 'setting',
                             content: [
                                 {
+                                    text: 'View',
+                                    class: 'is-info is-light',
+                                    useLink: {
+                                        path: '/web/upi/get/{id}',
+                                        parser: [ { replace: 'id', with: 'id' } ]
+                                    },
+                                },
+                                {
+                                    icon: 'fas fa-edit',
+                                    class: 'is-primary',
+                                    type: 'edit',
+                                    useModal: {
+                                        sourceId: 'id'
+                                    },
+                                },
+                                {
                                     icon: 'fas fa-times',
                                     class: 'is-danger',
                                     type: 'delete',
@@ -63,8 +86,28 @@ export default {
     },
     data: function() {
         return {
-            addUrl: `${BASE_URL}/web/upi/create`
+            showError: false,
+            showData: false,
+            showPendidikan: false,
+            showJabatan: false,
+            showPelatihan: false,
+            showKunjungan: false,
+            showEditAkun: false,
+            showEditPembinaMutu: false,
+            userData: {
+                role: 'pembina_mutu'
+            },
+            pembinaMutuData: {
+                nama_lengkap: '',
+                nip: '',
+                no_hp: '',
+                keahlian: '',
+                deskripsi: '-'
+            },
         }
-    }
+    },
+    props: {},
+    methods: {},
+    mounted() {}
 };
 </script>

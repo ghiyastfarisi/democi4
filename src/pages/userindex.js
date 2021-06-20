@@ -1,15 +1,11 @@
 import Vue from 'vue';
-import Ajaxtable from '../components/ajaxtable';
+import UserIndex from '../components/pages/userindex';
 
 new Vue({
     el: '#vuec',
     render: function (createElement) {
-        return createElement(Ajaxtable,  {
-            props: {
-                fieldType: 'user',
-                ajaxUri: 'v1/user/all',
-                showLimit: 10
-            }
+        return createElement(UserIndex,  {
+            props: {}
         })
     }
 })

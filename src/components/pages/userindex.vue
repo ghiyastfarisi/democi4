@@ -4,39 +4,31 @@
             <DynamicTable
                 :enableAdd="{
                     valid: true,
-                    displayLink: 'Buat Laporan Baru',
+                    displayLink: 'Buat User Baru',
                     useModal: {
-                        title: 'Buat Laporan Baru',
-                        submit: 'Simpan Data',
-                        modalType: 'addlaporan',
-                        createUrl: `v1/kunjungan/create`,
+                        title: 'Form User Pembina Mutu',
+                        submit: 'Submit Data',
+                        modalType: 'userform',
+                        createUrl: `register`,
                         extra: {}
                     }
                 }"
                 :tableDep="{
-                    ajaxUri: `v1/kunjungan/all?getDetailPembinaMutu=true`,
-                    deleteUrl: 'v1/kunjungan/',
+                    ajaxUri: `v1/user/all`,
+                    deleteUrl: `v1/user/`,
                     showLimit: 25,
                     renderObject: [
                         {
-                            fieldName: 'Kegiatan',
-                            objectField: 'kegiatan',
+                            fieldName: 'Username (Email)',
+                            objectField: 'username',
                             link: {
-                                path: '/web/laporan/get/{id}',
+                                path: '/web/user/get/{id}',
                                 parser: [ { replace: 'id', with: 'id' } ]
                             }
                         },
                         {
-                            fieldName: 'UPI',
-                            objectField: 'nama_upi'
-                        },
-                        {
-                            fieldName: 'Provinsi',
-                            objectField: 'nama_provinsi'
-                        },
-                        {
-                            fieldName: 'Tanggal',
-                            objectField: 'tanggal_kunjungan'
+                            fieldName: 'Status',
+                            objectField: 'login_status'
                         },
                         {
                             fieldName: 'Setting',
@@ -64,7 +56,10 @@ import DynamicTable from '../dynamic/table'
 
 export default {
     components: {
-        DynamicTable,
+        DynamicTable
+    },
+    data: function() {
+        return {}
     }
 };
 </script>

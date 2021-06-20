@@ -15,22 +15,27 @@
             </span>
         </div>
         <div class="box">
-            <!-- <div v-if="enableAdd.valid" class="mb-4">
+            <div v-if="enableAdd.valid" class="mb-4">
                 <a href="javascript:void(0)" :class="{ 'is-loading': isLoading }" class="button is-success is-outlined" @click="UpdateTable">
                     <span class="icon">
                         <i class="fas fa-sync"></i>
                     </span>
                 </a>
-                <a href="javascript:void(0)" class="button is-primary" @click="ToggleModal">
+                <a href="javascript:void(0)" class="button is-primary" @click="AddClick">
                     <span class="icon">
                         <i class="fas fa-plus"></i>
                     </span>
                     <span>
-                        {{ enableAdd.addDep.title }}
+                        {{ enableAdd.displayLink }}
                     </span>
                 </a>
-                <DynamicModalForm v-bind:modal-dep="enableAdd.addDep" v-if="showModal" @toggle-close="ToggleModal" @update-table="UpdateTable"/>
-            </div> -->
+                <DynamicModalForm
+                    v-bind:modal-dep="enableAdd.useModal"
+                    v-if="showModal"
+                    @toggle-close="ToggleModal"
+                    @update-table="UpdateTable"
+                />
+            </div>
             <h2 class="title is-6">Showing {{ show }} of {{ total }} data</h2>
             <div class="table-container">
                 <table class="table is-fullwidth is-striped">
@@ -42,14 +47,35 @@
                     </thead>
                     <tbody>
                         <tr v-for="(list, listIndex) in lists" :key="list.id">
-                            <th>{{ startOrder + listIndex }}</th>
+                            <td>{{ startOrder + listIndex }}</td>
                             <td v-for="(field, index) in tableDep.renderObject" :key="index">
-                                <span v-if="field.link">
+                                <template v-if="field.link">
                                     <a :href="list[field.objectField].link">{{ list[field.objectField].value }}</a>
-                                </span>
-                                <span v-else>
+                                </template>
+                                <template v-else-if="field.type && field.type === 'setting'">
+                                    <span v-for="(fc, fci) in field.content" :key="fci">
+                                        <template v-if="fc.useLink">
+                                            <a :href="fc.useLink.url" :class="fc.class" class="button is-small mb-1 mr-1">
+                                                <span v-if="fc.icon" class="icon">
+                                                    <i :class="fc.icon"></i>
+                                                </span>
+                                                <span v-if="fc.text">{{fc.text}}</span>
+                                            </a>
+                                        </template>
+                                        <template v-else-if="fc.useModal">
+                                            <a @click="SettingModal(fc.type, list[fc.useModal.sourceId])" :class="fc.class" class="button is-small mb-1 mr-1" href="javascript:void(0)">
+                                                <span v-if="fc.icon" class="icon">
+                                                    <i :class="fc.icon"></i>
+                                                </span>
+                                                <span v-if="fc.text">{{fc.text}}</span>
+                                            </a>
+                                        </template>
+                                        <template v-else></template>
+                                    </span>
+                                </template>
+                                <template v-else>
                                     {{ list[field.objectField] }}
-                                </span>
+                                </template>
                             </td>
                         </tr>
                     </tbody>
@@ -64,12 +90,12 @@
                     </li>
                 </ul>
             </nav>
-            <!-- <DynamicModalForm
-                v-if="enableEdit.valid && showModalEdit"
-                v-bind:modal-dep="enableEdit.editDep"
+            <DynamicModalForm
+                v-if="enableEdit.fetchEditUrl != '' && showModalEdit"
+                v-bind:modalDep="enableEdit"
                 @toggle-close="showModalEdit=!showModalEdit"
                 @update-table="UpdateTable"
-            /> -->
+            />
         </div>
     </div>
 </template>
@@ -108,18 +134,47 @@ export default {
     },
     props: {
         tableDep: {
-            renderObject: Array,
-            ajaxUri: String,
-            showLimit: Number,
-            // fieldType: String,
-            // deleteUrl: String,
-            // detailUrl: String,
-            // enableEdit: {
-            //     valid: true
-            // }
+            type: Object,
+            default: function() {
+                return {
+                    renderObject: Array,
+                    ajaxUri: String,
+                    showLimit: Number
+                }
+            }
         },
+        enableAdd: {
+            type: Object,
+            default: function() {
+                return {
+                    valid: false,
+                    displayLink: 'Tambah Data Baru',
+                    useModal: null,
+                    useLink: null
+                }
+            }
+        },
+        enableEdit: {
+            type: Object,
+            default: function() {
+                return {
+                    fetchEditUrl: '',
+                    updateUrl: '',
+                    modalType: '',
+                    extra: {}
+                }
+            }
+        }
     },
     methods: {
+        linkParser(path, parser, list) {
+            return parser.map(p => {
+                const toreplace = new RegExp(`{${p.replace}}`, "gi")
+                const replacewith = list[p.with]
+
+                return `${this.baseUrl}${path.replace(toreplace, replacewith)}`
+            })
+        },
         mapResult(fields, lists) {
             return lists.map(list => {
                 const newobj = {}
@@ -127,18 +182,22 @@ export default {
                 newobj.id = list.id
                 fields.forEach(field => {
                     if (field.link) {
-                        let linkPath = field.link.path
+                        const [ link ] = this.linkParser(field.link.path, field.link.parser, list)
 
-                        field.link.parser.forEach(parser => {
-                            const toreplace = new RegExp(`{${parser.replace}}`, "gi")
-                            const replacewith = list[parser.with]
-
-                            linkPath = linkPath.replace(toreplace, replacewith)
-                        })
                         newobj[field.objectField] = {
                             value: list[field.objectField],
-                            link: `${this.baseUrl}${linkPath}`
+                            link
                         }
+                    } else if (field.content) {
+                        field.content.map(c => {
+                            if (c.useLink) {
+                                const [ link ] = this.linkParser(c.useLink.path, c.useLink.parser, list)
+
+                                c.useLink.url = link
+                            }
+
+                            return c
+                        })
                     } else {
                         newobj[field.objectField] = list[field.objectField]
                     }
@@ -185,6 +244,13 @@ export default {
         ToggleModal() {
             this.showModal = !this.showModal
         },
+        SettingModal(type, sourceId) {
+            if (type === 'edit') {
+                return this.openEditModal(sourceId)
+            } else if (type === 'delete') {
+                return this.openDialog(sourceId)
+            }
+        },
         resetData() {
             this.noNext = false
             this.noPrev = false
@@ -204,9 +270,18 @@ export default {
             setTimeout(this.reFetch, 1000)
         },
         openEditModal(id) {
-            // this.enableEdit.editDep.fetchEditUrl = `${this.baseEditFetchUrl}${id}`
-            // this.enableEdit.editDep.updateUrl = `${this.baseEditSubmitUrl}${id}`
+            this.enableEdit.fetchEditUrl = `${this.baseEditFetchUrl}${id}`
+            this.enableEdit.updateUrl = `${this.baseEditSubmitUrl}${id}`
             this.showModalEdit = !this.showModalEdit
+        },
+        AddClick() {
+            if (this.enableAdd.valid && this.enableAdd.useModal) {
+                return this.ToggleModal()
+            } else if (this.enableAdd.valid && this.enableAdd.useLink) {
+                const rdl = this.enableAdd.useLink.url ? this.enableAdd.useLink.url : BASE_URL;
+
+                return window.location.replace(rdl)
+            }
         },
         openDialog(id) {
             Swal.fire({
@@ -233,9 +308,12 @@ export default {
             this.UpdateTable()
         }
     },
+    created() {
+        this.baseEditFetchUrl = this.enableEdit.fetchEditUrl
+        this.baseEditSubmitUrl = this.enableEdit.updateUrl
+    },
     mounted() {
-        let vm = this
-        vm.getData()
+        this.getData()
     }
 }
 </script>

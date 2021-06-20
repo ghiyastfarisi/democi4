@@ -2,7 +2,7 @@
     <form class="form-name-container" @submit.prevent="submitData">
         <section class="modal-card-body">
             <div class="field">
-                <label class="label">Username</label>
+                <label class="label">Email</label>
                 <div class="control">
                     <input class="input" name="username" type="email" placeholder="use email format" v-model="iuname" :disabled="formDep.isEdit">
                 </div>
@@ -28,6 +28,33 @@
                     </div>
                 </div>
             </div>
+            <div v-if="!formDep.isEdit" class="field">
+                <label for="" class="label">Nama Lengkap</label>
+                <div class="control has-icons-left">
+                    <input v-model="nama_lengkap" type="text" placeholder="Nama Lengkap Pembina Mutu" class="input" required>
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+                </div>
+            </div>
+            <div v-if="!formDep.isEdit" class="field">
+                <label for="" class="label">NIP</label>
+                <div class="control has-icons-left">
+                    <input v-model="nip" type="text" placeholder="NIP Valid" class="input" required>
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-id-card"></i>
+                    </span>
+                </div>
+            </div>
+            <div v-if="!formDep.isEdit" class="field">
+                <label for="" class="label">No. Handphone</label>
+                <div class="control has-icons-left">
+                    <input v-model="no_hp" type="text" placeholder="Nomor Handphone Terdaftar" class="input" required>
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-mobile-alt"></i>
+                    </span>
+                </div>
+            </div>
         </section>
         <footer class="modal-card-foot">
             <button type="submit" class="button is-success">{{ formDep.submit }}</button>
@@ -45,7 +72,10 @@ export default {
             iuname: '',
             ipass: '',
             iloginStatus: '',
-            loginStatusArray: [ 'active', 'inactive' ]
+            loginStatusArray: [ 'active', 'inactive' ],
+            nama_lengkap: '',
+            nip: '',
+            no_hp: ''
         }
     },
     props: {

@@ -1,4 +1,5 @@
 #! /bin/bash
+docker stop democi4
 docker run -d --name democi4 \
 --network=bridge \
 -p 80:80 \

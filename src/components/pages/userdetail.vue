@@ -75,7 +75,7 @@
                                 <div class="level-left">
                                     <p class="title is-4 is-spaced">Pembina Mutu</p>
                                 </div>
-                                <div class="level-right">
+                                <!-- <div class="level-right">
                                     <a href="javascript:void(0)" @click="showEditPembinaMutu=!showEditPembinaMutu" class="button is-warning is-small">
                                         <span class="icon">
                                             <i class="fas fa-edit"></i>
@@ -84,7 +84,7 @@
                                             Update
                                         </span>
                                     </a>
-                                </div>
+                                </div> -->
                             </nav>
                             <DynamicModalForm
                                 v-if="showEditPembinaMutu"
@@ -146,35 +146,27 @@
             <div class="box" v-if="showPendidikan">
                 <div class="title is-4">Riwayat Pendidikan</div>
                 <DynamicTable
-                    :enable-add="{
-                        valid: true,
-                        addDep: {
-                            title: 'Tambah Riwayat',
-                            submit: 'Submit Data',
-                            modalType: 'addriwayatpendidikan',
-                            createUrl: `v1/pendidikan/create/pembina-mutu/${this.pembinaMutuData.id}`,
-                            extra: {
-                                pembinaMutuId: parseInt(this.pembinaMutuData.id)
-                            }
-                        }
-                    }"
-                    :table-dep="{
-                        fieldType: 'pm_pendidikan',
+                    :tableDep="{
                         ajaxUri: `v1/pendidikan/pembina-mutu?pembina_mutu_id=${this.pembinaMutuData.id}`,
                         showLimit: 3,
-                        deleteUrl: 'v1/pendidikan/'
-                    }"
-                    :enable-edit="{
-                        valid: true,
-                        editDep: {
-                            title: 'Update Data',
-                            submit: 'Update',
-                            modalType: 'addriwayatpendidikan',
-                            isEdit: true,
-                            fetchEditUrl: `v1/pendidikan/`,
-                            updateUrl: `v1/pendidikan/update/`,
-                            extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
-                        }
+                        renderObject: [
+                            {
+                                fieldName: 'Jenjang',
+                                objectField:'jenjang'
+                            },
+                            {
+                                fieldName: 'Institusi Pendidikan',
+                                objectField:'institusi_pendidikan'
+                            },
+                            {
+                                fieldName: 'Program Studi',
+                                objectField:'program_studi'
+                            },
+                            {
+                                fieldName: 'Tahun Lulus',
+                                objectField:'tahun_lulus'
+                            }
+                        ]
                     }"
                 />
             </div>
@@ -183,35 +175,35 @@
             <div class="box" v-if="showJabatan">
                 <div class="title is-4">Riwayat Jabatan</div>
                 <DynamicTable
-                    :enable-add="{
-                        valid: true,
-                        addDep: {
-                            title: 'Tambah Riwayat',
-                            submit: 'Submit Data',
-                            modalType: 'addriwayatjabatan',
-                            createUrl: `v1/jabatan/create/pembina-mutu/${this.pembinaMutuData.id}`,
-                            extra: {
-                                pembinaMutuId: parseInt(this.pembinaMutuData.id)
-                            }
-                        }
-                    }"
-                    :table-dep="{
-                        fieldType: 'pm_jabatan',
+                    :tableDep="{
                         ajaxUri: `v1/jabatan/pembina-mutu?pembina_mutu_id=${this.pembinaMutuData.id}`,
                         showLimit: 3,
-                        deleteUrl: 'v1/jabatan/'
-                    }"
-                    :enable-edit="{
-                        valid: true,
-                        editDep: {
-                            title: 'Update Data',
-                            submit: 'Update',
-                            modalType: 'addriwayatjabatan',
-                            isEdit: true,
-                            fetchEditUrl: `v1/jabatan/`,
-                            updateUrl: `v1/jabatan/update/`,
-                            extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
-                        }
+                        renderObject: [
+                            {
+                                fieldName: 'Jabatan',
+                                objectField:'jabatan'
+                            },
+                            {
+                                fieldName: 'Unit Kerja',
+                                objectField:'unit_kerja'
+                            },
+                            {
+                                fieldName: 'Instansi',
+                                objectField:'instansi'
+                            },
+                            {
+                                fieldName: 'Tahun Mulai',
+                                objectField:'tahun_mulai'
+                            },
+                            {
+                                fieldName: 'Tahun Selesai',
+                                objectField:'tahun_selesai'
+                            },
+                            {
+                                fieldName: 'Masih Menjabat',
+                                objectField:'masih_menjabat'
+                            }
+                        ]
                     }"
                 />
             </div>
@@ -220,42 +212,25 @@
             <div class="box" v-if="showPelatihan">
                 <div class="title is-4">Riwayat Pelatihan</div>
                 <DynamicTable
-                    :enable-add="{
-                        valid: true,
-                        addDep: {
-                            title: 'Tambah Riwayat',
-                            submit: 'Submit Data',
-                            modalType: 'addriwayatpelatihan',
-                            createUrl: `v1/pelatihan/create/pembina-mutu/${this.pembinaMutuData.id}`,
-                            extra: {
-                                pembinaMutuId: parseInt(this.pembinaMutuData.id)
-                            }
-                        }
-                    }"
-                    :table-dep="{
-                        fieldType: 'pm_pelatihan',
+                    :tableDep="{
                         ajaxUri: `v1/pelatihan/pembina-mutu?pembina_mutu_id=${this.pembinaMutuData.id}`,
                         showLimit: 3,
-                        deleteUrl: 'v1/pelatihan/'
-                    }"
-                    :enable-edit="{
-                        valid: true,
-                        editDep: {
-                            title: 'Update Data',
-                            submit: 'Update',
-                            modalType: 'addriwayatpelatihan',
-                            isEdit: true,
-                            fetchEditUrl: `v1/pelatihan/`,
-                            updateUrl: `v1/pelatihan/update/`,
-                            extra: { pembinaMutuId: parseInt(this.pembinaMutuData.id) }
-                        }
+                        renderObject: [
+                            {
+                                fieldName: 'Nama Pelatihan',
+                                objectField:'nama_pelatihan'
+                            },
+                            {
+                                fieldName: 'Penyelenggara',
+                                objectField:'penyelenggara'
+                            },
+                            {
+                                fieldName: 'Tahun Pelaksanaan',
+                                objectField:'tahun_pelaksanaan'
+                            }
+                        ]
                     }"
                 />
-            </div>
-        </div>
-        <div class="column is-12">
-            <div class="box" v-if="showKunjungan">
-                <div class="title is-4">Riwayat Kunjungan</div>
             </div>
         </div>
     </div>
@@ -263,7 +238,7 @@
 
 <script>
 import dayjs from 'dayjs'
-import DynamicTable from '../dynamictable'
+import DynamicTable from '../dynamic/table'
 import DynamicModalForm from '../forms/dynamicmodalform'
 
 export default {
@@ -281,9 +256,7 @@ export default {
             showKunjungan: false,
             showEditAkun: false,
             showEditPembinaMutu: false,
-            userData: {
-                role: 'pembina_mutu'
-            },
+            userData: {},
             pembinaMutuData: {
                 nama_lengkap: '',
                 nip: '',
@@ -360,10 +333,3 @@ export default {
     }
 };
 </script>
-
-<style>
-.same-height {
-    min-height: 500px !important;
-    max-height: 500px !important;
-}
-</style>

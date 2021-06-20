@@ -2,20 +2,31 @@
     <div class="columns is-multiline">
         <div class="column is-12">
             <DynamicTable
-                :enable-add="{
-                    valid: false,
-                    addDep: {}
+                :enableAdd="{
+                    valid: false
                 }"
-                :table-dep="{
-                    fieldType: 'pembina_mutu',
+                :tableDep="{
                     ajaxUri: `v1/pembina-mutu/all?getInstansi=true`,
-                    showLimit: 20,
                     deleteUrl: 'v1/pembina-mutu/',
-                    detailUrl: 'pembina-mutu/get/'
-                }"
-                :enable-edit="{
-                    valid: false,
-                    editDep: {}
+                    showLimit: 25,
+                    renderObject: [
+                        {
+                            fieldName: 'Nama',
+                            objectField: 'nama_lengkap',
+                            link: {
+                                path: '/web/pembina-mutu/get/{id}',
+                                parser: [ { replace: 'id', with: 'id' } ]
+                            }
+                        },
+                        {
+                            fieldName: 'Email',
+                            objectField: 'email'
+                        },
+                        {
+                            fieldName: 'Instansi',
+                            objectField: 'instansi'
+                        }
+                    ]
                 }"
             />
         </div>
@@ -23,7 +34,7 @@
 </template>
 
 <script>
-import DynamicTable from '../dynamictable'
+import DynamicTable from '../dynamic/table'
 import DynamicModalForm from '../forms/dynamicmodalform'
 
 export default {
@@ -32,14 +43,7 @@ export default {
         DynamicModalForm,
     },
     data: function() {
-        return {
-            showError: false,
-            showData: false,
-            userData: {
-                role: 'pembina_mutu'
-            },
-            pembinaMutuData: {},
-        }
+        return {}
     },
     props: {},
     methods: {},

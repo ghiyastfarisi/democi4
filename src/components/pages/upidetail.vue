@@ -76,13 +76,11 @@
 </template>
 <script>
 import DynamicBlock from '../dynamicblock'
-import DynamicTable from '../dynamictable'
 import NewDynamicTable from '../dynamic/table'
 
 export default {
     components: {
         DynamicBlock,
-        DynamicTable,
         NewDynamicTable
     },
     data: function() {

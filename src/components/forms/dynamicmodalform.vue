@@ -8,7 +8,7 @@
                     <button @click="emitClose" class="delete" aria-label="close"></button>
                 </header>
                 <UserForm
-                    v-if="modalDep.modalType==='adduser'"
+                    v-if="modalDep.modalType==='userform'"
                     :form-dep="formDep" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
                 <RiwayatPendidikanForm
                     v-if="modalDep.modalType==='addriwayatpendidikan'"
