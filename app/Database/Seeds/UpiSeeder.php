@@ -15,8 +15,7 @@ class UpiSeeder extends Seeder
             'nib'                       => '123000123000',
             'no_kusuka'                 => '999000999000',
             'npwp'                      => '092542943407000',
-            'sertifikasi_perusahaan'    => 'HALAL',
-            'sumber_permodalan'         => 'Venture Capital',
+            'sumber_permodalan'         => 'PMA',
             'deskripsi'                 => 'Produsen Lobster Internasional asal Indonesia',
             'website'                   => 'moeghifaroceania.com',
             'nama_pemilik'              => 'M Ghiyast Farisi',
@@ -27,7 +26,6 @@ class UpiSeeder extends Seeder
             'kab_kota'                  => 217,
             'provinsi'                  => 13,
             'created_by'                => 1,
-            'is_main'                   => true,
             'created_at'                => Time::Now(),
             'updated_at'                => Time::Now()
         ];

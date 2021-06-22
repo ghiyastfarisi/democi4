@@ -35,6 +35,7 @@ class UpiProduksiSeeder extends Seeder
                 'sarpras_id'        => 1,
                 'nilai_unit'        => 6,
                 'nilai_kapasitas'   => 600,
+                'ukuran'            => 'kg',
                 'created_at'        => Time::Now(),
                 'updated_at'        => Time::Now()
             ], [
@@ -42,6 +43,7 @@ class UpiProduksiSeeder extends Seeder
                 'sarpras_id'        => 2,
                 'nilai_unit'        => 6,
                 'nilai_kapasitas'   => 10,
+                'ukuran'            => 'ton',
                 'created_at'        => Time::Now(),
                 'updated_at'        => Time::Now()
             ], [
@@ -49,6 +51,7 @@ class UpiProduksiSeeder extends Seeder
                 'sarpras_id'        => 3,
                 'nilai_unit'        => 20,
                 'nilai_kapasitas'   => 2000,
+                'ukuran'            => 'kg',
                 'created_at'        => Time::Now(),
                 'updated_at'        => Time::Now()
             ], [
@@ -56,6 +59,7 @@ class UpiProduksiSeeder extends Seeder
                 'sarpras_id'        => 4,
                 'nilai_unit'        => 44,
                 'nilai_kapasitas'   => 440000,
+                'ukuran'            => 'kg',
                 'created_at'        => Time::Now(),
                 'updated_at'        => Time::Now()
             ]

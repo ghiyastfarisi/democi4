@@ -37,6 +37,11 @@ class Tblupisarpras extends Migration
 				'constraint'    => 11,
 				'default'		=> 0
 			],
+			'ukuran' => [
+				'type'			=> 'VARCHAR',
+				'constraint'    => 20,
+				'default'		=> 0
+			],
 			'created_at' => [
 				'type'	=> 'DATETIME',
 				'null'	=> false

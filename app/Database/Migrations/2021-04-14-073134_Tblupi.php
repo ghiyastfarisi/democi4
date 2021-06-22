@@ -43,11 +43,6 @@ class Tblupi extends Migration
 				'constraint' 	=> '25',
 				'null' 			=> true
 			],
-			'sertifikasi_perusahaan' => [
-				'type' 			=> 'ENUM',
-				'null' 			=> true,
-				'constraint' 	=> [ 'SKP', 'HACCP', 'HALAL', 'BRC', 'ISO', 'LAINNYA' ]
-			],
 			'sumber_permodalan' => [
 				'type' 			=> 'VARCHAR',
 				'constraint' 	=> '255',
@@ -104,10 +99,6 @@ class Tblupi extends Migration
 				'constraint' 	=> 20,
 				'unsigned'      => true,
 				'null'			=> false
-			],
-			'is_main' => [
-				'type' 			=> 'BOOL',
-				'default'		=> false
 			],
 			'created_at' => [
 				'type'	=> 'DATETIME',
