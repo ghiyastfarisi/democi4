@@ -27,7 +27,7 @@
                                 v-bind:modal-dep="{
                                     title: 'Update Akun',
                                     submit: 'Update',
-                                    modalType: 'adduser',
+                                    modalType: 'userform',
                                     isEdit: true,
                                     fetchEditUrl: `v1/user/${this.uid}`,
                                     updateUrl: `v1/user/update/${this.uid}`,
@@ -484,11 +484,9 @@ export default {
                     this.showLoading = false
 
                     if (data !== null) {
-                        this.showData = true
-
-                        data.role = 'pembina_mutu'
                         data.registration_date = dayjs(data.created_at).format('DD - MM - YYYY')
 
+                        this.showData = true
                         this.userData = data
                     } else {
                         this.showError = true

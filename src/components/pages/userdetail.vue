@@ -30,10 +30,10 @@
                             </nav>
                             <DynamicModalForm
                                 v-if="showEditAkun"
-                                v-bind:modal-dep="{
+                                v-bind:modalDep="{
                                     title: 'Update Akun',
                                     submit: 'Update',
-                                    modalType: 'adduser',
+                                    modalType: 'userform',
                                     isEdit: true,
                                     fetchEditUrl: `v1/user/${this.uid}`,
                                     updateUrl: `v1/user/update/${this.uid}`,
@@ -307,13 +307,10 @@ export default {
                     const { data } = resp
 
                     if (data !== null) {
-                        this.showData = true
-
-                        data.role = 'pembina_mutu'
                         data.registration_date = dayjs(data.created_at).format('DD - MM - YYYY')
 
+                        this.showData = true
                         this.userData = data
-
                         this.getPembinaMutu(this.uid)
                     } else {
                         this.showError = true

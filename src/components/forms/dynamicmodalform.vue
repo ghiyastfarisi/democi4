@@ -43,6 +43,9 @@ import PembinaMutuForm from './pembinamutuform'
 import LaporanForm from './laporanform'
 
 export default {
+    created(){
+        console.log(this.formDep)
+    },
     data: function() {
         return {
             formDep: this.modalDep

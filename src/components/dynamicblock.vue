@@ -21,7 +21,7 @@
                 v-bind:modal-dep="{
                     title: 'Update Akun',
                     submit: 'Update',
-                    modalType: 'adduser',
+                    modalType: 'userform',
                     isEdit: true,
                     fetchEditUrl: `v1/user/${this.uid}`,
                     updateUrl: `v1/user/update/${this.uid}`,

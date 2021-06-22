@@ -95,6 +95,7 @@ export default {
         }
     },
     created() {
+        console.log('-->', this.formDep)
         let fd = this.formDep
 
         if (fd.isEdit) {

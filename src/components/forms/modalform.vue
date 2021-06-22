@@ -7,7 +7,7 @@
                     <p class="modal-card-title">{{ title }}</p>
                     <button @click="emitClose" class="delete" aria-label="close"></button>
                 </header>
-                <UserForm v-if="mtype==='adduser'" submit="submit" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
+                <UserForm v-if="mtype==='userform'" submit="submit" @toggle-close="emitClose" @update-table="emitUpdateTable"/>
             </div>
         </div>
     </div>
