@@ -42,6 +42,23 @@ class Upi extends BaseController
 		return RenderTemplate($data);
 	}
 
+	public function create()
+	{
+		$args = array(
+			'_PageSectionTitle' 	=> 'UPI',
+			'_PageSectionSubTitle' 	=> 'create page'
+		);
+		$data = array(
+			'args' 			=> $args,
+			'_PageTitle' 	=> 'Upi Create Page',
+			'_Pages' 		=> 'upi/create',
+			'_LoadCSS'		=> array(),
+			'_LoadJS'		=> array('@/upicreate.js'),
+			'_ActiveSlug'	=> 'upi'
+		);
+		return RenderTemplate($data);
+	}
+
 	public function edit($id = 0)
 	{
 		$args = array(

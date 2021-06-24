@@ -19,23 +19,38 @@
                 <div class="columns is-multiline">
                     <div class="column is-6">
                         <div class="field">
+                            <nav class="level">
+                                <div class="level-left">
+                                    <p class="title is-4 is-spaced">Data Umum</p>
+                                </div>
+                            </nav>
+                        </div>
+                        <div class="field">
                             <label class="label"> Nama Perusahaan </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
+                                <input :class="validation.classHandler.nama_perusahaan" class="input" required type="text" placeholder="nama perusahaan" v-model="list.data_umum.nama_perusahaan">
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.nama_perusahaan">{{validation.messageHandler.nama_perusahaan}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> Alamat Pabrik </label>
                             <div class="control">
-                                <textarea class="textarea" placeholder="Alamat Pabrik" v-model="list.data_umum.alamat_pabrik"></textarea>
+                                <textarea class="textarea" :class="validation.classHandler.alamat_pabrik" placeholder="Alamat Pabrik" v-model="list.data_umum.alamat_pabrik"></textarea>
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.alamat_pabrik">{{validation.messageHandler.alamat_pabrik}}</p>
                         </div>
                         <label class="label"> Detail Alamat</label>
                         <div class="columns is-multiline">
                             <div class="column is-6">
                                 <div class="field">
+                                    <p class="help is-info mb-3">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                        Provinsi
+                                    </p>
                                     <div class="control">
-                                        <div class="select is-fullwidth">
+                                        <div :class="validation.classHandler.provinsi" class="select is-fullwidth">
                                             <select v-model="list.data_umum.provinsi" @change="reloadSelect('kab_kota')">
                                                 <option v-for="(l, i) in master.province" :value="l.id" :key="i">
                                                     {{ l.name }}
@@ -43,12 +58,19 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <p class="help is-danger" v-if="validation.messageHandler.provinsi">{{validation.messageHandler.provinsi}}</p>
                                 </div>
                             </div>
                             <div class="column is-6">
                                 <div class="field">
+                                    <p class="help is-info mb-3">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                        Kabupatan/Kota
+                                    </p>
                                     <div class="control">
-                                        <div class="select is-fullwidth">
+                                        <div :class="validation.classHandler.kab_kota" class="select is-fullwidth">
                                             <select v-model="list.data_umum.kab_kota" @change="reloadSelect('kecamatan')">
                                                 <option v-for="(l, i) in master.regency" :value="l.id" :key="i">
                                                     {{ l.name }}
@@ -56,12 +78,19 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <p class="help is-danger" v-if="validation.messageHandler.kab_kota">{{validation.messageHandler.kab_kota}}</p>
                                 </div>
                             </div>
                             <div class="column is-6">
                                 <div class="field">
+                                    <p class="help is-info mb-3">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                        Kecamatan
+                                    </p>
                                     <div class="control">
-                                        <div class="select is-fullwidth">
+                                        <div :class="validation.classHandler.kecamatan" class="select is-fullwidth">
                                             <select v-model="list.data_umum.kecamatan" @change="reloadSelect('kelurahan_desa')">
                                                 <option v-for="(l, i) in master.district" :value="l.id" :key="i">
                                                     {{ l.name }}
@@ -69,12 +98,19 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <p class="help is-danger" v-if="validation.messageHandler.kecamatan">{{validation.messageHandler.kecamatan}}</p>
                                 </div>
                             </div>
                             <div class="column is-6">
                                 <div class="field">
+                                    <p class="help is-info mb-3">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                        Kelurahan/Desa
+                                    </p>
                                     <div class="control">
-                                        <div class="select is-fullwidth">
+                                        <div :class="validation.classHandler.kelurahan_desa" class="select is-fullwidth">
                                             <select v-model="list.data_umum.kelurahan_desa">
                                                 <option v-for="(l, i) in master.sub_district" :value="l.id" :key="i">
                                                     {{ l.name }}
@@ -82,6 +118,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <p class="help is-danger" v-if="validation.messageHandler.kelurahan_desa">{{validation.messageHandler.kelurahan_desa}}</p>
                                 </div>
                             </div>
                         </div>
@@ -104,14 +141,16 @@
                         <div class="field">
                             <label class="label"> Nomor Induk Berusaha (NIB) </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Nomor Induk Berusaha (NIB)" v-model="list.data_umum.nib">
+                                <input :class="validation.classHandler.nib" class="input" type="text" required placeholder="Nomor Induk Berusaha (NIB)" v-model="list.data_umum.nib">
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.nib">{{validation.messageHandler.nib}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> No Kusuka </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Nomor KUSUKA" v-model="list.data_umum.no_kusuka">
+                                <input :class="validation.classHandler.no_kusuka" class="input" type="text" required placeholder="Nomor KUSUKA" v-model="list.data_umum.no_kusuka">
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.no_kusuka">{{validation.messageHandler.no_kusuka}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> NPWP </label>
@@ -148,13 +187,14 @@
                         <div class="field">
                             <label class="label"> Sumber Permodalan </label>
                             <div class="control">
-                                <div class="select is-fullwidth">
+                                <div :class="validation.classHandler.sumber_permodalan" class="select is-fullwidth">
                                     <select v-model="list.data_umum.sumber_permodalan">
                                         <option value="PMDN">PMDN</option>
                                         <option value="PMA">PMA</option>
                                     </select>
                                 </div>
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.sumber_permodalan">{{validation.messageHandler.sumber_permodalan}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> Foto Pabrik </label>
@@ -225,20 +265,38 @@
                         </div>
                         <div class="field">
                             <label class="label"> Kapasitas Maksimum Produk (Kg per Hari)</label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka
+                            </p>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Kapasitas Maksimum Produksi (Kg per Hari)" v-model="list.data_produksi.kapasitas_produksi_hari">
+                                <input class="input" type="number" pattern="[0-9]*" required placeholder="Kapasitas Maksimum Produksi (Kg per Hari)" v-model="list.data_produksi.kapasitas_produksi_hari">
                             </div>
                         </div>
                         <div class="field">
                             <label class="label"> Rata-rata Jumlah Hari Produksi (Hari per Bulan) </label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka (1-31)
+                            </p>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Rata-rata Jumlah Hari Produksi (Hari per Bulan)" v-model="list.data_produksi.rata_hari_produksi_bulan">
+                                <input class="input" type="number" pattern="[0-9]*" placeholder="Rata-rata Jumlah Hari Produksi (Hari per Bulan)" v-model="list.data_produksi.rata_hari_produksi_bulan">
                             </div>
                         </div>
                         <div class="field">
                             <label class="label"> Rata-rata Jumlah Bulan Produksi (Bulan per Tahun) </label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka (1-12)
+                            </p>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Rata-rata Jumlah Bulan Produksi (Bulan per Tahun)" v-model="list.data_produksi.rata_bulan_produksi_tahun">
+                                <input class="input" type="number" pattern="[0-9]*" placeholder="Rata-rata Jumlah Bulan Produksi (Bulan per Tahun)" v-model="list.data_produksi.rata_bulan_produksi_tahun">
                             </div>
                         </div>
                         <div class="field">
@@ -276,13 +334,19 @@
                         </div>
                         <div class="field">
                             <label class="label"> Karyawan Tetap </label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka
+                            </p>
                         </div>
                         <div class="field">
                             <div class="field-body">
                                 <div class="field is-expanded">
                                     <div class="field has-addons">
                                         <p class="control is-expanded">
-                                            <input class="input" type="text" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_p" />
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_p" />
                                         </p>
                                         <p class="control">
                                             <a class="button is-static">
@@ -298,7 +362,7 @@
                                 <div class="field is-expanded">
                                     <div class="field has-addons">
                                         <p class="control is-expanded">
-                                            <input class="input" type="text" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_l" />
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_l" />
                                         </p>
                                         <p class="control">
                                             <a class="button is-static">
@@ -311,13 +375,19 @@
                         </div>
                         <div class="field">
                             <label class="label"> Karyawan Harian </label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka
+                            </p>
                         </div>
                         <div class="field">
                             <div class="field-body">
                                 <div class="field is-expanded">
                                     <div class="field has-addons">
                                         <p class="control is-expanded">
-                                            <input class="input" type="text" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_p" />
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_p" />
                                         </p>
                                         <p class="control">
                                             <a class="button is-static">
@@ -333,7 +403,7 @@
                                 <div class="field is-expanded">
                                     <div class="field has-addons">
                                         <p class="control is-expanded">
-                                            <input class="input" type="text" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_l" />
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_l" />
                                         </p>
                                         <p class="control">
                                             <a class="button is-static">
@@ -346,13 +416,19 @@
                         </div>
                         <div class="field">
                             <label class="label"> Jumlah Hari Kerja per Bulan </label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka (1-31)
+                            </p>
                         </div>
                         <div class="field">
                             <div class="field-body">
                                 <div class="field is-expanded">
                                     <div class="field has-addons">
                                         <p class="control is-expanded">
-                                            <input class="input" type="text" placeholder="Jumlah Hari Kerja per Bulan" v-model="list.data_tenaga_kerja.hari_kerja_bulan" />
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Jumlah Hari Kerja per Bulan" v-model="list.data_tenaga_kerja.hari_kerja_bulan" />
                                         </p>
                                         <p class="control">
                                             <a class="button is-static">
@@ -365,13 +441,19 @@
                         </div>
                         <div class="field">
                             <label class="label"> Jumlah Shift per Hari </label>
+                            <p class="help is-info">
+                                <span class="icon is-small">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                hanya bisa diisi dengan angka
+                            </p>
                         </div>
                         <div class="field">
                             <div class="field-body">
                                 <div class="field is-expanded">
                                     <div class="field has-addons">
                                         <p class="control is-expanded">
-                                            <input class="input" type="text" placeholder="Jumlah Shift per Hari" v-model="list.data_tenaga_kerja.shift_kerja_hari" />
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Jumlah Shift per Hari" v-model="list.data_tenaga_kerja.shift_kerja_hari" />
                                         </p>
                                         <p class="control">
                                             <a class="button is-static">
@@ -405,18 +487,21 @@
                                     <tr v-for="(l, i) in list.data_sarpras" :key="i">
                                         <td>{{ l.name }}</td>
                                         <td>
-                                            <input class="input" type="text" placeholder="Unit" v-model="l.nilai_unit">
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Unit" v-model="l.nilai_unit">
                                         </td>
                                         <td>
-                                            <input class="input" type="text" placeholder="Kapasitas" v-model="l.nilai_kapasitas">
+                                            <input class="input" type="number" pattern="[0-9]*" placeholder="Kapasitas" v-model="l.nilai_kapasitas">
                                         </td>
                                         <td>
                                             <div class="field">
                                                 <div class="control">
                                                     <div class="select is-fullwidth">
-                                                        <select v-model="l.satuan">
+                                                        <select v-if="l.metric=='weight'" v-model="l.satuan">
                                                             <option value="kg">kg</option>
                                                             <option value="ton">ton</option>
+                                                        </select>
+                                                        <select v-if="l.metric=='duration'" v-model="l.satuan">
+                                                            <option value="jam">jam</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -440,9 +525,10 @@
 <script>
 import UrlParse from 'url-parse'
 import DynamicModalForm from '../forms/dynamicmodalform'
-import { HandlePatch, ParseError } from '../../lib/form'
+import { HandlePatch, HandlePost, ParseError } from '../../lib/form'
 import { AutoClosePopup } from '../../lib/popup'
 import Multiselect from 'vue-multiselect'
+import FValid from 'fastest-validator'
 
 export default {
     components: {
@@ -454,7 +540,7 @@ export default {
             showEditAkun: false,
             showError: false,
             showData: false,
-            backUrl: `${BASE_URL}/web/upi/get/${this.blockDep.upiId}`,
+            backUrl: this.formDep.upiId > 0 ? `${BASE_URL}/web/upi/get/${this.formDep.upiId}` : `${BASE_URL}/web/upi`,
             master: {
                 province: [],
                 regency: [],
@@ -475,7 +561,9 @@ export default {
                 }
             },
             list: {
-                data_umum: {},
+                data_umum: {
+                    koordinat_lokasi: '',
+                },
                 data_produksi: {
                     produk_dihasilkan: [],
                     pemasaran_domestik: [],
@@ -483,18 +571,24 @@ export default {
                     merk_dagang: []
                 },
                 data_tenaga_kerja: {},
-                data_sarpras: {}
+                data_sarpras: []
+            },
+            validation: {
+                classHandler: {},
+                messageHandler: {}
             }
         }
     },
     props: {
-        blockDep: {
+        formDep: {
             type: Object,
             default: function () {
                 return {
-                    editMode: 'request',
+                    formMode: 'request',
                     ajaxUri: '',
-                    upiId: 0
+                    upiId: 0,
+                    isCreate: false,
+                    createUrl: ''
                 }
             }
         }
@@ -587,15 +681,111 @@ export default {
                 })
         },
         locatorButtonPressed() {
+            const vm = this
+
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const latlong = `${position.coords.latitude}, ${position.coords.longitude}`
-                    this.list.data_umum.koordinat_lokasi = latlong
+                    vm.list.data_umum.koordinat_lokasi = latlong
                 },
                 error => {
                     console.error(error.message);
                 },
             )
+        },
+        validateDataUmum(items) {
+            this.validation.classHandler = {}
+            this.validation.messageHandler = {}
+
+            const v = new FValid({
+                messages: {
+                    required: "Wajib isi"
+                }
+            })
+            const schema = {
+                nama_perusahaan: "string",
+                alamat_pabrik: "string",
+                provinsi: {
+                    type: 'number',
+                    min: 1,
+                    messages: {
+                        number: 'harap pilih data yang sesuai',
+                        min: 'wajib isi'
+                    }
+                },
+                kab_kota: {
+                    type: 'number',
+                    min: 1,
+                    messages: {
+                        number: 'harap pilih data yang sesuai',
+                        min: 'wajib isi'
+                    }
+                },
+                kecamatan: {
+                    type: 'number',
+                    min: 1,
+                    messages: {
+                        number: 'harap pilih data yang sesuai',
+                        min: 'wajib isi'
+                    }
+                },
+                kelurahan_desa: {
+                    type: 'number',
+                    min: 1,
+                    messages: {
+                        number: 'harap pilih data yang sesuai',
+                        min: 'wajib isi'
+                    }
+                },
+                nib: {
+                    type: 'number',
+                    length: 13,
+                    messages: {
+                        number: 'isi dengan angka NIB',
+                        length: 'format NIB tidak sesuai'
+                    }
+                },
+                no_kusuka: {
+                    type: 'number',
+                    messages: {
+                        number: 'isi dengan angka No. Kusuka'
+                    }
+                },
+                sumber_permodalan: {
+                    type: 'enum',
+                    values: [ 'PMA', 'PMDN' ],
+                    messages: {
+                        enum: 'hanya PMA dan PMDN',
+                    }
+                }
+            }
+            const validate = v.compile(schema)
+            const result = validate(items)
+            const msg = {}
+            const cls = {}
+
+            if (typeof result === 'boolean') {
+                return true
+            } else if (typeof result === 'object' || typeof result === 'array') {
+                for (const key in result) {
+                    if (result[key].message && result[key].message !== '') {
+                        msg[result[key].field] = result[key].message
+                        cls[result[key].field] = 'is-danger'
+                    }
+                }
+
+                this.validation.classHandler =  Object.assign({}, this.validation.classHandler, cls)
+                this.validation.messageHandler =  Object.assign({}, this.validation.messageHandler, msg)
+
+                window.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            }
+        },
+        validatePayload(payload) {
+            return this.validateDataUmum(payload.data_umum)
         },
         submitData() {
             const payload = Object.assign({}, this.list)
@@ -613,7 +803,25 @@ export default {
             delete payload.data_tenaga_kerja.id
             delete payload.data_tenaga_kerja.upi_id
 
-            this.editData(payload)
+            payload.data_umum = {
+                ...payload.data_umum,
+                provinsi: parseInt(payload.data_umum.provinsi),
+                kab_kota: parseInt(payload.data_umum.kab_kota),
+                kecamatan: parseInt(payload.data_umum.kecamatan),
+                kelurahan_desa: parseInt(payload.data_umum.kelurahan_desa),
+                nib: parseInt(payload.data_umum.nib),
+                no_kusuka: parseInt(payload.data_umum.no_kusuka)
+            }
+
+            if (this.validatePayload(payload)) {
+                if (this.formDep.isCreate) {
+                    return this.createData(payload)
+                } else {
+                    return this.editData(payload)
+                }
+            }
+
+            return false
         },
         closeAndPopup(title='', body ='', timeout=900, redirect=false) {
             AutoClosePopup({
@@ -637,7 +845,21 @@ export default {
         },
         async editData(payload) {
             const result = await HandlePatch(
-                `${BASE_API_URL}v1/upi/${this.blockDep.upiId}/update/complete`,
+                `${BASE_API_URL}v1/upi/${this.formDep.upiId}/update/complete`,
+                JSON.stringify(payload)
+            )
+
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            return this.closeAndPopup(result.message, '', 900, true)
+        },
+        async createData(payload) {
+            const result = await HandlePost(
+                this.formDep.createUrl,
                 JSON.stringify(payload)
             )
 
@@ -650,7 +872,7 @@ export default {
             return this.closeAndPopup(result.message, '', 900, true)
         },
         getData() {
-            const url = `${BASE_API_URL}${this.blockDep.ajaxUri}`
+            const url = `${BASE_API_URL}${this.formDep.ajaxUri}`
 
             fetch(url)
                 .then(stream => stream.json())
@@ -741,6 +963,32 @@ export default {
                     console.error(err)
                 })
         },
+        getSarpras() {
+            const url = new UrlParse(`${BASE_API_URL}v1/sarpras/upi/0`, true)
+
+            fetch(url)
+                .then(stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
+
+                    if (data !== null) {
+                        data.forEach(el => {
+                            el.nilai_unit = 0
+                            el.nilai_kapasitas = 0
+                            el.ukuran = el.metric === 'weight' ? 'kg' : 'jam'
+                            el.satuan = el.metric === 'weight' ? 'kg' : 'jam'
+
+                            this.list.data_sarpras.push(el)
+                        })
+                    }
+
+                    return true
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                })
+        },
         transformArrayObject(data) {
             return data.map(el => {
                 return parseInt(el.id)
@@ -762,13 +1010,18 @@ export default {
             })
         }
     },
-    mounted() {
-        let vm = this
-        vm.getBadge()
-        vm.getProduct()
-        vm.getRegency()
-        vm.getCountry()
-        vm.getData()
+    created() {
+        this.getBadge()
+        this.getProduct()
+        this.getRegency()
+        this.getCountry()
+        if (this.formDep.isCreate) {
+            this.getLocation('province', 0)
+            this.getSarpras()
+            this.showData = true
+        } else {
+            this.getData()
+        }
     }
 };
 </script>

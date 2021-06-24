@@ -21,9 +21,9 @@
                             <tbody>
                                 <tr v-for="(l, i) in list" :key="i">
                                     <td>{{ l.name }}</td>
-                                    <td>{{ l.nilai_unit }}</td>
+                                    <td>{{ l.nilai_unit !== null ? numberWithCommas(l.nilai_unit) : 0 }}</td>
                                     <td>{{ l.nilai_kapasitas !== null ? numberWithCommas(l.nilai_kapasitas) : 0 }}</td>
-                                    <td>Kg</td>
+                                    <td>{{ l.ukuran !== null ? l.ukuran : '-' }}</td>
                                 </tr>
                             </tbody>
                         </table>

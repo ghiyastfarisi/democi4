@@ -3,9 +3,11 @@
         <div class="column is-12">
             <UpiForm
                 :formDep="{
-                    editMode: 'edit',
-                    ajaxUri: `v1/upi/${this.uid}/complete`,
-                    upiId: this.uid
+                    formMode: '',
+                    ajaxUri: ``,
+                    upiId: 0,
+                    isCreate: true,
+                    createUrl: `v1/upi/create/complete`
                 }"
             />
         </div>

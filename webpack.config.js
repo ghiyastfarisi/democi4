@@ -13,6 +13,7 @@ module.exports = {
         pembinamutugetid: './src/pages/pembinamutugetid.js',
         upiindex: './src/pages/upiindex.js',
         upigetid: './src/pages/upigetid.js',
+        upicreate: './src/pages/upicreate.js',
         upiedit: './src/pages/upiedit.js',
         dashboard: './src/pages/dashboard.js',
         laporanindex: './src/pages/laporanindex.js',

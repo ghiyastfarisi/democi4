@@ -177,7 +177,7 @@ class Upi extends BaseController
 			'*.sarpras_id'		=> 'numeric',
 			'*.nilai_unit'		=> 'numeric',
 			'*.nilai_kapasitas'	=> 'numeric',
-			'*.satuan'			=> 'in_list[ton,kg]'
+			'*.satuan'			=> 'in_list[ton,kg,jam]'
 		],
 		'message' => [
 			'sarpras_id'		=> [
@@ -190,7 +190,7 @@ class Upi extends BaseController
 				'numeric'		=> 'nilai dalam bentuk angka'
 			],
 			'satuan'			=> [
-				'in_list'		=> 'hanya menerima ton atau kilogram'
+				'in_list'		=> 'satuan tidak valid'
 			]
 		]
 	);
@@ -444,7 +444,18 @@ class Upi extends BaseController
 
 			foreach($upiSarpras as $k => $v) {
 				$upiSarpras[$k] = $this->_cleanField((array)$v);
-				$upiSarpras[$k]['satuan'] = 'kg';
+				if (isset($v['ukuran']) && null != $v['ukuran']) {
+					$upiSarpras[$k]['satuan'] = $v['ukuran'];
+				} else {
+					if ($v['metric'] == 'weight')
+					{
+						$upiSarpras[$k]['satuan'] = 'kg';
+					}
+					else if ($v['metric'] == 'duration')
+					{
+						$upiSarpras[$k]['satuan'] = 'jam';
+					}
+				}
 			}
 
 			$upiTenagaKerja = $upiTenagaKerjaModel->where('upi_id', $upiId)->first();
@@ -619,12 +630,12 @@ class Upi extends BaseController
 		// insert sarpras with upi_id
 		$insertSarpras = array();
 		foreach($reqArray['data_sarpras'] as $v) {
-			$nilaiKapasitas = $v['satuan'] == 'ton' ? $v['nilai_kapasitas'] * 1000 : $v['nilai_kapasitas'];
 			array_push($insertSarpras, array(
 				'upi_id'			=> $upiId,
-				'sarpras_id'			=> $v['sarpras_id'],
+				'sarpras_id'		=> $v['sarpras_id'],
 				'nilai_unit'		=> $v['nilai_unit'],
-				'nilai_kapasitas'	=> $nilaiKapasitas,
+				'nilai_kapasitas'	=> $v['nilai_kapasitas'],
+				'ukuran'			=> $v['satuan'],
 				'created_at'		=> $now,
 				'updated_at'		=> $now
 			));
@@ -785,9 +796,7 @@ class Upi extends BaseController
 		$this->db->table('tbl_upi_tenaga_kerja')->where('upi_id', $upiId)->update($insertTenagaKerja);
 		// update sarpras with upi_id
 		foreach($reqArray['data_sarpras'] as $v) {
-			$nilaiKapasitas = $v['satuan'] == 'ton' ? $v['nilai_kapasitas'] * 1000 : $v['nilai_kapasitas'];
-
-			if ($nilaiKapasitas > 0 && $v['nilai_unit'] > 0) {
+			if ($v['nilai_kapasitas'] > 0 && $v['nilai_unit'] > 0) {
 				// find and update
 				$getSarpras = $this->db->table('tbl_upi_sarpras')
 					->select('id')
@@ -800,10 +809,21 @@ class Upi extends BaseController
 					$this->db->table('tbl_upi_sarpras')->where('id', $upiSarprasId)->update(
 						array(
 							'nilai_unit'		=> $v['nilai_unit'],
-							'nilai_kapasitas'	=> $nilaiKapasitas,
+							'nilai_kapasitas'	=> $v['nilai_kapasitas'],
+							'ukuran'			=> $v['satuan'],
 							'updated_at'		=> $now
 						)
 					);
+				} else {
+					$this->db->table('tbl_upi_sarpras')->insert(array(
+						'upi_id'			=> $upiId,
+						'sarpras_id'		=> $v['sarpras_id'],
+						'nilai_unit'		=> $v['nilai_unit'],
+						'nilai_kapasitas'	=> $v['nilai_kapasitas'],
+						'ukuran'			=> $v['satuan'],
+						'created_at'		=> $now,
+						'updated_at'		=> $now
+					));
 				}
 			}
 
@@ -813,6 +833,7 @@ class Upi extends BaseController
 					'sarpras_id'		=> $v['sarpras_id'],
 					'nilai_unit'		=> 0,
 					'nilai_kapasitas'	=> 0,
+					'ukuran'			=> $v['satuan'],
 					'created_at'		=> $now,
 					'updated_at'		=> $now
 				));
