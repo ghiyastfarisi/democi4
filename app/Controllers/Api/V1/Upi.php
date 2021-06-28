@@ -401,7 +401,7 @@ class Upi extends BaseController
 		return ResponseOK($transformed);
 	}
 
-	public function _mapCompleteUpi($data)
+	public function _mapCompleteUpi($data, $isRequest=false)
 	{
 		$transformed = $this->upiCompleteStructure;
 		$transformed['data_umum'] = $this->_cleanField($data);
@@ -427,13 +427,13 @@ class Upi extends BaseController
 				$this->_cleanField($upiProduksi)
 			);
 			foreach($upiProduk as $k => $v) {
-				$upiProduk[$k] = $this->_cleanField((array)$v);
+				$upiProduk[$k] = !$isRequest ? $this->_cleanField((array)$v) : (int)$v->id;
 			}
 			foreach($upiPemasaranEkspor as $k => $v) {
-				$upiPemasaranEkspor[$k] = $this->_cleanField((array)$v);
+				$upiPemasaranEkspor[$k] = !$isRequest ? $this->_cleanField((array)$v) : (int)$v->id;
 			}
 			foreach($upiPemasaranDomestik as $k => $v) {
-				$upiPemasaranDomestik[$k] = $this->_cleanField((array)$v);
+				$upiPemasaranDomestik[$k] = !$isRequest ? $this->_cleanField((array)$v) : (int)$v->id;
 			}
 
 			$upiSarprasModel->select('tbl_upi_sarpras.*, tbl_sarpras.*, tbl_sarpras.id as upi_sarpras_id');
@@ -443,18 +443,31 @@ class Upi extends BaseController
 			$upiSarpras = $upiSarprasModel->findAll();
 
 			foreach($upiSarpras as $k => $v) {
-				$upiSarpras[$k] = $this->_cleanField((array)$v);
+				$satuan = '';
 				if (isset($v['ukuran']) && null != $v['ukuran']) {
-					$upiSarpras[$k]['satuan'] = $v['ukuran'];
+					$satuan = $v['ukuran'];
 				} else {
 					if ($v['metric'] == 'weight')
 					{
-						$upiSarpras[$k]['satuan'] = 'kg';
+						$satuan = 'kg';
 					}
 					else if ($v['metric'] == 'duration')
 					{
-						$upiSarpras[$k]['satuan'] = 'jam';
+						$satuan = 'jam';
 					}
+				}
+				if (!$isRequest)
+				{
+					$upiSarpras[$k] = $this->_cleanField((array)$v);
+					$upiSarpras[$k]['satuan'] = $satuan;
+				} else
+				{
+					$upiSarpras[$k] = array(
+						'sarpras_id' 		=> $v['sarpras_id'],
+						'nilai_unit' 		=> $v['nilai_unit'],
+						'nilai_kapasitas' 	=> $v['nilai_kapasitas'],
+						'satuan' 			=> $satuan,
+					);
 				}
 			}
 
@@ -611,6 +624,7 @@ class Upi extends BaseController
 		$now = date("Y-m-d H:i:s");
 		// insert data umum to tbl_upi
 		$insertDataUpi = $reqArray['data_umum'];
+		unset($insertDataUpi['sertifikasi']);
 		$insertDataUpi['created_at'] = $now;
 		$insertDataUpi['updated_at'] = $now;
 		$insertDataUpi['created_by'] = 1;
@@ -679,6 +693,20 @@ class Upi extends BaseController
 			));
 		}
 		$this->db->table('tbl_produksi_pemasaran')->insertBatch($insertProduksiPemasaran);
+
+		$sertifikasi = $reqArray['data_umum']['sertifikasi'];
+
+		if (isset($sertifikasi) && count($sertifikasi) > 0)
+		{
+			$this->_deleteAllUpiSertifikasi($upiId);
+			foreach($sertifikasi as $v)
+			{
+				if ((int)$v > 0)
+				{
+					$this->_upsertUpiSertifikasi($upiId, $v);
+				}
+			}
+		}
 
 		if ($this->db->transStatus() === FALSE) {
 			$this->db->transRollback();
@@ -776,8 +804,8 @@ class Upi extends BaseController
 		$this->db->transBegin();
 		$now = date("Y-m-d H:i:s");
 		// update data umum to tbl_upi
-		unset($reqArray['data_umum']['sertifikasi']);
 		$insertDataUpi = $reqArray['data_umum'];
+		unset($insertDataUpi['sertifikasi']);
 		$insertDataUpi['updated_at'] = $now;
 		// TODO: inject user id while create new upi data
 		$this->db->table('tbl_upi')->where('id', $upiId)->update($insertDataUpi);
@@ -1034,11 +1062,14 @@ class Upi extends BaseController
 			return ResponseBadRequest(array('message' => 'upi tidak terdaftar'));
 		}
 
+		// compare arrays
+		$requested = $this->_compareCurrentWithNew($reqArray, $id);
+
 		$updated = $this->_requestUpdatePerubahanUpi(array(
 			'upi_id' 			=> $id,
 			'pembina_mutu_id'	=> $pembinaMutuId,
 			'status'			=> 'requested',
-			'data_perubahan'	=> json_encode($reqArray),
+			'data_perubahan'	=> json_encode($requested),
 			'kunjungan_id'		=> $kunjunganId,
 			'catatan'			=> $catatan
 		));
@@ -1053,7 +1084,76 @@ class Upi extends BaseController
 			));
 		}
 
+		$this->_updateUPIRequestTotal($id);
+
 		return ResponseCreated(array( 'message' => 'Request perubahan data UPI berhasil dibuat' ));
+	}
+
+	public function _compareCurrentWithNew($newUpi, $upiId)
+	{
+		$requested = array();
+
+		$getUpi = $this->UpiModel->find($upiId);
+		$currentUpi = $this->_mapCompleteUpi($getUpi, true);
+
+		// check data umum
+		$sertifikasi = array();
+		foreach($currentUpi['data_umum']['sertifikasi'] as $v)
+		{
+			array_push($sertifikasi, $v['id']);
+		}
+		$currentUpi['data_umum']['sertifikasi'] = $sertifikasi;
+		$requested['data_umum'] = $this->_getDiff($currentUpi['data_umum'], $newUpi['data_umum']);
+
+		// check data produksi
+		$requested['data_produksi'] = $this->_getDiff($currentUpi['data_produksi'], $newUpi['data_produksi']);
+
+		// check tenaga kerja
+		$requested['data_tenaga_kerja'] = $this->_getDiff($currentUpi['data_tenaga_kerja'], $newUpi['data_tenaga_kerja']);
+
+		// check sarpras
+		$requested['data_sarpras'] = $this->_getDiff($currentUpi['data_sarpras'], $newUpi['data_sarpras']);
+
+		return $requested;
+	}
+
+	public function _getDiff($origin, $new)
+	{
+		$diff = array();
+
+		foreach($origin as $k => $v)
+		{
+			if (isset($new[$k]))
+			{
+				if (is_array($v))
+				{
+					$arrDiff = array_diff_assoc($v, $new[$k]);
+					if (count($arrDiff)>0)
+					{
+						$diff[$k] = $new[$k];
+					}
+				} else
+				{
+					if ($v != $new[$k])
+					{
+						$diff[$k] = $new[$k];
+					}
+				}
+			}
+		}
+
+		return $diff;
+	}
+
+	public function _updateUPIRequestTotal($upiId)
+	{
+		$countQuery = $this->PerubahanUpiModel->selectCount('id')->where('upi_id', $upiId)->find();
+		$count = (int)$countQuery[0]['id'];
+
+		return $this->UpiModel->save(array(
+			'id'					=> $upiId,
+			'total_request_update' 	=> $count
+		));
 	}
 
 	public function requestUpdatePerubahaUpi($id = 0, $action = '')
@@ -1113,6 +1213,8 @@ class Upi extends BaseController
 			'id'				=> $id,
 			'status'			=> $action
 		));
+
+		$this->_updateUPIRequestTotal($upiId);
 
 		return ResponseOK(array('data' => 'Update request perubahan data UPI berhasil'));
 	}

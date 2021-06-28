@@ -272,8 +272,9 @@
                                 hanya bisa diisi dengan angka
                             </p>
                             <div class="control">
-                                <input class="input" type="number" pattern="[0-9]*" required placeholder="Kapasitas Maksimum Produksi (Kg per Hari)" v-model="list.data_produksi.kapasitas_produksi_hari">
+                                <input :class="validation.classHandler.kapasitas_produksi_hari" class="input" type="number" pattern="[0-9]*" required placeholder="Kapasitas Maksimum Produksi (Kg per Hari)" v-model="list.data_produksi.kapasitas_produksi_hari">
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.kapasitas_produksi_hari">{{validation.messageHandler.kapasitas_produksi_hari}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> Rata-rata Jumlah Hari Produksi (Hari per Bulan) </label>
@@ -284,8 +285,9 @@
                                 hanya bisa diisi dengan angka (1-31)
                             </p>
                             <div class="control">
-                                <input class="input" type="number" pattern="[0-9]*" placeholder="Rata-rata Jumlah Hari Produksi (Hari per Bulan)" v-model="list.data_produksi.rata_hari_produksi_bulan">
+                                <input :class="validation.classHandler.rata_hari_produksi_bulan" class="input" type="number" pattern="[0-9]*" placeholder="Rata-rata Jumlah Hari Produksi (Hari per Bulan)" v-model="list.data_produksi.rata_hari_produksi_bulan">
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.rata_hari_produksi_bulan">{{validation.messageHandler.rata_hari_produksi_bulan}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> Rata-rata Jumlah Bulan Produksi (Bulan per Tahun) </label>
@@ -296,8 +298,9 @@
                                 hanya bisa diisi dengan angka (1-12)
                             </p>
                             <div class="control">
-                                <input class="input" type="number" pattern="[0-9]*" placeholder="Rata-rata Jumlah Bulan Produksi (Bulan per Tahun)" v-model="list.data_produksi.rata_bulan_produksi_tahun">
+                                <input :class="validation.classHandler.rata_bulan_produksi_tahun" class="input" type="number" pattern="[0-9]*" placeholder="Rata-rata Jumlah Bulan Produksi (Bulan per Tahun)" v-model="list.data_produksi.rata_bulan_produksi_tahun">
                             </div>
+                            <p class="help is-danger" v-if="validation.messageHandler.rata_bulan_produksi_tahun">{{validation.messageHandler.rata_bulan_produksi_tahun}}</p>
                         </div>
                         <div class="field">
                             <label class="label"> Wilayah Pemasaran Domestik </label>
@@ -349,7 +352,7 @@
                                             <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_p" />
                                         </p>
                                         <p class="control">
-                                            <a class="button is-static">
+                                            <a class="button is-static" style="width:130px;">
                                                 Perempuan
                                             </a>
                                         </p>
@@ -365,8 +368,8 @@
                                             <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Tetap" v-model="list.data_tenaga_kerja.karyawan_tetap_l" />
                                         </p>
                                         <p class="control">
-                                            <a class="button is-static">
-                                                Laki-laki
+                                            <a class="button is-static" style="width:130px;">
+                                                Laki - laki
                                             </a>
                                         </p>
                                     </div>
@@ -390,7 +393,7 @@
                                             <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_p" />
                                         </p>
                                         <p class="control">
-                                            <a class="button is-static">
+                                            <a class="button is-static" style="width:130px;">
                                                 Perempuan
                                             </a>
                                         </p>
@@ -406,7 +409,7 @@
                                             <input class="input" type="number" pattern="[0-9]*" placeholder="Karyawan Harian" v-model="list.data_tenaga_kerja.karyawan_harian_l" />
                                         </p>
                                         <p class="control">
-                                            <a class="button is-static">
+                                            <a class="button is-static" style="width:130px;">
                                                 Laki-laki
                                             </a>
                                         </p>
@@ -431,7 +434,7 @@
                                             <input class="input" type="number" pattern="[0-9]*" placeholder="Jumlah Hari Kerja per Bulan" v-model="list.data_tenaga_kerja.hari_kerja_bulan" />
                                         </p>
                                         <p class="control">
-                                            <a class="button is-static">
+                                            <a class="button is-static" style="width:130px;">
                                                 Hari / Bulan
                                             </a>
                                         </p>
@@ -456,7 +459,7 @@
                                             <input class="input" type="number" pattern="[0-9]*" placeholder="Jumlah Shift per Hari" v-model="list.data_tenaga_kerja.shift_kerja_hari" />
                                         </p>
                                         <p class="control">
-                                            <a class="button is-static">
+                                            <a class="button is-static" style="width:130px;">
                                                 Shift / Hari
                                             </a>
                                         </p>
@@ -517,6 +520,7 @@
                     <button type="submit" class="button is-success">Update</button>
                     <button type="cancel" @click="Close" class="button">Cancel</button>
                 </div>
+                <div id="mamboleo"></div>
             </form>
         </div>
     </div>
@@ -561,9 +565,7 @@ export default {
                 }
             },
             list: {
-                data_umum: {
-                    koordinat_lokasi: '',
-                },
+                data_umum: {},
                 data_produksi: {
                     produk_dihasilkan: [],
                     pemasaran_domestik: [],
@@ -681,12 +683,10 @@ export default {
                 })
         },
         locatorButtonPressed() {
-            const vm = this
-
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const latlong = `${position.coords.latitude}, ${position.coords.longitude}`
-                    vm.list.data_umum.koordinat_lokasi = latlong
+                    this.list.data_umum = Object.assign({}, this.list.data_umum, { koordinat_lokasi: latlong })
                 },
                 error => {
                     console.error(error.message);
@@ -777,15 +777,81 @@ export default {
                 this.validation.classHandler =  Object.assign({}, this.validation.classHandler, cls)
                 this.validation.messageHandler =  Object.assign({}, this.validation.messageHandler, msg)
 
-                window.scrollTo({
-                    top: 0,
-                    left: 0,
-                    behavior: 'smooth'
-                });
+                setTimeout(function() {
+                    const pos = document.getElementsByClassName('is-danger')[0].getBoundingClientRect()
+                    const bodypos = document.body.getBoundingClientRect()
+                    const cocok = (Math.abs(bodypos.top) - Math.abs(pos.top)) - 45
+
+                    window.scrollTo({
+                        top: cocok,
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }, 500)
             }
+
+            return false
+        },
+        validateDataProduksi(items) {
+            this.validation.classHandler = {}
+            this.validation.messageHandler = {}
+
+            const v = new FValid({
+                messages: {
+                    required: "Wajib isi"
+                }
+            })
+            const schema = {
+                kapasitas_produksi_hari: {
+                    type: "number",
+                    min: 1
+                },
+                rata_hari_produksi_bulan: {
+                    type: "number",
+                    min: 1,
+                    max: 31
+                },
+                rata_bulan_produksi_tahun: {
+                    type: "number",
+                    min: 1,
+                    max: 12
+                }
+            }
+            const validate = v.compile(schema)
+            const result = validate(items)
+            const msg = {}
+            const cls = {}
+
+            if (typeof result === 'boolean') {
+                return true
+            } else if (typeof result === 'object' || typeof result === 'array') {
+                for (const key in result) {
+                    if (result[key].message && result[key].message !== '') {
+                        msg[result[key].field] = result[key].message
+                        cls[result[key].field] = 'is-danger'
+                    }
+                }
+
+                this.validation.classHandler =  Object.assign({}, this.validation.classHandler, cls)
+                this.validation.messageHandler =  Object.assign({}, this.validation.messageHandler, msg)
+
+                setTimeout(function() {
+                    const pos = document.getElementsByClassName('is-danger')[0].getBoundingClientRect()
+                    const bodypos = document.body.getBoundingClientRect()
+                    const cocok = (Math.abs(bodypos.top) - Math.abs(pos.top)) - 45
+
+                    window.scrollTo({
+                        top: cocok,
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }, 500)
+            }
+
+            return false
         },
         validatePayload(payload) {
-            return this.validateDataUmum(payload.data_umum)
+            return this.validateDataUmum(payload.data_umum) && this.validateDataProduksi(payload.data_produksi)
         },
         submitData() {
             const payload = Object.assign({}, this.list)
@@ -811,6 +877,13 @@ export default {
                 kelurahan_desa: parseInt(payload.data_umum.kelurahan_desa),
                 nib: parseInt(payload.data_umum.nib),
                 no_kusuka: parseInt(payload.data_umum.no_kusuka)
+            }
+
+            payload.data_produksi = {
+                ...payload.data_produksi,
+                kapasitas_produksi_hari: parseInt(payload.data_produksi.kapasitas_produksi_hari),
+                rata_hari_produksi_bulan: parseInt(payload.data_produksi.rata_hari_produksi_bulan),
+                rata_bulan_produksi_tahun: parseInt(payload.data_produksi.rata_bulan_produksi_tahun)
             }
 
             if (this.validatePayload(payload)) {
@@ -844,6 +917,8 @@ export default {
             })
         },
         async editData(payload) {
+            console.log(JSON.stringify(payload))
+
             const result = await HandlePatch(
                 `${BASE_API_URL}v1/upi/${this.formDep.upiId}/update/complete`,
                 JSON.stringify(payload)
@@ -855,7 +930,7 @@ export default {
                 )
             }
 
-            return this.closeAndPopup(result.message, '', 900, true)
+            return this.closeAndPopup(result.message, '', 900, false)
         },
         async createData(payload) {
             const result = await HandlePost(

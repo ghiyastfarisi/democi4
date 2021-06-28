@@ -100,17 +100,24 @@ class Tblupi extends Migration
 				'unsigned'      => true,
 				'null'			=> false
 			],
+			'total_request_update' => [
+				'type' 			=> 'INT',
+				'constraint' 	=> 11,
+				'unsigned'      => true,
+				'null'			=> false,
+				'default'		=> 0
+			],
 			'created_at' => [
-				'type'	=> 'DATETIME',
-				'null'	=> false
+				'type'			=> 'DATETIME',
+				'null'			=> false
 			],
 			'updated_at' => [
-				'type'		=> 'DATETIME',
-				'null'		=> false
+				'type'			=> 'DATETIME',
+				'null'			=> false
 			],
 			'deleted_at' => [
-				'type'	=> 'DATETIME',
-				'null'	=> true
+				'type'			=> 'DATETIME',
+				'null'			=> true
 			]
 		]);
 		$this->forge->addKey('id', true);

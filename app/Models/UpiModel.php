@@ -25,7 +25,7 @@ class UpiModel extends Model {
                                         'kab_kota',
                                         'provinsi',
                                         'created_by',
-                                        'is_main'
+                                        'total_request_update'
                                     ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';

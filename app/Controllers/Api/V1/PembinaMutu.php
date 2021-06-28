@@ -31,6 +31,7 @@ class PembinaMutu extends BaseController
 		$q = $req->getGet();
 
 		$getInstansi = isset($q['getInstansi']) && filter_var($q['getInstansi'], FILTER_VALIDATE_BOOLEAN) ? true : false;
+		$keyword = isset($q['keyword']) ? $q['keyword'] : '';
 
 		$page = (isset($q['page'])) ? $q['page'] : 1;
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
@@ -38,8 +39,16 @@ class PembinaMutu extends BaseController
 
 		$joinQuery = 'tbl_user.id = tbl_pembina_mutu.user_id AND tbl_user.deleted_at IS NULL';
 
-		$resp = $this->PembinaMutuModel->select('tbl_pembina_mutu.*')->join('tbl_user', $joinQuery)->orderBy('tbl_pembina_mutu.id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->PembinaMutuModel->join('tbl_user', $joinQuery)->selectCount('tbl_pembina_mutu.id')->find();
+
+		$this->PembinaMutuModel->select('tbl_pembina_mutu.*')->join('tbl_user', $joinQuery);
+
+		if ($keyword != '') {
+			$cleanKey = "'%" . $this->db->escapeLikeString($keyword) . "%' ESCAPE '!'";
+			$this->PembinaMutuModel->where('nama_lengkap LIKE' . $cleanKey);
+		}
+
+		$resp = $this->PembinaMutuModel->orderBy('tbl_pembina_mutu.id', 'desc')->findAll($limit, $offset);
+		$countQuery = $this->PembinaMutuModel->selectCount('tbl_pembina_mutu.id')->find();
 		$count = (int)$countQuery[0]['id'];
 
 		$pageAvailable = ceil((int)$count/(int)$limit);

@@ -34,6 +34,10 @@
                             objectField: 'location_regency_name'
                         },
                         {
+                            fieldName: 'Permintaan Update',
+                            objectField: 'total_request_update'
+                        },
+                        {
                             fieldName: 'Setting',
                             type: 'setting',
                             content: [
