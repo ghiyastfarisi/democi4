@@ -3,12 +3,13 @@
         <div class="column is-12">
             <UpiForm
                 :formDep="{
-                    formMode: '',
-                    ajaxUri: ``,
-                    upiId: 0,
-                    isCreate: true,
-                    createUrl,
-                    submitTitle: 'Simpan Data'
+                    editMode: 'request',
+                    ajaxUri: `v1/upi/${uid}/complete`,
+                    upiId: uid,
+                    submitTitle: 'Request Perubahan Data UPI',
+                    extra: {
+                        kunjunganId
+                    }
                 }"
             />
         </div>
@@ -24,7 +25,6 @@ export default {
     },
     data: function() {
         return {
-            createUrl: `${BASE_API_URL}v1/upi/create/complete`,
             showError: false,
             showData: false
         }
@@ -32,6 +32,7 @@ export default {
     props: {
         ajaxUri: String,
         uid: Number,
+        kunjunganId: Number
     },
     methods: {},
     mounted() {}

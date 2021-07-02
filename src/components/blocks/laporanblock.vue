@@ -14,6 +14,16 @@
                     <div class="level-left">
                         <p class="title is-4 is-spaced">Data Laporan Kunjungan</p>
                     </div>
+                    <div class="level-right">
+                        <a :href="updateUpiUrl" class="button is-warning">
+                            <span class="icon">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                            <span>
+                                Request Perubahan Data UPI
+                            </span>
+                        </a>
+                    </div>
                 </nav>
                 <div class="columns is-multiline">
                     <div class="column is-12">
@@ -69,6 +79,7 @@ export default {
     },
     data: function() {
         return {
+            updateUpiUrl: `${BASE_URL}/web/upi/request`,
             showEditAkun: false,
             showError: false,
             showData: false,
@@ -104,6 +115,7 @@ export default {
                         this.list = data
                         this.list.tanggal_kunjungan = Dayjs(this.list.tanggal_kunjungan).format('DD-MM-YYYY')
                         this.list.catatanForm = this.parseForDisplay(this.list.catatan)
+                        this.updateUpiUrl = `${this.updateUpiUrl}/${data.upi_id}/kunjungan/${data.id}`
                     } else {
                         this.showError = true
                     }

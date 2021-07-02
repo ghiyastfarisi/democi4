@@ -88,6 +88,7 @@ $routes->group('api', function($routes)
 		$routes->patch('(:num)/update/complete', 'Api\V1\Upi::updateComplete/$1');
 		$routes->post('(:num)/request/perubahan-upi', 'Api\V1\Upi::requestUpdate/$1');
 		$routes->post('update/perubahan-upi/(:num)/(:alpha)', 'Api\V1\Upi::requestUpdatePerubahaUpi/$1/$2');
+		$routes->get('all/perubahan-upi', 'Api\V1\Upi::GetAllPerubahan');
 	});
 	$routes->group('v1/produksi', function($routes)
 	{

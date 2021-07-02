@@ -7,6 +7,7 @@ module.exports = {
     entry: {
         core: './src/core.js',
         login: './src/pages/login.js',
+        usersetting: './src/pages/usersetting.js',
         userindex: './src/pages/userindex.js',
         usergetid: './src/pages/usergetid.js',
         pembinamutuindex: './src/pages/pembinamutuindex.js',
@@ -15,6 +16,7 @@ module.exports = {
         upigetid: './src/pages/upigetid.js',
         upicreate: './src/pages/upicreate.js',
         upiedit: './src/pages/upiedit.js',
+        upirequest: './src/pages/upirequest.js',
         dashboard: './src/pages/dashboard.js',
         laporanindex: './src/pages/laporanindex.js',
         laporandetail: './src/pages/laporandetail.js',

@@ -12,7 +12,7 @@ class Upload extends BaseController
 	protected $uploadUsageFolder = [
 		'gambar_laporan' 	=> array('laporan', 'gambar'),
 		'dokumen_laporan' 	=> array('laporan', 'dokumen'),
-		'profil_upi'		=> array('upi', 'profil'),
+		'foto_pabrik'		=> array('upi', 'pabrik'),
 		'produk_upi'		=> array('upi', 'produk'),
 	];
 	protected $validType = [

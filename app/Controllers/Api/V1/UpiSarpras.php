@@ -21,10 +21,6 @@ class UpiSarpras extends BaseController
 	{
 		$req = $this->request;
 
-		if (0 === $id) {
-			return ResponseNotFound();
-		}
-
 		if ($req->getMethod(TRUE) !== 'GET') {
 			return ResponseNotAllowed();
 		}

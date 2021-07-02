@@ -1,21 +1,21 @@
 <template>
     <div class="columns is-multiline">
+        <DynamicModalForm
+            v-if="showModalEdit"
+            :modal-dep="{
+                title: 'Update Laporan Detail',
+                submit: 'Update Laporan',
+                modalType: 'addlaporan',
+                isEdit: true,
+                fetchEditUrl: `v1/kunjungan/${kunjunganId}?upiLabel=true`,
+                updateUrl: `v1/kunjungan/update/${kunjunganId}`,
+                extra: { kunjunganId: parseInt(kunjunganId) }
+            }"
+            @toggle-close="showModalEdit=!showModalEdit"
+            @update-table="reload"
+        />
         <div class="column is-12">
-            <a href="javascript:void(9)" class="button is-info is-outlined" @click="showModalEdit=!showModalEdit">Update Data</a>
-            <DynamicModalForm
-                v-if="showModalEdit"
-                :modal-dep="{
-                    title: 'Update Laporan Detail',
-                    submit: 'Update Laporan',
-                    modalType: 'addlaporan',
-                    isEdit: true,
-                    fetchEditUrl: `v1/kunjungan/${kunjunganId}?upiLabel=true`,
-                    updateUrl: `v1/kunjungan/update/${kunjunganId}`,
-                    extra: { kunjunganId: parseInt(kunjunganId) }
-                }"
-                @toggle-close="showModalEdit=!showModalEdit"
-                @update-table="reload"
-            />
+            <a href="javascript:void(0)" class="button is-info is-outlined" @click="showModalEdit=!showModalEdit">Update Laporan Data</a>
         </div>
         <div class="column is-12">
             <DynamicBlock

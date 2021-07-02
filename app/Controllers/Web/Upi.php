@@ -75,4 +75,21 @@ class Upi extends BaseController
 		);
 		return RenderTemplate($data);
 	}
+
+	public function request($id = 0, $kunjungan = '', $kunjungan_id = 0)
+	{
+		$args = array(
+			'_PageSectionTitle' 	=> 'UPI',
+			'_PageSectionSubTitle' 	=> 'request edit page'
+		);
+		$data = array(
+			'args' 			=> $args,
+			'_PageTitle' 	=> 'Upi Request Edit Page',
+			'_Pages' 		=> 'upi/get_id',
+			'_LoadCSS'		=> array(),
+			'_LoadJS'		=> array('@/upirequest.js'),
+			'_ActiveSlug'	=> 'upi'
+		);
+		return RenderTemplate($data);
+	}
 }

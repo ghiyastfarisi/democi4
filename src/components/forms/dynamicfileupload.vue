@@ -23,7 +23,7 @@
         <div class="image-cont" v-if="blockDep.uploadType=='image_upload'">
             <figure v-for="(url, urli) in urls" :key="urli" class="image is-128x128 is-inline-block mr-2" style="border:1px dotted #ddd;">
                 <img class="mb-1" :src="url.ou" style="max-width:128px;max-height:128px;width:128px;height:128px;" />
-                <a href="javascript:void(0)" class="button is-danger is-small" @click="cancelUpload(urli)">hapus</a>
+                <a href="javascript:void(0)" class="button is-danger is-small is-fullwidth" @click="cancelUpload(urli)">hapus</a>
             </figure>
         </div>
         <div class="image-cont" v-if="blockDep.uploadType=='document_upload'">
@@ -38,7 +38,7 @@
                         <input class="input" type="text" placeholder="Masukan nama file" v-model="fileNames[urli]">
                     </p>
                     <p class="control">
-                        <a href="javascript:void(0)" class="button is-danger" @click="cancelUpload(urli)">hapus</a>
+                        <a href="javascript:void(0)" class="button is-danger is-fullwidth" @click="cancelUpload(urli)">hapus</a>
                     </p>
                 </div>
             </span>

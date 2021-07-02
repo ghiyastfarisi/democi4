@@ -1,4 +1,6 @@
-<?php if (!isset($_COOKIE['auth']) && null!=session('auth')) { setcookie('auth', json_encode(session('auth')), time()+1*60*60, '/'); } ?>
+<?php
+    if (!isset($_COOKIE['auth']) && null!=session('auth')) { setcookie('auth', json_encode(session('auth')), time()+1*60*60, '/'); }
+?>
 
 <!DOCTYPE html>
 <html lang="en">

@@ -11,3 +11,12 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 1XAmpleXample1
+  nginx:
+    container_name: nginx
+    network_mode: bridge
+    image: nginx:alpine
+    volumes:
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "433:433"
+    restart: always

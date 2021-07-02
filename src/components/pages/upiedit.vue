@@ -5,7 +5,8 @@
                 :formDep="{
                     editMode: 'edit',
                     ajaxUri: `v1/upi/${this.uid}/complete`,
-                    upiId: this.uid
+                    upiId: this.uid,
+                    submitTitle: 'Simpan Data'
                 }"
             />
         </div>

@@ -13,6 +13,8 @@ use App\Models\UpiTenagaKerjaModel;
 use App\Models\PerubahanUpiModel;
 use App\Models\RiwayatPerubahanUpiModel;
 use App\Models\UpiSertifikasiModel;
+use App\Models\PembinaMutuModel;
+use App\Models\KunjunganModel;
 
 class Upi extends BaseController
 {
@@ -20,6 +22,7 @@ class Upi extends BaseController
 	protected $PerubahanUpiModel;
 	protected $RiwayatPerubahanUpiModel;
 	protected $UpiSertifikasiModel;
+	protected $PembinaMutuModel;
 	protected $validation;
 	protected $db;
 	protected $upiDataUmum = array(
@@ -31,8 +34,8 @@ class Upi extends BaseController
 			'npwp'						=> 'required|numeric|min_length[15]|max_length[15]',
 			'nib'						=> 'required|min_length[5]',
 			'sumber_permodalan' 		=> 'required|min_length[3]|in_list[PMDN,PMA]',
-			'nama_pemilik' 				=> 'required|min_length[5]',
-			'nama_kontak_upi' 			=> 'required|min_length[5]',
+			'nama_pemilik' 				=> 'required',
+			'nama_kontak_upi' 			=> 'required',
 			'foto_pabrik' 				=> 'if_exist|valid_url',
 			'kecamatan'					=> 'required|numeric|greater_than[0]',
 			'kab_kota' 					=> 'required|numeric|greater_than[0]',
@@ -70,15 +73,12 @@ class Upi extends BaseController
 				'in_list'		=> 'input tidak valid'
 			],
 			'nama_pemilik'=> [
-				'required' 		=> 'wajib diisi',
-				'min_length'	=> 'minimum 5 karakter'
+				'required' 		=> 'wajib diisi'
 			],
 			'nama_kontak_upi'=> [
-				'required' 		=> 'wajib diisi',
-				'min_length'	=> 'minimum 5 karakter'
+				'required' 		=> 'wajib diisi'
 			],
 			'foto_pabrik'=> [
-				'required' 		=> 'wajib diisi',
 				'valid_url'		=> 'url gambar tidak valid'
 			],
 			'kecamatan'=> [
@@ -177,7 +177,7 @@ class Upi extends BaseController
 			'*.sarpras_id'		=> 'numeric',
 			'*.nilai_unit'		=> 'numeric',
 			'*.nilai_kapasitas'	=> 'numeric',
-			'*.satuan'			=> 'in_list[ton,kg,jam]'
+			'*.satuan'			=> 'in_list[ton,kg]'
 		],
 		'message' => [
 			'sarpras_id'		=> [
@@ -237,6 +237,7 @@ class Upi extends BaseController
 		$this->PerubahanUpiModel = new PerubahanUpiModel();
 		$this->RiwayatPerubahanUpiModel = new RiwayatPerubahanUpiModel();
 		$this->UpiSertifikasiModel = new UpiSertifikasiModel();
+		$this->PembinaMutuModel = new PembinaMutuModel();
 		$this->validation = \Config\Services::validation();
 		$this->db = db_connect();
 		$this->upiCompleteStructure = array(
@@ -1299,5 +1300,98 @@ class Upi extends BaseController
 	function _deleteAllUpiSertifikasi($upiId)
 	{
 		return $this->UpiSertifikasiModel->where([ 'upi_id', $upiId ])->delete();
+	}
+
+	function GetAllPerubahan()
+	{
+		$req = $this->request;
+
+		if ($req->getMethod(TRUE) !== 'GET') {
+			return ResponseNotAllowed();
+		}
+
+		$q = $req->getGet();
+
+		$extraQuery = array();
+
+		$upiId = (isset($q['upi_id']) && filter_var($q['upi_id'], FILTER_VALIDATE_INT)) ? (int)$q['upi_id'] : 0;
+		$page = (isset($q['page'])) ? $q['page'] : 1;
+		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
+		$offset = ($page - 1) * $limit;
+		$where = array();
+
+		if ($upiId > 0) {
+			$where = array('upi_id' => $upiId);
+		}
+
+		$resp = $this->PerubahanUpiModel->where($where)->orderBy('id', 'desc')->findAll($limit, $offset);
+		$countQuery = $this->PerubahanUpiModel->selectCount('id')->where($where)->find();
+		$count = (int)$countQuery[0]['id'];
+
+		$pageAvailable = ceil((int)$count/(int)$limit);
+
+		$current = $page;
+		$next = ($pageAvailable <= $current) ? 0 : $page + 1;
+		$prev = ($page == 1) ? 0 : $page - 1;
+
+		$lists = [];
+
+		if (count($resp) > 0) {
+			$lists = [ (int)$current ];
+
+			if ($prev > 0) {
+				$limitPrev = ($next == 0) ? $prev-1 : $prev;
+				for ($i = $current - 1; $i >= $limitPrev; $i--) {
+					if ($i >= 1) {
+						array_unshift($lists, (int)$i);
+					}
+				}
+			}
+
+			if ($next > 0) {
+				$limitNext = ($prev == 0) ? $next+1 : $next;
+				for ($i = $current + 1; $i <= $limitNext; $i++) {
+					if ($i <= $pageAvailable) {
+						array_push($lists, (int)$i);
+					}
+				}
+			}
+
+			$KunjunganModel = New KunjunganModel();
+
+			foreach($resp as $key => $value) {
+				$pm = $this->PembinaMutuModel->find($value['pembina_mutu_id']);
+				$kunjungan = '-';
+
+				if ($value['kunjungan_id'] > 0) {
+					$getKunjungan = $KunjunganModel->find($value['kunjungan_id']);
+
+					$kunjungan = isset($getKunjungan) ? $getKunjungan['kegiatan'] : '-';
+				}
+
+				$resp[$key]['nama_pembina_mutu'] = $pm['nama_lengkap'];
+				$resp[$key]['nama_kunjungan'] = $kunjungan;
+			}
+		}
+
+
+		$transformed = array(
+			'queries' 		=> array(
+				'limit'		=> (int)$limit,
+				'page'		=> (int)$page
+			),
+			'data' 			=> $resp,
+			'pagination'	=> array(
+				'total' 	=> $count,
+				'current'	=> (int)$current,
+				'next'		=> $next,
+				'prev'		=> $prev,
+				'list'		=> $lists
+			)
+		);
+
+		$transformed['queries'] = array_merge($transformed['queries'], $extraQuery);
+
+		return ResponseOK($transformed);
 	}
 }

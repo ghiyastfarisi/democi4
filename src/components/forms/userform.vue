@@ -16,7 +16,7 @@
                     <input class="input" name="password" type="password" placeholder="minimum 8 characters" v-model="ipass">
                 </div>
             </div>
-            <div v-if="formDep.isEdit" class="field">
+            <div v-if="formDep.isEdit && !formDep.extra.excludeRoleUpdate" class="field">
                 <label class="label">Login Status</label>
                 <div class="control is-expanded">
                     <div class="select is-fullwidth">
@@ -95,7 +95,6 @@ export default {
         }
     },
     created() {
-        console.log('-->', this.formDep)
         let fd = this.formDep
 
         if (fd.isEdit) {
@@ -147,7 +146,7 @@ export default {
                     return resp.json()
                         .then(errResp => {
                             if (errResp && errResp.error && errResp.error.message) {
-                                console.log(errResp.error.message)
+                                console.error(errResp.error.message)
                             }
                         })
                         .catch(err => {
@@ -177,8 +176,9 @@ export default {
                 login_status: this.iloginStatus
             }
             if (this.ipass !== '' && this.ipass.length > 1) {
-                payload.password = this.password
+                payload.password = this.ipass
             }
+
             fetch(url, {
                 method: 'PATCH',
                 body: JSON.stringify(payload),
@@ -188,7 +188,7 @@ export default {
                     return resp.json()
                         .then(errResp => {
                             if (errResp && errResp.error && errResp.error.message) {
-                                console.log(errResp.error.message)
+                                console.error(errResp.error.message)
                             }
                         })
                         .catch(err => {

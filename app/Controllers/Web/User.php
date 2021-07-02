@@ -41,4 +41,21 @@ class User extends BaseController
 		);
 		return RenderTemplate($data);
 	}
+
+	public function setting($id = 0)
+	{
+		$args = array(
+			'_PageSectionTitle' 	=> 'Setting',
+			'_PageSectionSubTitle' 	=> 'user setting'
+		);
+		$data = array(
+			'args' 			=> $args,
+			'_PageTitle' 	=> 'User Setting Page',
+			'_Pages' 		=> 'user/setting',
+			'_LoadCSS'		=> array(),
+			'_LoadJS'		=> array('@/usersetting.js'),
+			'_ActiveSlug'	=> 'setting'
+		);
+		return RenderTemplate($data);
+	}
 }

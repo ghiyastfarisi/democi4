@@ -130,5 +130,46 @@ module.exports = {
         }
 
         return msg
-    }
+    },
+    async HandlePostUpload(url, payload) {
+        const result = {
+            isError: false,
+            message: {},
+            origin: {}
+        }
+        await fetch(url, {
+            method: 'POST',
+            body: payload,
+        })
+        .then(async stream => {
+            const resp = await stream.json()
+
+            if (!stream.ok) {
+                result.isError = true
+                result.message = resp.error.message
+
+                return
+            }
+
+            result.message = resp
+
+            if (resp.message) {
+                result.message = resp.message
+            }
+
+            if (resp.data && resp.data.message) {
+                result.message = resp.data.message
+            }
+
+            result.origin = resp
+
+            return
+        })
+        .catch(err => {
+            result.isError = true
+            result.message = err
+        })
+
+        return result
+    },
 }

@@ -211,7 +211,15 @@ class User extends BaseController
 			}
 		}
 
+		// check old id and generated token
+		$user = $this->UserModel->find($id);
+
+		if (!isset($user)) {
+			return ResponseError(400, array('message' => 'user invalid'));
+		}
+
 		$reqArray['id'] = $id;
+		$reqArray['generated_token'] = $user['generated_token'];
 
 		$this->UserModel->save($reqArray);
 

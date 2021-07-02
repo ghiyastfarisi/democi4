@@ -17,6 +17,63 @@
             </div>
             <form v-cloak v-if="showData" class="form-name-container" @submit.prevent="submitData">
                 <div class="columns is-multiline">
+                    <div class="column is-12" v-if="formDep.editMode=='request'">
+                        <div class="field">
+                            <label class="label">Kunjungan Terkait</label>
+                            <Multiselect
+                                v-if="formDep.isEdit"
+                                v-model="list.kunjungan_id"
+                                id="ajax"
+                                track-by="id"
+                                label="label"
+                                placeholder="Cari Kunjungan Terkait"
+                                selectLabel=""
+                                deselectLabel=""
+                                selectedLabel=""
+                                open-direction="bottom"
+                                :options="searchedUpi"
+                                :searchable="true"
+                                :loading="isLoading"
+                                :internal-search="false"
+                                :close-on-select="true"
+                                :options-limit="300"
+                                :limit-text="limitText"
+                                :max-height="600"
+                                :show-no-results="false"
+                                :hide-selected="false"
+                                :allowEmpty="false"
+                                :preserveSearch="true"
+                                @search-change="asyncFind"
+                                style="width:100%"
+                            >
+                                <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                                <span slot="noOptions">Ketik keyword untuk mencari nama upi</span>
+                            </Multiselect>
+                        </div>
+                        <div>
+                            <table class="table is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Kegiatan</th>
+                                        <th>Tanggal Kunjungan</th>
+                                        <th>Provinsi</th>
+                                        <th>Pembina Mutu</th>
+                                        <th>Catatan</th>
+                                    </tr>
+                                </thead>
+                                <tr>
+                                    <td>{{master.kunjungan.kegiatan}}</td>
+                                    <td>{{master.kunjungan.tanggal_kunjungan}}</td>
+                                    <td>{{master.kunjungan.nama_provinsi}}</td>
+                                    <td>{{master.kunjungan.nama_pembina_mutu}}</td>
+                                    <td>
+                                        <div class="control" v-html="master.kunjungan.catatanForm">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                     <div class="column is-6">
                         <div class="field">
                             <nav class="level">
@@ -199,13 +256,36 @@
                         <div class="field">
                             <label class="label"> Foto Pabrik </label>
                             <div class="control">
-                                <input class="input" type="text" v-model="list.data_umum.foto_pabrik">
+                                <div class="file">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file" name="resume" @change="onFileChange">
+                                        <span class="file-cta">
+                                            <span class="file-icon">
+                                                <i class="fas fa-upload"></i>
+                                            </span>
+                                            <span class="file-label">
+                                                Upload Foto Pabrik
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="image-current mr-2 mb-2 mt-2" v-if="list.data_umum.foto_pabrik">
+                                    <figure class="image is-inline-block p-1" style="border:1px dotted #ddd;">
+                                        <img :src="list.data_umum.foto_pabrik" style="max-width:128px;width:128px;" />
+                                    </figure>
+                                </div>
+                                <div class="image-cont mr-2 mb-2 mt-2" v-if="image.display">
+                                    <figure class="image is-inline-block p-1" style="border:1px dotted #ddd;">
+                                        <img :src="image.display" style="max-width:128px;width:128px;" />
+                                        <a href="javascript:void(0)" class="button is-danger is-small mt-1 is-fullwidth" @click="cancelUpload">Batal Upload</a>
+                                    </figure>
+                                </div>
                             </div>
                         </div>
                         <div class="field">
                             <label class="label"> Website </label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Nama & Kontak UPI" v-model="list.data_umum.website">
+                                <input class="input" type="text" placeholder="Alamat Website Perusahaan" v-model="list.data_umum.website">
                             </div>
                         </div>
                         <div class="field">
@@ -517,10 +597,9 @@
                     </div>
                 </div>
                 <div>
-                    <button type="submit" class="button is-success">Update</button>
+                    <button type="submit" class="button is-success">{{formDep.submitTitle}}</button>
                     <button type="cancel" @click="Close" class="button">Cancel</button>
                 </div>
-                <div id="mamboleo"></div>
             </form>
         </div>
     </div>
@@ -529,18 +608,23 @@
 <script>
 import UrlParse from 'url-parse'
 import DynamicModalForm from '../forms/dynamicmodalform'
-import { HandlePatch, HandlePost, ParseError } from '../../lib/form'
+import { HandlePatch, HandlePost, ParseError, HandlePostUpload } from '../../lib/form'
 import { AutoClosePopup } from '../../lib/popup'
 import Multiselect from 'vue-multiselect'
 import FValid from 'fastest-validator'
+import Table from '../dynamic/table.vue'
+import Dayjs from 'dayjs'
 
 export default {
     components: {
         DynamicModalForm,
-        Multiselect
+        Multiselect,
+        Table
     },
     data: function() {
         return {
+            AUTH: {},
+            baseUrl: BASE_URL,
             showEditAkun: false,
             showError: false,
             showData: false,
@@ -553,7 +637,8 @@ export default {
                 products: [],
                 ekspor: [],
                 domestik: [],
-                badges: []
+                badges: [],
+                kunjungan: {}
             },
             transformed: {
                 sertifikasi: [],
@@ -573,11 +658,16 @@ export default {
                     merk_dagang: []
                 },
                 data_tenaga_kerja: {},
-                data_sarpras: []
+                data_sarpras: [],
+                kunjungan_id: 0
             },
             validation: {
                 classHandler: {},
                 messageHandler: {}
+            },
+            image: {
+                display: '',
+                object: {}
             }
         }
     },
@@ -586,22 +676,76 @@ export default {
             type: Object,
             default: function () {
                 return {
-                    formMode: 'request',
+                    editMode: 'request',
                     ajaxUri: '',
                     upiId: 0,
                     isCreate: false,
-                    createUrl: ''
+                    createUrl: '',
+                    submitTitle: 'Simpan Data',
+                    extra: {
+                        kunjunganId: 0
+                    }
                 }
             }
         }
     },
     methods: {
         Close() {},
+        async asyncFind (query) {
+            const q = {
+                mapSelect: true,
+                keyword: query
+            }
+            const url = new UrlParse(`${BASE_API_URL}/v1/upi/search`, true)
+
+            url.query.mapSelect = q.mapSelect
+            url.query.keyword = q.keyword
+
+            if (query.length > 0) {
+                this.isLoading = true
+                fetch(url.toString())
+                    .then(stream => stream.json())
+                    .then(resp => {
+                        const { data } = resp
+                        this.searchedUpi = data
+                        this.isLoading = false
+                    })
+                    .catch(err => {
+                        console.error(err)
+                        this.errorPopup(
+                            ParseError("Terjadi kesalahan ketika mencari")
+                        )
+                    })
+            }
+        },
+        cancelUpload() {
+            this.image = {
+                display: '',
+                object: {}
+            }
+        },
+        onFileChange(e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+                    return this.errorPopup("Jenis file tidak didukung")
+                }
+
+                const ou = URL.createObjectURL(file)
+
+                this.image.display = ou
+                this.image.uploadType = 'image_upload'
+                this.image.uploadUsage = 'foto_pabrik'
+                this.image.object = file
+            }
+
+        },
         addTag (newTag) {
             this.transformed.data_produksi.merk_dagang.push(newTag)
         },
         getBadge() {
-            const url = `${BASE_API_URL}/v1/badge/all?category=upi&transformLabel=true`
+            const url = `${BASE_API_URL}v1/badge/all?category=upi&transformLabel=true`
             fetch(url)
                 .then(stream => stream.json())
                 .then(resp => {
@@ -853,7 +997,7 @@ export default {
         validatePayload(payload) {
             return this.validateDataUmum(payload.data_umum) && this.validateDataProduksi(payload.data_produksi)
         },
-        submitData() {
+        async submitData() {
             const payload = Object.assign({}, this.list)
 
             payload.data_sarpras = this.transformSarprasForm(payload.data_sarpras)
@@ -887,14 +1031,57 @@ export default {
             }
 
             if (this.validatePayload(payload)) {
+                const uploaded = await this.actionUpload()
+
+                if (uploaded && uploaded.upload_path) {
+                    payload.data_umum.foto_pabrik = `${this.baseUrl}/${uploaded.upload_path}`
+                }
+
                 if (this.formDep.isCreate) {
                     return this.createData(payload)
                 } else {
-                    return this.editData(payload)
+                    if (this.formDep.editMode === 'request') {
+                        return this.requestEditData(payload)
+                    } else if (this.formDep.editMode === 'update') {
+                        return this.editData(payload)
+                    }
                 }
             }
 
             return false
+        },
+        async fetchUpload(payload) {
+            const result = await HandlePostUpload(
+                `${BASE_API_URL}v1/upload/file`,
+                payload
+            )
+
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            if (result.origin && result.origin.data && result.origin.data.path) {
+                const [uploaded] = result.origin.data.path
+
+                return uploaded
+            }
+        },
+        async actionUpload() {
+            const payload = new FormData()
+
+            if (this.image && this.image.object && this.image.display != '') {
+                payload.append('upload_usage', this.image.uploadUsage)
+                payload.append('upload_type', this.image.uploadType)
+                payload.append('files[]', this.image.object)
+
+                const uploaded = await this.fetchUpload(payload)
+
+                return uploaded
+            }
+
+            return {}
         },
         closeAndPopup(title='', body ='', timeout=900, redirect=false) {
             AutoClosePopup({
@@ -913,12 +1100,10 @@ export default {
             AutoClosePopup({
                 title: message,
                 body: '',
-                timeout: 60000
+                timeout: 3000
             })
         },
         async editData(payload) {
-            console.log(JSON.stringify(payload))
-
             const result = await HandlePatch(
                 `${BASE_API_URL}v1/upi/${this.formDep.upiId}/update/complete`,
                 JSON.stringify(payload)
@@ -930,7 +1115,23 @@ export default {
                 )
             }
 
-            return this.closeAndPopup(result.message, '', 900, false)
+            return this.closeAndPopup(result.message, '', 1200, true)
+        },
+        async requestEditData(payload) {
+            payload.kunjungan_id = this.master.kunjungan.id
+
+            const result = await HandlePost(
+                `${BASE_API_URL}v1/upi/${this.formDep.upiId}/request/perubahan-upi`,
+                JSON.stringify(payload)
+            )
+
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            return this.closeAndPopup(result.message, '', 1200, true)
         },
         async createData(payload) {
             const result = await HandlePost(
@@ -944,7 +1145,7 @@ export default {
                 )
             }
 
-            return this.closeAndPopup(result.message, '', 900, true)
+            return this.closeAndPopup(result.message, '', 1200, true)
         },
         getData() {
             const url = `${BASE_API_URL}${this.formDep.ajaxUri}`
@@ -1048,6 +1249,7 @@ export default {
 
                     if (data !== null) {
                         data.forEach(el => {
+                            el.sarpras_id = el.id
                             el.nilai_unit = 0
                             el.nilai_kapasitas = 0
                             el.ukuran = el.metric === 'weight' ? 'kg' : 'jam'
@@ -1083,19 +1285,71 @@ export default {
                     satuan: el.satuan ? el.satuan : 'kg'
                 }
             })
+        },
+        parseForDisplay(txt) {
+            return txt.split('\n').join('<br/>')
+        },
+        async getKunjungan(kunjunganId) {
+            return fetch(`${BASE_API_URL}v1/kunjungan/${kunjunganId}`)
+                .then(async stream => stream.json())
+                .then(resp => {
+                    const { data } = resp
+
+                    if (data !== null) {
+                        data.tanggal_kunjungan = Dayjs(data.tanggal_kunjungan).format('DD-MM-YYYY')
+                        data.catatanForm = this.parseForDisplay(data.catatan)
+                        this.master.kunjungan = Object.assign({}, this.master.kunjungan, data)
+
+                        return data
+                    }
+
+                    return {}
+                })
+                .catch(err => {
+                    console.error('Err while FetchAjax:', err)
+                    console.error(err)
+                    return {}
+                })
+        },
+        async validatePage() {
+            console.log(this.formDep)
+            if (!this.formDep.isCreate) {
+                if (this.formDep.extra && this.formDep.extra.kunjunganId && this.formDep.extra.kunjunganId > 0) {
+                    const kunjungan = await this.getKunjungan(this.formDep.extra.kunjunganId)
+
+                    if (kunjungan && kunjungan.upi_id) {
+                        const fetchedUpiId = parseInt(kunjungan.upi_id)
+
+                        if (fetchedUpiId !== this.formDep.upiId) {
+                            return false
+                        }
+
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+            }
         }
     },
-    created() {
-        this.getBadge()
-        this.getProduct()
-        this.getRegency()
-        this.getCountry()
-        if (this.formDep.isCreate) {
-            this.getLocation('province', 0)
-            this.getSarpras()
-            this.showData = true
+    async created() {
+        const valid = await this.validatePage()
+        if (valid) {
+            this.AUTH = window.COOKIE_OBJECT
+            this.getBadge()
+            this.getProduct()
+            this.getRegency()
+            this.getCountry()
+            if (this.formDep.isCreate) {
+                this.getLocation('province', 0)
+                this.getSarpras()
+                this.showData = true
+            } else {
+                this.getData()
+            }
         } else {
-            this.getData()
+            alert('ERROR!')
+            this.showError = true
         }
     }
 };

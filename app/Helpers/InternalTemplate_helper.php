@@ -99,7 +99,7 @@ function RenderTemplate($data = null)
             'slug'  => 'setting',
             'title' => 'Setting',
             'icon'  => 'fas fa-tools',
-            'url'   => base_url('web/setting')
+            'url'   => base_url('web/user/setting')
         ),
         array(
             'slug'  => 'logout',

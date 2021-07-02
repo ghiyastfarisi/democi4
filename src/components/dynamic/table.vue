@@ -185,7 +185,7 @@ export default {
                         const [ link ] = this.linkParser(field.link.path, field.link.parser, list)
 
                         newobj[field.objectField] = {
-                            value: list[field.objectField],
+                            value: field.link.text ? field.link.text : list[field.objectField],
                             link
                         }
                     } else if (field.content) {

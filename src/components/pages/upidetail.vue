@@ -72,6 +72,49 @@
                 />
             </div>
         </div>
+        <div class="column is-12">
+            <div class="box" v-if="showPembinaan">
+                <div class="title is-4">Permintaan Perubahan Data</div>
+                <NewDynamicTable
+                    :tableDep="{
+                        ajaxUri: `v1/upi/all/perubahan-upi?upi_id=${this.uid}`,
+                        showLimit: 10,
+                        renderObject: [
+                            {
+                                fieldName: 'Link',
+                                type: 'setting',
+                                content: [
+                                    {
+                                        text: 'Lihat data perubahan',
+                                        class: 'is-success is-outlined',
+                                        useLink: {
+                                            path: '/web/upi/get/{id}',
+                                            parser: [ { replace: 'id', with: 'id' } ]
+                                        },
+                                    },
+                                ]
+                            },
+                            {
+                                fieldName: 'Status',
+                                objectField: 'status'
+                            },
+                            {
+                                fieldName: 'Tanggal Permintaan',
+                                objectField: 'created_at'
+                            },
+                            {
+                                fieldName: 'Pembina Mutu',
+                                objectField: 'nama_pembina_mutu'
+                            },
+                            {
+                                fieldName: 'Kunjungan Terkait',
+                                objectField: 'nama_kunjungan'
+                            }
+                        ]
+                    }"
+                />
+            </div>
+        </div>
     </div>
 </template>
 <script>
