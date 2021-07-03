@@ -20,4 +20,5 @@ services:
       - ./datadir/nginx/private:/etc/private
     ports:
       - "433:433"
+      - "80:80"
     restart: always
