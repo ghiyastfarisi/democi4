@@ -1312,7 +1312,6 @@ export default {
                 })
         },
         async validatePage() {
-            console.log(this.formDep)
             if (!this.formDep.isCreate) {
                 if (this.formDep.extra && this.formDep.extra.kunjunganId && this.formDep.extra.kunjunganId > 0) {
                     const kunjungan = await this.getKunjungan(this.formDep.extra.kunjunganId)
@@ -1328,7 +1327,11 @@ export default {
                     } else {
                         return false
                     }
+                } else {
+                    return true
                 }
+            } else {
+                return true
             }
         }
     },
