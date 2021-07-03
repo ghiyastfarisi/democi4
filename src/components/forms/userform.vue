@@ -132,10 +132,13 @@ export default {
                 })
         },
         createData() {
-            const url = `${BASE_API_URL}v1/user/create`
+            const url = `${BASE_URL}/register`
             const payload = JSON.stringify({
                 username: this.iuname,
-                password: this.ipass
+                password: this.ipass,
+                nama_lengkap: this.nama_lengkap,
+                nip: this.nip,
+                no_hp: this.no_hp
             })
             fetch(url, {
                 method: 'POST',

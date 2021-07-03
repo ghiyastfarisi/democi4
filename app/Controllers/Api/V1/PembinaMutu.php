@@ -37,19 +37,24 @@ class PembinaMutu extends BaseController
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
 		$offset = ($page - 1) * $limit;
 
+		$queryBuilder = new PembinaMutuModel();
+		$countQueryBuilder = new PembinaMutuModel();
+
 		$joinQuery = 'tbl_user.id = tbl_pembina_mutu.user_id AND tbl_user.deleted_at IS NULL';
 
-
-		$this->PembinaMutuModel->select('tbl_pembina_mutu.*')->join('tbl_user', $joinQuery);
+		$queryBuilder->select('tbl_pembina_mutu.*')->join('tbl_user', $joinQuery);
+		$countQueryBuilder->select('tbl_pembina_mutu.*')->join('tbl_user', $joinQuery);
 
 		if ($keyword != '') {
 			$cleanKey = "'%" . $this->db->escapeLikeString($keyword) . "%' ESCAPE '!'";
-			$this->PembinaMutuModel->where('nama_lengkap LIKE' . $cleanKey);
+			$where  = 'nama_lengkap LIKE' . $cleanKey;
+			$queryBuilder->where($where);
+			$countQueryBuilder->where($where);
 		}
 
-		$resp = $this->PembinaMutuModel->orderBy('tbl_pembina_mutu.id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->PembinaMutuModel->selectCount('tbl_pembina_mutu.id')->find();
-		$count = (int)$countQuery[0]['id'];
+		$resp = $queryBuilder->orderBy('tbl_pembina_mutu.id', 'desc')->findAll($limit, $offset);
+		$countQuery = $countQueryBuilder->countAllResults();
+		$count = (int)$countQuery;
 
 		$pageAvailable = ceil((int)$count/(int)$limit);
 

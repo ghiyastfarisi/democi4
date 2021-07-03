@@ -15,6 +15,15 @@
             </span>
         </div>
         <div class="box">
+            <div v-if="!tableDep.searchable">
+                <div class="columns is-multiline mb-2">
+                    <div class="column is-3">
+                        <div class="control" :class="searchStatus">
+                            <input class="input" @input="debounceSearch" required type="text" placeholder="Search...">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div v-if="enableAdd.valid" class="mb-4">
                 <a href="javascript:void(0)" :class="{ 'is-loading': isLoading }" class="button is-success is-outlined" @click="UpdateTable">
                     <span class="icon">
@@ -126,10 +135,15 @@ export default {
             isLoading: false,
             pagination: {},
             limit: 0,
+            page: 1,
             startOrder: 1,
             showModalEdit: false,
             baseEditFetchUrl: '',
             baseEditSubmitUrl: '',
+            searchMessage: null,
+            searchTyping: null,
+            searchDebounceInfo: null,
+            searchStatus: ''
         }
     },
     props: {
@@ -137,9 +151,10 @@ export default {
             type: Object,
             default: function() {
                 return {
-                    renderObject: Array,
-                    ajaxUri: String,
-                    showLimit: Number
+                    searchable: false,
+                    renderObject: [],
+                    ajaxUri: '',
+                    showLimit: 5
                 }
             }
         },
@@ -167,6 +182,20 @@ export default {
         }
     },
     methods: {
+        clearDebounce() {
+            clearTimeout(this.searchDebounceInfo)
+        },
+        debounceSearch(event) {
+            this.searchMessage = null
+            this.searchTyping = 'You are typing'
+            this.clearDebounce()
+            this.searchStatus = 'is-loading'
+            this.searchDebounceInfo = setTimeout(() => {
+                this.searchTyping = null
+                this.searchMessage = event.target.value
+                this.getData()
+            }, 600)
+        },
         linkParser(path, parser, list) {
             return parser.map(p => {
                 const toreplace = new RegExp(`{${p.replace}}`, "gi")
@@ -216,6 +245,13 @@ export default {
 
             url.query.limit = q.limit
             url.query.page = q.page
+
+            this.clearDebounce()
+            this.searchStatus = ''
+
+            if (this.searchMessage) {
+                url.query.keyword = this.searchMessage
+            }
 
             fetch(url.toString())
                 .then(stream => stream.json())

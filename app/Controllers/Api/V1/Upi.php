@@ -271,9 +271,21 @@ class Upi extends BaseController
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
 		$offset = ($page - 1) * $limit;
 
-		$resp = $this->UpiModel->orderBy('id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->UpiModel->selectCount('id')->find();
-		$count = (int)$countQuery[0]['id'];
+		$keyword = isset($q['keyword']) ? $q['keyword'] : '';
+		$minSearch = 1;
+
+		$qBuilder = $this->UpiModel;
+		$cBuilder = new UpiModel();
+
+		if ($keyword!='') {
+			$cleanKey = "'%" . $this->db->escapeLikeString($keyword) . "%' ESCAPE '!'";
+			$qBuilder->where('nama_perusahaan LIKE' . $cleanKey);
+			$cBuilder->where('nama_perusahaan LIKE' . $cleanKey);
+		}
+
+		$resp = $qBuilder->orderBy('id', 'desc')->findAll($limit, $offset);
+		$countQuery = $cBuilder->countAllResults();
+		$count = (int)$countQuery;
 
 		$pageAvailable = ceil((int)$count/(int)$limit);
 
