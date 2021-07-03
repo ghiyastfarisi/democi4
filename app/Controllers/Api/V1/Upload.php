@@ -13,6 +13,7 @@ class Upload extends BaseController
 		'gambar_laporan' 	=> array('laporan', 'gambar'),
 		'dokumen_laporan' 	=> array('laporan', 'dokumen'),
 		'foto_pabrik'		=> array('upi', 'pabrik'),
+		'foto_pembina_mutu'	=> array('pm', 'foto'),
 		'produk_upi'		=> array('upi', 'produk'),
 	];
 	protected $validType = [

@@ -50,12 +50,6 @@
                     <input class="input" type="text" placeholder="Deskripsi Diri" v-model="deskripsi">
                 </div>
             </div>
-            <!-- <div class="field">
-                <label class="label">Upload Foto Profil</label>
-                <div class="control">
-                    <input class="input" type="text" placeholder="minimum 8 characters" v-model="ipass">
-                </div>
-            </div> -->
         </section>
         <footer class="modal-card-foot">
             <button type="submit" class="button is-success">{{ formDep.submit }}</button>

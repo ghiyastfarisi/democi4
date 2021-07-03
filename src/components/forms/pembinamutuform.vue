@@ -39,12 +39,35 @@
                     <input class="input" type="text" placeholder="Deskripsi Diri" v-model="deskripsi">
                 </div>
             </div>
-            <!-- <div class="field">
-                <label class="label">Upload Foto Profil</label>
+            <div class="field">
+                <label class="label"> Foto Profil </label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="minimum 8 characters" v-model="foto_profil">
+                    <div class="file">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="resume" @change="onFileChange">
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label">
+                                    Upload Foto Profil
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="image-current mr-2 mb-2 mt-2" v-if="foto_profil">
+                        <figure class="image is-inline-block p-1" style="border:1px dotted #ddd;">
+                            <img :src="foto_profil" style="max-width:128px;width:128px;" />
+                        </figure>
+                    </div>
+                    <div class="image-cont mr-2 mb-2 mt-2" v-if="image.display">
+                        <figure class="image is-inline-block p-1" style="border:1px dotted #ddd;">
+                            <img :src="image.display" style="max-width:128px;width:128px;" />
+                            <a href="javascript:void(0)" class="button is-danger is-small mt-1 is-fullwidth" @click="cancelUpload">Batal Upload</a>
+                        </figure>
+                    </div>
                 </div>
-            </div> -->
+            </div>
         </section>
         <footer class="modal-card-foot">
             <button type="submit" class="button is-success">{{ formDep.submit }}</button>
@@ -55,6 +78,7 @@
 
 <script>
 import { AutoClosePopup } from '../../lib/popup'
+import { HandlePostUpload, ParseError } from '../../lib/form'
 import Multiselect from 'vue-multiselect'
 
 export default {
@@ -75,6 +99,11 @@ export default {
             keahlian: '',
             deskripsi: '',
             foto_profil: '',
+            image: {
+                display: '',
+                object: {}
+            },
+            baseUrl: BASE_URL
         }
     },
     props: {
@@ -104,10 +133,72 @@ export default {
         }
     },
     methods: {
-        submitData() {
+        cancelUpload() {
+            this.image = {
+                display: '',
+                object: {}
+            }
+        },
+        onFileChange(e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+                    return this.errorPopup("Jenis file tidak didukung")
+                }
+
+                const ou = URL.createObjectURL(file)
+
+                this.image.display = ou
+                this.image.uploadType = 'image_upload'
+                this.image.uploadUsage = 'foto_pembina_mutu'
+                this.image.object = file
+            }
+
+        },
+        async fetchUpload(payload) {
+            const result = await HandlePostUpload(
+                `${BASE_API_URL}v1/upload/file`,
+                payload
+            )
+
+            if (result.isError) {
+                return this.errorPopup(
+                    ParseError(result.message)
+                )
+            }
+
+            if (result.origin && result.origin.data && result.origin.data.path) {
+                const [uploaded] = result.origin.data.path
+
+                return uploaded
+            }
+        },
+        async actionUpload() {
+            const payload = new FormData()
+
+            if (this.image && this.image.object && this.image.display != '') {
+                payload.append('upload_usage', this.image.uploadUsage)
+                payload.append('upload_type', this.image.uploadType)
+                payload.append('files[]', this.image.object)
+
+                const uploaded = await this.fetchUpload(payload)
+
+                return uploaded
+            }
+
+            return {}
+        },
+        async submitData() {
             let fd = this.formDep
 
             if (fd.isEdit) {
+                const uploaded = await this.actionUpload()
+
+                if (uploaded && uploaded.upload_path) {
+                    this.foto_profil = `${this.baseUrl}/${uploaded.upload_path}`
+                }
+
                 return this.updateData()
             }
 
@@ -248,6 +339,13 @@ export default {
             })
 
             this.$emit('update-table')
+        },
+        errorPopup(message) {
+            AutoClosePopup({
+                title: message,
+                body: '',
+                timeout: 3000
+            })
         },
     }
 };

@@ -75,16 +75,6 @@
                                 <div class="level-left">
                                     <p class="title is-4 is-spaced">Pembina Mutu</p>
                                 </div>
-                                <!-- <div class="level-right">
-                                    <a href="javascript:void(0)" @click="showEditPembinaMutu=!showEditPembinaMutu" class="button is-warning is-small">
-                                        <span class="icon">
-                                            <i class="fas fa-edit"></i>
-                                        </span>
-                                        <span>
-                                            Update
-                                        </span>
-                                    </a>
-                                </div> -->
                             </nav>
                             <DynamicModalForm
                                 v-if="showEditPembinaMutu"
@@ -100,7 +90,11 @@
                                 @toggle-close="showEditPembinaMutu=!showEditPembinaMutu"
                                 @update-table="getData"
                             />
-
+                            <div class="field">
+                                <figure class="image">
+                                    <img v-if="pembinaMutuData.foto_profil!=''" :src="pembinaMutuData.foto_profil" style="max-width:180px;max-height:180px;">
+                                </figure>
+                            </div>
                             <div class="field">
                                 <label class="label"> Nama Lengkap </label>
                                 <div class="control">
