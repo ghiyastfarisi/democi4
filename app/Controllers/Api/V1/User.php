@@ -34,9 +34,21 @@ class User extends BaseController
 		$limit = (isset($q['limit'])) ? $q['limit'] : 1;
 		$offset = ($page - 1) * $limit;
 
-		$resp = $this->UserModel->orderBy('id', 'desc')->findAll($limit, $offset);
-		$countQuery = $this->UserModel->selectCount('id')->find();
-		$count = (int)$countQuery[0]['id'];
+		$keyword = isset($q['keyword']) ? $q['keyword'] : '';
+
+		$queryBuilder = $this->UserModel;
+		$countQueryBuilder = new UserModel();
+
+		if ($keyword != '') {
+			$cleanKey = "'%" . $this->db->escapeLikeString($keyword) . "%' ESCAPE '!'";
+			$where  = 'username LIKE' . $cleanKey;
+			$queryBuilder->where($where);
+			$countQueryBuilder->where($where);
+		}
+
+		$resp = $queryBuilder->orderBy('id', 'desc')->findAll($limit, $offset);
+		$countQuery = $countQueryBuilder->countAllResults();
+		$count = (int)$countQuery;
 
 		$pageAvailable = ceil((int)$count/(int)$limit);
 

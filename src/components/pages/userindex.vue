@@ -14,6 +14,7 @@
                     }
                 }"
                 :tableDep="{
+                    searchable: true,
                     ajaxUri: `v1/user/all`,
                     deleteUrl: `v1/user/`,
                     showLimit: 25,

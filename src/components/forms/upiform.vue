@@ -612,14 +612,12 @@ import { HandlePatch, HandlePost, ParseError, HandlePostUpload } from '../../lib
 import { AutoClosePopup } from '../../lib/popup'
 import Multiselect from 'vue-multiselect'
 import FValid from 'fastest-validator'
-import Table from '../dynamic/table.vue'
 import Dayjs from 'dayjs'
 
 export default {
     components: {
         DynamicModalForm,
         Multiselect,
-        Table
     },
     data: function() {
         return {

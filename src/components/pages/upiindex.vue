@@ -10,6 +10,7 @@
                     }
                 }"
                 :tableDep="{
+                    searchable: true,
                     ajaxUri: `v1/upi/all?getLocationName=true`,
                     showLimit: 25,
                     renderObject: [

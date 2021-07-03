@@ -15,7 +15,7 @@
             </span>
         </div>
         <div class="box">
-            <div v-if="!tableDep.searchable">
+            <div v-if="tableDep.searchable">
                 <div class="columns is-multiline mb-2">
                     <div class="column is-3">
                         <div class="control" :class="searchStatus">

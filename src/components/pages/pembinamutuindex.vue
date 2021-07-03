@@ -6,6 +6,7 @@
                     valid: false
                 }"
                 :tableDep="{
+                    searchable: true,
                     ajaxUri: `v1/pembina-mutu/all?getInstansi=true`,
                     deleteUrl: 'v1/pembina-mutu/',
                     showLimit: 25,
