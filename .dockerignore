@@ -130,6 +130,3 @@ node_modules/
 
 # file upload exclude file
 public/files/*/
-
-# infra
-infra/
