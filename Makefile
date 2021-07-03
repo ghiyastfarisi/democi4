@@ -13,6 +13,8 @@ migration-run:
 
 build-image:
 	@docker build -t ${PROJECT_NAME}:v1 -f Dockerfile .
+	@sleep 3
+	@docker image prune -f
 
 run-dev:
 	@sh run.sh
