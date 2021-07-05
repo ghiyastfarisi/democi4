@@ -27,7 +27,7 @@ class BaseController extends Controller
 	 *
 	 * @var array
 	 */
-	protected $helpers = [ 'InternalHttpResponse', 'InternalTemplate', 'html' ];
+	protected $helpers = [ 'InternalHttpResponse', 'InternalTemplate', 'InternalSecurity', 'html' ];
 	protected $db;
 	protected $session;
 

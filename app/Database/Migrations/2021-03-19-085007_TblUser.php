@@ -34,6 +34,12 @@ class TblUser extends Migration
 				'type' => 'TEXT',
 				'null' => false
 			],
+			'registration_status' => [
+				'type' 			=> 'ENUM',
+				'null' 			=> false,
+				'constraint' 	=> [ 'unverified', 'verified' ],
+				'default' 		=> 'unverified'
+			],
 			'generated_token' => [
 				'type' => 'TEXT',
 				'null' => false

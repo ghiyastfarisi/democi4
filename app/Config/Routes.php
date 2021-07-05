@@ -137,6 +137,7 @@ $routes->group('web', function($routes)
 $routes->post('login', 'Api\V1\User::login');
 $routes->post('register', 'Api\V1\User::register');
 $routes->get('logout', 'Auth::logout');
+$routes->get('rv/(:any)', 'Api\V1\User::rv/$1');
 
 
 /*

@@ -64,50 +64,65 @@ function RenderTemplate($data = null)
     $data['_LoadJS'] = array_merge(_globalJS(), $injectJS);
 
     // default inject menu
-    $menuData = array(
-        array(
+    $listOfMenu = array(
+        'dashboard' =>  array(
             'slug'  => 'dashboard',
             'title' => 'Dashboard',
             'icon'  => 'fas fa-home',
             'url'   => base_url('web/dashboard')
         ),
-        array(
+        'user' => array(
             'slug'  => 'user',
             'title' => 'User',
             'icon'  => 'fas fa-user',
             'url'   => base_url('web/user')
         ),
-        array(
+        'pembinamutu' => array(
             'slug'  => 'pembina-mutu',
             'title' => 'Pembina mutu',
             'icon'  => 'fas fa-user-secret',
             'url'   => base_url('web/pembina-mutu')
         ),
-        array(
+        'upi' => array(
             'slug'  => 'upi',
             'title' => 'UPI',
             'icon'  => 'fas fa-building',
             'url'   => base_url('web/upi')
         ),
-        array(
+        'laporan' => array(
             'slug'  => 'laporan',
             'title' => 'Laporan',
             'icon'  => 'fas fa-book',
             'url'   => base_url('web/laporan')
         ),
-        array(
+        'setting' => array(
             'slug'  => 'setting',
             'title' => 'Setting',
             'icon'  => 'fas fa-tools',
             'url'   => base_url('web/user/setting')
         ),
-        array(
+        'logout' => array(
             'slug'  => 'logout',
             'title' => 'Logout',
             'icon'  => 'fas fa-sign-out-alt',
             'url'   => base_url('logout')
         )
     );
+
+    $userMenu = ['pembina_mutu' => [ 'dashboard', 'pembinamutu', 'upi', 'laporan', 'setting', 'logout' ] ];
+    $menuData = $listOfMenu;
+    $userSession = session('auth');
+
+    if (isset($userSession) && isset($userSession['role'])) {
+        $role = $userSession['role'];
+        if (isset($userMenu[$role])) {
+            $menuData = array();
+            foreach($userMenu[$role] as $k => $v) {
+                array_push($menuData, $listOfMenu[$v]);
+            }
+        }
+    }
+
     $data['_Menu'] = $menuData;
 
     $vp =  ViewPath();

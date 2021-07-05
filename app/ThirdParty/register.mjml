@@ -1,0 +1,20 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="280px" src="https://binamutu.com/logo.png"></mj-image>
+        <mj-divider border-color="#BBBBBB"></mj-divider>
+        <mj-text font-size="20px" color="#333" font-family="helvetica">
+          Hi, <strong>{{NAME}}</strong> sang Pembina Mutu.
+        </mj-text>
+        <mj-text font-size="20px" color="#333" font-family="helvetica">
+          Pendaftaran akun anda di website <strong>binamutu.com</strong> telah kami terima, harap klik tautan di bawah ini untuk melakukan verifikasi agar akun anda segera aktif dan dapat digunakan.
+        </mj-text>
+        <mj-button href="{{VERIF_URL}}" target="_blank" font-size="20px" font-family="Helvetica" background-color="#3676ff" color="white">
+          Verifikasi Pendaftaran
+        </mj-button>
+        <mj-divider border-color="#BBBBBB"></mj-divider>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

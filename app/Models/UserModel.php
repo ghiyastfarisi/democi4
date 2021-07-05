@@ -9,7 +9,7 @@ class UserModel extends Model {
     protected $useAutoIncrement     = true;
     protected $returnType           = 'array';
     protected $useSoftDeletes       = true;
-    protected $allowedFields        = [ 'username', 'password', 'login_status', 'registration_token', 'generated_token', 'role' ];
+    protected $allowedFields        = [ 'username', 'password', 'login_status', 'registration_token', 'registration_status', 'generated_token', 'role' ];
     protected $useTimestamps        = true;
     protected $createdField         = 'created_at';
     protected $updatedField         = 'updated_at';

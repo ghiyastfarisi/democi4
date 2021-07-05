@@ -66,6 +66,7 @@ input[type=number] {
         left: 0px !important;
         z-index: 1;
         width: 100%;
+        top: 70px;
     }
 }
 
@@ -78,6 +79,15 @@ input[type=number] {
         margin-top:70px;
     }
     @include from($desktop) {
+        margin-top:50px;
+    }
+}
+
+.login-main-container {
+    @include until($tablet) {
+        margin-top:100px;
+    }
+    @include from($tablet) {
         margin-top:50px;
     }
 }

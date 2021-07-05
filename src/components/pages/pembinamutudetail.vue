@@ -69,7 +69,7 @@
                                 <div class="level-left">
                                     <p class="title is-4 is-spaced">Pembina Mutu</p>
                                 </div>
-                                <div class="level-right">
+                                <div class="level-right" v-if="allowUpdatePembinaMutu">
                                     <a href="javascript:void(0)" @click="showEditPembinaMutu=!showEditPembinaMutu" class="button is-warning is-small">
                                         <span class="icon">
                                             <i class="fas fa-edit"></i>
@@ -414,6 +414,7 @@
 import dayjs from 'dayjs'
 import DynamicModalForm from '../forms/dynamicmodalform'
 import DynamicTable from '../dynamic/table'
+import { UserSession } from '../../lib/auth'
 
 export default {
     components: {
@@ -440,6 +441,7 @@ export default {
                 keahlian: '',
                 deskripsi: '-'
             },
+            allowUpdatePembinaMutu: UserSession.role === 'admin' ? true : false
         }
     },
     props: {

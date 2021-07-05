@@ -35,7 +35,8 @@ class Filters extends BaseConfig
 				'except' => [
 					'api/*',
 					'login',
-					'register'
+					'register',
+					'rv/*'
 				]
 			],
 			// 'honeypot',

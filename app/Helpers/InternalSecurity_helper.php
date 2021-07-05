@@ -8,3 +8,14 @@ function SecureDecorator($p)
     $p = hash('sha512', base64_encode($p.$c));
     return $p.base64_encode($p);
 }
+
+function SendMail($recipient='',$subject='',$body='',$mailTemplate='')
+{
+    $email = \Config\Services::email();
+
+    $email->setTo($recipient);
+    $email->setSubject($subject);
+    $email->setMessage($body);
+
+    return $email->send();
+}

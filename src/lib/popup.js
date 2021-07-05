@@ -28,5 +28,18 @@ module.exports = {
                 clearInterval(timerInterval)
             }
         })
-    }
+    },
+    Loading: ({
+        title, body, icon = ''
+    }) => {
+        return Swal.fire({
+            ...(icon !== '' ? { icon } : {} ),
+            title,
+            html: body,
+            timerProgressBar: false,
+            didOpen: () => {
+                Swal.showLoading()
+            }
+        })
+    },
 }

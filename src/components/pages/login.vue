@@ -1,5 +1,5 @@
 <template>
-    <div style="margin-top:30px;">
+    <div class="login-main-container">
         <div class="tabs is-toggle is-centered">
             <ul>
                 <li :class="[ { 'is-active': isLoginPage  } ]">
@@ -104,7 +104,7 @@
 
 <script>
 import { HandlePost, ParseError } from '../../lib/form'
-import { AutoClosePopup } from '../../lib/popup'
+import { AutoClosePopup, Loading } from '../../lib/popup'
 
 export default {
     components: {},
@@ -160,11 +160,17 @@ export default {
             }
         },
         async submitRegister() {
+            const loaders = Loading({
+                title: 'Sedang Memproses Registrasi'
+            })
+
             const payload = {
                 ...this.form,
                 ...this.formregis
             }
             const resp = await HandlePost(`${BASE_URL}/register`, JSON.stringify(payload))
+
+            loaders.close()
 
             if (resp.isError) {
                 AutoClosePopup({
@@ -185,9 +191,9 @@ export default {
                 }
                 AutoClosePopup({
                     icon: 'success',
-                    title: 'Registered!',
-                    body: 'Please Check Your Email!',
-                    timeout: 5000
+                    title: 'Registrasi Berhasil',
+                    body: 'Mohon cek email anda untuk verifikasi pendaftaran',
+                    timeout: 3500
                 })
             }
         }

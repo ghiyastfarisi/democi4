@@ -17,7 +17,7 @@ class App extends BaseConfig
 	public $forceGlobalSecureRequests = false;
 	public $sessionDriver = 'CodeIgniter\Session\Handlers\DatabaseHandler';
 	public $sessionCookieName = 'democi4_sess';
-	public $sessionExpiration = 7200;
+	public $sessionExpiration = 18000;
 	public $sessionSavePath = WRITEPATH . 'session';
 	public $sessionMatchIP = false;
 	public $sessionTimeToUpdate = 300;
@@ -32,7 +32,7 @@ class App extends BaseConfig
 	public $CSRFTokenName = 'csrf_test_name';
 	public $CSRFHeaderName = 'X-CSRF-TOKEN';
 	public $CSRFCookieName = 'csrf_cookie_name';
-	public $CSRFExpire = 7200;
+	public $CSRFExpire = 18000;
 	public $CSRFRegenerate = true;
 	public $CSRFRedirect = true;
 	public $CSRFSameSite = 'Lax';

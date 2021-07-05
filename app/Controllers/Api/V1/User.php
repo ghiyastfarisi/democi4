@@ -319,12 +319,16 @@ class User extends BaseController
 			return ResponseConflict(array('message' => 'username already registered'));
 		}
 
+		$regToken = hash('sha256', 'registration_token'.sha1($reqArray['username'].microtime()));
+		$genToken = hash('sha256', 'generated_token'.sha1($reqArray['username'].microtime()));
+
 		$insert = array_merge(
 			$reqArray,
 			array(
 				'login_status' 			=> 'inactive',
-				'registration_token' 	=> hash('sha256', 'registration_token'.sha1($reqArray['username'].microtime())),
-				'generated_token' 		=> hash('sha256', 'generated_token'.sha1($reqArray['username'].microtime()))
+				'registration_token' 	=> $regToken,
+				'generated_token' 		=> $genToken,
+				'registration_status'	=> 'unverified'
 			)
 		);
 
@@ -344,6 +348,8 @@ class User extends BaseController
 			);
 
 			$puModel->save($insertPembinaMutu);
+
+			$this->_sendVerifMail($reqArray['username'], $reqArray['nama_lengkap'], $regToken);
 		}
 
 		return ResponseCreated(array( 'message' => 'user and pembina mutu created' ));
@@ -420,5 +426,79 @@ class User extends BaseController
 		$this->SetSession($session);
 
 		return ResponseOK(array( 'data' => $session  ));
+	}
+
+	function rv($regisToken) {
+		$foundRecord = $this->UserModel
+			->select('tbl_user.id, tbl_user.registration_status, tbl_user.registration_token, tbl_user.login_status')
+			->join('tbl_pembina_mutu', 'tbl_pembina_mutu.user_id = tbl_user.id')
+			->where('tbl_user.registration_token', $regisToken)->get()->getRow();
+
+
+		if ($foundRecord->registration_status === 'unverified' && $regisToken === $foundRecord->registration_token)
+		{
+			// verify registration and set active
+			$this->UserModel->save(array(
+				'id'					=> $foundRecord->id,
+				'login_status'			=> 'active',
+				'registration_status'	=> 'verified'
+			));
+
+			$args = array(
+				'_PageSectionTitle' 	=> '',
+				'_PageSectionSubTitle' 	=> ''
+			);
+
+			$data = array(
+				'args' 			=> $args,
+				'_PageTitle' 	=> 'rv',
+				'_Pages' 		=> '',
+				'_LoadCSS'		=> array(),
+				'_LoadJS'		=> array(),
+				'_ActiveSlug'	=> '',
+				'_ExtendPath'	=> 'rv'
+			);
+
+			return RenderTemplate($data);
+		}
+
+		return redirect()->to('/web/login');
+	}
+
+	function _sendVerifMail($userMail, $fullName, $regisToken)
+	{
+		$mailContent = '<!doctype html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><title></title><!--[if !mso]><!--><meta http-equiv="X-UA-Compatible" content="IE=edge"><!--<![endif]--><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style type="text/css">#outlook a { padding:0; }
+		body { margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; }
+		table, td { border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt; }
+		img { border:0;height:auto;line-height:100%; outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; }
+		p { display:block;margin:13px 0; }</style><!--[if mso]>
+	  <noscript>
+	  <xml>
+	  <o:OfficeDocumentSettings>
+		<o:AllowPNG/>
+		<o:PixelsPerInch>96</o:PixelsPerInch>
+	  </o:OfficeDocumentSettings>
+	  </xml>
+	  </noscript>
+	  <![endif]--><!--[if lte mso 11]>
+	  <style type="text/css">
+		.mj-outlook-group-fix { width:100% !important; }
+	  </style>
+	  <![endif]--><style type="text/css">@media only screen and (min-width:480px) {
+	  .mj-column-per-100 { width:100% !important; max-width: 100%; }
+	}</style><style media="screen and (min-width:480px)">.moz-text-html .mj-column-per-100 { width:100% !important; max-width: 100%; }</style><style type="text/css">@media only screen and (max-width:480px) {
+	table.mj-full-width-mobile { width: 100% !important; }
+	td.mj-full-width-mobile { width: auto !important; }
+  }</style></head><body style="word-spacing:normal;"><div><!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]--><div style="margin:0px auto;max-width:600px;"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;"><tbody><tr><td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;"><!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]--><div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"><tbody><tr><td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;"><tbody><tr><td style="width:280px;"><img height="auto" src="https://binamutu.com/logo.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="280"></td></tr></tbody></table></td></tr><tr><td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"><p style="border-top:solid 4px #BBBBBB;font-size:1px;margin:0px auto;width:100%;"></p><!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 4px #BBBBBB;font-size:1px;margin:0px auto;width:550px;" role="presentation" width="550px" ><tr><td style="height:0;line-height:0;"> &nbsp;
+</td></tr></table><![endif]--></td></tr><tr><td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;"><div style="font-family:helvetica;font-size:20px;line-height:1;text-align:left;color:#333333;">Hi, <strong>{{NAME}}</strong> sang Pembina Mutu.</div></td></tr><tr><td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;"><div style="font-family:helvetica;font-size:20px;line-height:1;text-align:left;color:#333333;">Pendaftaran akun anda di website <strong>binamutu.com</strong> telah kami terima, harap klik tautan di bawah ini untuk melakukan verifikasi agar akun anda segera aktif dan dapat digunakan.</div></td></tr><tr><td align="center" vertical-align="middle" style="font-size:0px;padding:10px 25px;word-break:break-word;"><table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;"><tr><td align="center" bgcolor="#3676ff" role="presentation" style="border:none;border-radius:3px;cursor:auto;mso-padding-alt:10px 25px;background:#3676ff;" valign="middle"><a href="{{VERIF_URL}}" style="display:inline-block;background:#3676ff;color:white;font-family:Helvetica;font-size:20px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:3px;" target="_blank">Verifikasi Pendaftaran</a></td></tr></table></td></tr><tr><td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"><p style="border-top:solid 4px #BBBBBB;font-size:1px;margin:0px auto;width:100%;"></p><!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 4px #BBBBBB;font-size:1px;margin:0px auto;width:550px;" role="presentation" width="550px" ><tr><td style="height:0;line-height:0;"> &nbsp;
+</td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table><![endif]--></div></body></html>';
+
+		$verifUrl = base_url('rv/'.$regisToken);
+
+		// string replace
+		$mailContent = str_replace('{{NAME}}', $fullName, $mailContent);
+		$mailContent = str_replace('{{VERIF_URL}}', $verifUrl, $mailContent);
+
+		return SendMail($userMail, 'Verifikasi Pendaftaran', $mailContent);
 	}
 }

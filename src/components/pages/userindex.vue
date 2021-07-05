@@ -18,34 +18,7 @@
                     ajaxUri: `v1/user/all`,
                     deleteUrl: `v1/user/`,
                     showLimit: 25,
-                    renderObject: [
-                        {
-                            fieldName: 'Username (Email)',
-                            objectField: 'username',
-                            link: {
-                                path: '/web/user/get/{id}',
-                                parser: [ { replace: 'id', with: 'id' } ]
-                            }
-                        },
-                        {
-                            fieldName: 'Status',
-                            objectField: 'login_status'
-                        },
-                        {
-                            fieldName: 'Setting',
-                            type: 'setting',
-                            content: [
-                                {
-                                    icon: 'fas fa-times',
-                                    class: 'is-danger',
-                                    type: 'delete',
-                                    useModal: {
-                                        sourceId: 'id'
-                                    },
-                                }
-                            ]
-                        }
-                    ]
+                    renderObject
                 }"
             />
         </div>
@@ -54,13 +27,59 @@
 
 <script>
 import DynamicTable from '../dynamic/table'
+import { UserSession } from '../../lib/auth'
 
 export default {
+    created() {
+        console.log(UserSession)
+    },
     components: {
         DynamicTable
     },
     data: function() {
-        return {}
+        return {
+            renderObject: (UserSession && UserSession.role === 'pembina_mutu') ? [
+                {
+                    fieldName: 'Username (Email)',
+                    objectField: 'username',
+                    link: {
+                        path: '/web/user/get/{id}',
+                        parser: [ { replace: 'id', with: 'id' } ]
+                    }
+                },
+                {
+                    fieldName: 'Status',
+                    objectField: 'login_status'
+                }
+            ] : [
+                {
+                    fieldName: 'Username (Email)',
+                    objectField: 'username',
+                    link: {
+                        path: '/web/user/get/{id}',
+                        parser: [ { replace: 'id', with: 'id' } ]
+                    }
+                },
+                {
+                    fieldName: 'Status',
+                    objectField: 'login_status'
+                },
+                {
+                    fieldName: 'Setting',
+                    type: 'setting',
+                    content: [
+                        {
+                            icon: 'fas fa-times',
+                            class: 'is-danger',
+                            type: 'delete',
+                            useModal: {
+                                sourceId: 'id'
+                            },
+                        }
+                    ]
+                }
+            ]
+        }
     }
 };
 </script>

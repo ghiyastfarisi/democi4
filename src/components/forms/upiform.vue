@@ -996,6 +996,8 @@ export default {
             return this.validateDataUmum(payload.data_umum) && this.validateDataProduksi(payload.data_produksi)
         },
         async submitData() {
+            console.log(this.formDep)
+
             const payload = Object.assign({}, this.list)
 
             payload.data_sarpras = this.transformSarprasForm(payload.data_sarpras)
@@ -1040,7 +1042,7 @@ export default {
                 } else {
                     if (this.formDep.editMode === 'request') {
                         return this.requestEditData(payload)
-                    } else if (this.formDep.editMode === 'update') {
+                    } else if (this.formDep.editMode === 'edit') {
                         return this.editData(payload)
                     }
                 }
