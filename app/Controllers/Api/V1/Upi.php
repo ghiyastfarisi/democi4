@@ -637,6 +637,7 @@ class Upi extends BaseController
 		$now = date("Y-m-d H:i:s");
 		// insert data umum to tbl_upi
 		$insertDataUpi = $reqArray['data_umum'];
+		$insertDataUpi['nama_perusahaan'] = strtoupper($insertDataUpi['nama_perusahaan']);
 		unset($insertDataUpi['sertifikasi']);
 		$insertDataUpi['created_at'] = $now;
 		$insertDataUpi['updated_at'] = $now;

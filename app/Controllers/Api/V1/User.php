@@ -322,6 +322,8 @@ class User extends BaseController
 		$regToken = hash('sha256', 'registration_token'.sha1($reqArray['username'].microtime()));
 		$genToken = hash('sha256', 'generated_token'.sha1($reqArray['username'].microtime()));
 
+		$reqArray['nama_lengkap'] = ToTittleCase($reqArray['nama_lengkap']);
+
 		$insert = array_merge(
 			$reqArray,
 			array(
