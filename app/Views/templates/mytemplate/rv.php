@@ -32,19 +32,19 @@
                 <p>
                     <a href="<?=base_url('web/login')?>" class="button is-large is-primary is-light is-rounded">Kembali ke Beranda</a>
                 </p>
-                <span id="countdown" class="mb-2"></span>
+                otomatis ke beranda dalam <span id="countdown" class="mb-2"></span>
             </div>
         </section>
     </div>
-
     <script>
         var timeleft = 3;
+        document.getElementById("countdown").innerHTML = timeleft;
         var downloadTimer = setInterval(function(){
-        if(timeleft <= 0){
+        if(timeleft <= 1){
             clearInterval(downloadTimer);
             window.location.replace('<?=base_url('web/login')?>')
         } else {
-            document.getElementById("countdown").innerHTML = timeleft + " seconds remaining";
+            document.getElementById("countdown").innerHTML = timeleft;
         }
         timeleft -= 1;
         }, 1000);
