@@ -14,6 +14,7 @@ class UserSeeder extends Seeder
             'login_status'          => 'active',
             'role'                  => 'admin',
             'registration_token'    => '1c35df098cec1a4b55ff1cafa22b5d3c1ef073d217c8deb4b09768e6b6626a7b',
+            'registration_status'   => 'verified',
             'generated_token'       => 'f5ec6fd87dcb9848a7071150609c3657c56ca3c1d294665413c90325729c9373',
             'created_at'            => Time::Now(),
             'updated_at'            => Time::Now()

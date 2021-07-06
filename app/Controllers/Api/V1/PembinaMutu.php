@@ -52,6 +52,9 @@ class PembinaMutu extends BaseController
 			$countQueryBuilder->where($where);
 		}
 
+		$queryBuilder->whereNotIn('tbl_user.id', [1]);
+		$countQueryBuilder->whereNotIn('tbl_user.id', [1]);
+
 		$resp = $queryBuilder->orderBy('tbl_pembina_mutu.id', 'desc')->findAll($limit, $offset);
 		$countQuery = $countQueryBuilder->countAllResults();
 		$count = (int)$countQuery;

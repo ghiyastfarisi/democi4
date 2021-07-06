@@ -41,10 +41,13 @@ class User extends BaseController
 
 		if ($keyword != '') {
 			$cleanKey = "'%" . $this->db->escapeLikeString($keyword) . "%' ESCAPE '!'";
-			$where  = 'username LIKE' . $cleanKey;
+			$where  = 'username LIKE ' . $cleanKey;
 			$queryBuilder->where($where);
 			$countQueryBuilder->where($where);
 		}
+
+		$queryBuilder->whereNotIn('id', [1]);
+		$countQueryBuilder->whereNotIn('id', [1]);
 
 		$resp = $queryBuilder->orderBy('id', 'desc')->findAll($limit, $offset);
 		$countQuery = $countQueryBuilder->countAllResults();
