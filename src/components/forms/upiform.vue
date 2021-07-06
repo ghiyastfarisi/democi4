@@ -996,8 +996,6 @@ export default {
             return this.validateDataUmum(payload.data_umum) && this.validateDataProduksi(payload.data_produksi)
         },
         async submitData() {
-            console.log(this.formDep)
-
             const payload = Object.assign({}, this.list)
 
             payload.data_sarpras = this.transformSarprasForm(payload.data_sarpras)
