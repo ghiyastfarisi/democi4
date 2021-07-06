@@ -10,7 +10,6 @@ class CheckLogin implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // dd(session('auth'));
         if (null==session('auth'))
         {
             // if page is login or register redirect to dashboard
@@ -22,7 +21,7 @@ class CheckLogin implements FilterInterface
 
         if (null!=session('auth')){
             // if page is login or register redirect to dashboard
-            if (url_is('web/login'))
+            if (url_is('web/login') || url_is('web') || url_is('/'))
             {
                 return redirect()->to('/web/dashboard');
             }

@@ -510,4 +510,8 @@ class User extends BaseController
 
 		return SendMail($userMail, 'Verifikasi Pendaftaran', $mailContent);
 	}
+
+	// function sendx() {
+	// 	return $this->_sendVerifMail('ghi.fai@gmail.com', 'Ghiyast F', 'mytoken1992');
+	// }
 }

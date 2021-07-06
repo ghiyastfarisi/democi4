@@ -47,7 +47,7 @@ class Email extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $SMTPHost = 'email-smtp.ap-southeast-1.amazonaws.com';
+	public $SMTPHost = '';
 
 	/**
 	 * SMTP Username
