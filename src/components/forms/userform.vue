@@ -28,6 +28,18 @@
                     </div>
                 </div>
             </div>
+            <div v-if="formDep.isEdit && !formDep.extra.excludeRoleUpdate" class="field">
+                <label class="label">Role</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">
+                        <select name="role" id="login_status" v-model="iRole">
+                            <option v-for="(list, index) in roleArray" :value="list" :key="index">
+                                {{ list }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div v-if="!formDep.isEdit" class="field">
                 <label for="" class="label">Nama Lengkap</label>
                 <div class="control has-icons-left">
@@ -72,7 +84,9 @@ export default {
             iuname: '',
             ipass: '',
             iloginStatus: '',
+            iRole: '',
             loginStatusArray: [ 'active', 'inactive' ],
+            roleArray: [ 'admin', 'pembina_mutu' ],
             nama_lengkap: '',
             nip: '',
             no_hp: ''
@@ -124,6 +138,7 @@ export default {
                     if (data) {
                         this.iuname = data.username
                         this.iloginStatus = data.login_status
+                        this.iRole = data.role
                     }
                 })
                 .catch(err => {
@@ -176,7 +191,8 @@ export default {
         updateData() {
             const url = `${BASE_API_URL}${this.formDep.updateUrl}`
             const payload = {
-                login_status: this.iloginStatus
+                login_status: this.iloginStatus,
+                role: this.iRole
             }
             if (this.ipass !== '' && this.ipass.length > 1) {
                 payload.password = this.ipass

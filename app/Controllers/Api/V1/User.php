@@ -183,7 +183,8 @@ class User extends BaseController
 		$vRulesConfig = array(
 			'username' 		=> 'min_length[3]|valid_email',
 			'password' 		=> 'min_length[8]',
-			'login_status' 	=> 'in_list[active,inactive]'
+			'login_status' 	=> 'in_list[active,inactive]',
+			'role'			=> 'in_list[admin,pembina_mutu]'
 		);
 		$vMessagesConfig = array(
 			'username' => [
@@ -193,6 +194,9 @@ class User extends BaseController
 				'min_length' 	=> 'minimal 8 karakter'
 			],
 			'login_status' => [
+				'in_list'		=> 'tidak terdaftar'
+			],
+			'role' => [
 				'in_list'		=> 'tidak terdaftar'
 			]
 		);
