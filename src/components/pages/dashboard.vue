@@ -2,7 +2,7 @@
     <div class="columns is-multiline">
         <div class="column is-12">
             <div class="box">
-                Welcome dashboard
+                Welcome, {{nama}}
             </div>
         </div>
         <div class="column is-12">
@@ -39,13 +39,17 @@
 
 <script>
 import DashboardBarChart from '../chart/dashboardbar'
+import { UserSession } from '../../lib/auth'
 
 export default {
+    created() {},
     components: {
         DashboardBarChart
     },
     data: function() {
-        return {}
+        return {
+            nama: 'Pembina Mutu'
+        }
     },
     props: {},
     methods: {}

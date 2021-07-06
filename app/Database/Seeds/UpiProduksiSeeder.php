@@ -62,6 +62,70 @@ class UpiProduksiSeeder extends Seeder
                 'ukuran'            => 'kg',
                 'created_at'        => Time::Now(),
                 'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 5,
+                'nilai_unit'        => 5,
+                'nilai_kapasitas'   => 5,
+                'ukuran'            => 'ton',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 6,
+                'nilai_unit'        => 6,
+                'nilai_kapasitas'   => 600,
+                'ukuran'            => 'ton',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 7,
+                'nilai_unit'        => 77,
+                'nilai_kapasitas'   => 77,
+                'ukuran'            => 'kg',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 8,
+                'nilai_unit'        => 80,
+                'nilai_kapasitas'   => 800,
+                'ukuran'            => 'kg',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 9,
+                'nilai_unit'        => 9,
+                'nilai_kapasitas'   => 99,
+                'ukuran'            => 'kg',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 10,
+                'nilai_unit'        => 120,
+                'nilai_kapasitas'   => 1200,
+                'ukuran'            => 'kg',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 11,
+                'nilai_unit'        => 11,
+                'nilai_kapasitas'   => 110,
+                'ukuran'            => 'ton',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
+            ], [
+                'upi_id'            => 1,
+                'sarpras_id'        => 12,
+                'nilai_unit'        => 12,
+                'nilai_kapasitas'   => 120,
+                'ukuran'            => 'kg',
+                'created_at'        => Time::Now(),
+                'updated_at'        => Time::Now()
             ]
         ]);
         $this->db->table('tbl_produksi_produk')->insertBatch([
