@@ -268,7 +268,7 @@ export default {
                         timeout: 3500
                     })
                 }
-            }cons
+            }
         }
     },
     mounted() {}
