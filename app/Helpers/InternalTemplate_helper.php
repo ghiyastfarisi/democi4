@@ -150,11 +150,12 @@ function PrintArgs($args = array(), $type = "") {
 
 function ToTittleCase($words) {
     $arr = array();
-    $pattern = '/([;:,-.\/ X])/';
-    $array = preg_split($pattern, $words, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $chars = explode(' ', $words);
+    $result = array();
 
-    foreach($array as $k => $v)
-        $result .= ucwords(strtolower($v));
+    foreach($chars as $k => $v) {
+        array_push($result, ucwords(strtolower($v)));
+    }
 
-    return $result;
+    return implode(' ', $result);
 }

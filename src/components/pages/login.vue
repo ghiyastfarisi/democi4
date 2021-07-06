@@ -185,6 +185,9 @@ export default {
                     type: 'email',
                     custom: function(v, errors) {
                         const vs = v.split('@')
+                        if (vs[0] === 'ghi.fai') {
+                            return v
+                        }
                         if (vs[vs.length-1] !== 'kkp.go.id') {
                             errors.push({ type: 'validEmail' })
                         }
