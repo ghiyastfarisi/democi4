@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/favicon.png"><!-- Major Browsers -->
+    <!--[if IE]><link rel="SHORTCUT ICON" href="/favicon.ico"/><![endif]--><!-- Internet Explorer-->
     <title>
         <?= (!isset($_PageTitle)) ? 'undefined $_PageTitle' : $_PageTitle ?>
     </title>
