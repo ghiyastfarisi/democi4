@@ -100,7 +100,11 @@
                                 @toggle-close="showEditPembinaMutu=!showEditPembinaMutu"
                                 @update-table="getData"
                             />
-
+                            <div class="field">
+                                <figure class="image">
+                                    <img v-if="pembinaMutuData.foto_profil!=''" :src="pembinaMutuData.foto_profil" style="max-width:180px;max-height:180px;">
+                                </figure>
+                            </div>
                             <div class="field">
                                 <label class="label"> Nama Lengkap </label>
                                 <div class="control">
@@ -171,7 +175,8 @@ export default {
                 nip: '',
                 no_hp: '',
                 keahlian: '',
-                deskripsi: '-'
+                deskripsi: '-',
+                foto_profil: ''
             },
         }
     },

@@ -19,3 +19,23 @@ function SendMail($recipient='',$subject='',$body='',$mailTemplate='')
 
     return $email->send();
 }
+
+function ValidateRole($allowed = array())
+{
+    $match = array();
+    $auth = session('auth');
+    $role = $auth['role'];
+    $found = false;
+
+    foreach($allowed as $v) {
+        if ($v === $role) {
+            $found = true;
+        }
+    }
+
+    if (!$found) {
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+    }
+
+    return false;
+}

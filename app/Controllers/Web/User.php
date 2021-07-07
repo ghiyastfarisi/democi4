@@ -8,6 +8,8 @@ class User extends BaseController
 
 	public function index($id = 0)
 	{
+		ValidateRole(array('admin'));
+
 		$args = array(
 			'_PageSectionTitle' 	=> 'Manage User',
 			'_PageSectionSubTitle' 	=> 'User Management Page'
@@ -27,6 +29,8 @@ class User extends BaseController
 
 	public function get($id = 0)
 	{
+		ValidateRole(array('admin'));
+
 		$args = array(
 			'_PageSectionTitle' 	=> 'User',
 			'_PageSectionSubTitle' 	=> 'detail page'
@@ -44,6 +48,8 @@ class User extends BaseController
 
 	public function setting($id = 0)
 	{
+		ValidateRole(array('admin', 'pembina_mutu'));
+
 		$args = array(
 			'_PageSectionTitle' 	=> 'Setting',
 			'_PageSectionSubTitle' 	=> 'user setting'

@@ -128,10 +128,12 @@ $routes->group('api', function($routes)
 });
 
 $routes->group('web', function($routes)
-{
-	$routes->get('pembina-mutu', 'Web\PembinaMutu::index');
-	$routes->get('pembina-mutu/get/(:num)', 'Web\PembinaMutu::get/$1');
-}
+	{
+		$routes->get('pembina-mutu', 'Web\PembinaMutu::index');
+		$routes->get('pembina-mutu/get/(:num)', 'Web\PembinaMutu::get/$1');
+		$routes->get('upi-request', 'Web\UpiRequest::index');
+		$routes->get('upi-request/get/(:num)', 'Web\UpiRequest::get/$1');
+	}
 );
 
 $routes->post('login', 'Api\V1\User::login');

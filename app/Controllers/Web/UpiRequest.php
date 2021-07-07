@@ -8,6 +8,8 @@ class UpiRequest extends BaseController
 
 	public function index($id = 0)
 	{
+		ValidateRole(array('admin'));
+
 		$args = array(
 			'_PageSectionTitle' 	=> 'Manage Request UPI',
 			'_PageSectionSubTitle' 	=> 'Request UPI Management Page'
@@ -15,11 +17,11 @@ class UpiRequest extends BaseController
 
 		$data = array(
 			'args' 			=> $args,
-			'_PageTitle' 	=> 'Upi Request Management',
+			'_PageTitle' 	=> 'Upi Request Page',
 			'_Pages' 		=> 'upirequest/index',
 			'_LoadCSS'		=> array(),
 			'_LoadJS'		=> array('@/upirequestindex.js'),
-			'_ActiveSlug'	=> 'upi'
+			'_ActiveSlug'	=> 'upirequest'
 		);
 
 		return RenderTemplate($data);
@@ -27,17 +29,19 @@ class UpiRequest extends BaseController
 
 	public function get($id = 0)
 	{
+		ValidateRole(array('admin'));
+
 		$args = array(
-			'_PageSectionTitle' 	=> 'UPI',
-			'_PageSectionSubTitle' 	=> 'detail page'
+			'_PageSectionTitle' 	=> 'Manage Request UPI',
+			'_PageSectionSubTitle' 	=> 'Detail Request UPI Management Page'
 		);
 		$data = array(
 			'args' 			=> $args,
-			'_PageTitle' 	=> 'Upi Detail Page',
-			'_Pages' 		=> 'upi/get_id',
+			'_PageTitle' 	=> 'Upi Request Detail Page',
+			'_Pages' 		=> 'upirequest/get_id',
 			'_LoadCSS'		=> array(),
-			'_LoadJS'		=> array('@/upigetid.js'),
-			'_ActiveSlug'	=> 'upi'
+			'_LoadJS'		=> array('@/upirequestid.js'),
+			'_ActiveSlug'	=> 'upirequest'
 		);
 		return RenderTemplate($data);
 	}
